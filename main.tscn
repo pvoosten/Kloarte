@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://VenueBuilder.cs" id="1_venue"]
+[ext_resource type="Environment" path="res://environment/theatre_environment.tres" id="2_env"]
+[ext_resource type="Script" path="res://camera/FlyCamera.cs" id="3_cam"]
+[ext_resource type="Script" path="res://fixtures/ProfileFixture.cs" id="4_profile"]
+[ext_resource type="Texture2D" path="res://gobos/window.png" id="5_gobo"]
+[ext_resource type="Script" path="res://ui/FixturePanel.cs" id="9_panel"]
+[ext_resource type="Script" path="res://environment/StrayLight.cs" id="10_stray"]
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_env")
+
+[node name="Venue" type="Node3D" parent="."]
+script = ExtResource("1_venue")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 12)
+fov = 55.0
+script = ExtResource("3_cam")
+LookAtOnStart = Vector3(0, 0.5, -4)
+
+[node name="Fixtures" type="Node3D" parent="."]
+
+[node name="FOH_DS104" type="Node3D" parent="Fixtures"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, 8)
+script = ExtResource("4_profile")
+FieldAngle = 26.0
+FocusPoint = Vector3(0, 0, -3)
+
+[node name="FixturePanel" type="CanvasLayer" parent="."]
+script = ExtResource("9_panel")
+
+[node name="StrayLight" type="Node" parent="."]
+script = ExtResource("10_stray")

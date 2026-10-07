@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/GiCapture.cs" id="1_gi"]
+
+[node name="GiCapture" type="Node"]
+script = ExtResource("1_gi")

@@ -1,0 +1,1013 @@
+{
+  "show": "RT2025_031.shw",
+  "fixtures": {
+    "150": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -0.82316405,
+        0,
+        -0.6913562
+      ]
+    },
+    "151": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        0.82316405,
+        0,
+        -0.6913562
+      ]
+    },
+    "152": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        2.9,
+        0,
+        -5.55
+      ]
+    },
+    "153": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -3.7005227,
+        0,
+        -4.762512
+      ]
+    },
+    "154": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -1.9,
+        0,
+        -4.9161263
+      ]
+    },
+    "155": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -0.5440713,
+        0,
+        -4.4134483
+      ]
+    },
+    "156": {
+      "kind": "fresnel",
+      "fieldAngle": 45,
+      "softness": 0.3,
+      "fieldFalloff": 0.25,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -4.33,
+        0,
+        -3.8981996
+      ]
+    },
+    "157": {
+      "kind": "fresnel",
+      "fieldAngle": 45,
+      "softness": 0.3,
+      "fieldFalloff": 0.25,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        0.5,
+        0,
+        -3.640829
+      ]
+    },
+    "158": {
+      "kind": "fresnel",
+      "fieldAngle": 45,
+      "softness": 0.3,
+      "fieldFalloff": 0.25,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -1.6054504,
+        0,
+        -3.834875
+      ]
+    },
+    "159": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        0,
+        0,
+        -3.15
+      ]
+    },
+    "200": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        0,
+        0,
+        -1.6186581
+      ]
+    },
+    "201": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        2.890236,
+        0,
+        -5.816665
+      ]
+    },
+    "202": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -3.1932147,
+        0,
+        -1.5405903
+      ]
+    },
+    "203": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -2.2125845,
+        0,
+        -1.1490726
+      ]
+    },
+    "204": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        2.5127814,
+        0,
+        -2.9977913
+      ]
+    },
+    "205": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.5779462,
+        0,
+        -1.7892857
+      ]
+    },
+    "206": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -2.5052285,
+        -4.7683716E-07,
+        1.8402119
+      ]
+    },
+    "209": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -6.4135275,
+        -4.7683716E-07,
+        -3.7637138
+      ]
+    },
+    "210": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        1.812298,
+        0,
+        -1.4599762
+      ]
+    },
+    "211": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -0.49399137,
+        0,
+        -2.3415241
+      ]
+    },
+    "250": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -5.8012,
+        0,
+        -5.5434055
+      ]
+    },
+    "251": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -2.4711998,
+        0,
+        -5.5434055
+      ]
+    },
+    "252": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        0.8588003,
+        0,
+        -5.5434055
+      ]
+    },
+    "253": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.120309,
+        0,
+        -1.2143087
+      ]
+    },
+    "254": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        2.6698127,
+        0,
+        -1.2225175
+      ]
+    },
+    "255": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        0.43801117,
+        0,
+        -1.3907688
+      ]
+    },
+    "256": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -1.1576312,
+        0,
+        -1.2636988
+      ]
+    },
+    "257": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -3.2212934,
+        0,
+        -1.605303
+      ]
+    },
+    "258": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -4.824954,
+        0,
+        -1.4416289
+      ]
+    },
+    "300": {
+      "kind": "fresnel",
+      "fieldAngle": 45,
+      "softness": 0.3,
+      "fieldFalloff": 0.25,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -1.1,
+        0,
+        -3.6870058
+      ]
+    },
+    "301": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        2.939177,
+        0,
+        -2.610219
+      ]
+    },
+    "302": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.2072325,
+        0,
+        -5.936625
+      ]
+    },
+    "303": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.57243,
+        0,
+        -5.611952
+      ]
+    },
+    "304": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.102477,
+        4.7683716E-07,
+        -2.37817
+      ]
+    },
+    "350": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -1.1,
+        0,
+        -4.417022
+      ]
+    },
+    "351": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        1.12239,
+        0,
+        -2.6678848
+      ]
+    },
+    "352": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.0124846,
+        0,
+        -2.819792
+      ]
+    },
+    "353": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.78,
+        0,
+        -5.2714415
+      ]
+    },
+    "354": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        6.52,
+        0,
+        -5.2714415
+      ]
+    },
+    "400": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -3.267878,
+        0,
+        -3.7616467
+      ]
+    },
+    "401": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -1.6153398,
+        0,
+        -2.76477
+      ]
+    },
+    "212": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        0.49399137,
+        0,
+        -2.3415241
+      ]
+    },
+    "402": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        1.6153398,
+        0,
+        -2.76477
+      ]
+    },
+    "403": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.4807022,
+        0,
+        -2.5810533
+      ]
+    },
+    "450": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.65,
+        1.85,
+        -8.6
+      ]
+    },
+    "451": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        2.49,
+        3.749631,
+        -21.09779
+      ]
+    },
+    "452": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -3.76,
+        3.749631,
+        -21.09779
+      ]
+    },
+    "453": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.19,
+        3.749631,
+        -21.09779
+      ]
+    },
+    "454": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -2.91,
+        3.749631,
+        -21.09779
+      ]
+    },
+    "455": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.89,
+        3.749631,
+        -21.09779
+      ]
+    },
+    "456": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        -2.06,
+        3.749631,
+        -21.09779
+      ]
+    },
+    "457": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.59,
+        3.749631,
+        -21.09779
+      ]
+    },
+    "70": {
+      "kind": "profile",
+      "fieldAngle": 26,
+      "softness": 0.01,
+      "fieldFalloff": 0.85,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.371945,
+        3.3387368,
+        -8.096818
+      ]
+    },
+    "71": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.05,
+        2.840024,
+        -17.509085
+      ]
+    },
+    "72": {
+      "kind": "flood",
+      "fieldAngle": 90,
+      "softness": 0.35,
+      "fieldFalloff": 0.5,
+      "energy": 300,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        3.15,
+        2.8196692,
+        -17.514025
+      ]
+    },
+    "74": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.7150292,
+        0,
+        -4.6358423
+      ]
+    },
+    "75": {
+      "kind": "pc",
+      "fieldAngle": 30,
+      "softness": 0.12,
+      "fieldFalloff": 0.5,
+      "energy": 400,
+      "color": "#ffd19e",
+      "iris": 1,
+      "focusPoint": [
+        4.703113,
+        0,
+        -4.371532
+      ]
+    },
+    "513": {
+      "kind": "ledbeam",
+      "fieldAngle": 10,
+      "softness": 0.05,
+      "fieldFalloff": 0.8,
+      "energy": 250,
+      "color": "#ffffff",
+      "iris": 1,
+      "focusPoint": [
+        -8.08,
+        0,
+        -7.9700003
+      ]
+    },
+    "535": {
+      "kind": "ledbeam",
+      "fieldAngle": 10,
+      "softness": 0.05,
+      "fieldFalloff": 0.8,
+      "energy": 250,
+      "color": "#ffffff",
+      "iris": 1,
+      "focusPoint": [
+        5.9,
+        0,
+        -4.6195307
+      ]
+    },
+    "557": {
+      "kind": "ledbeam",
+      "fieldAngle": 10,
+      "softness": 0.05,
+      "fieldFalloff": 0.8,
+      "energy": 250,
+      "color": "#ffffff",
+      "iris": 1,
+      "focusPoint": [
+        5.9,
+        0,
+        -4.6195307
+      ]
+    },
+    "50": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        6.68,
+        0,
+        -4.0096955
+      ]
+    },
+    "51": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        5.55,
+        0,
+        -4.3982315
+      ]
+    },
+    "52": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        4.41,
+        0,
+        -4.767812
+      ]
+    },
+    "53": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        3.27,
+        0,
+        -5.12301
+      ]
+    },
+    "54": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        2.14,
+        0,
+        -5.464618
+      ]
+    },
+    "55": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        1,
+        0,
+        -5.7964253
+      ]
+    },
+    "56": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        -0.14,
+        0,
+        -6.120815
+      ]
+    },
+    "57": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        -1.27,
+        0,
+        -6.4399757
+      ]
+    },
+    "58": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        -2.41,
+        0,
+        -6.756953
+      ]
+    },
+    "59": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        -3.55,
+        0,
+        -7.0717397
+      ]
+    },
+    "60": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        -4.68,
+        0,
+        -7.387278
+      ]
+    },
+    "61": {
+      "kind": "par64",
+      "fieldAngle": 20,
+      "softness": 0.2,
+      "fieldFalloff": 0.35,
+      "energy": 500,
+      "color": "#ffd6a8",
+      "iris": 1,
+      "focusPoint": [
+        -5.98,
+        0,
+        -7.89985
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Test output (keep the .gdignore so Godot doesn't import the screenshots)
+tests/output/*
+!tests/output/.gdignore
+
+# .NET / C# build output
+bin/
+obj/
+.mono/
+mono_crash.*
+*.user
+*.suo
+*.userprefs
+*.rsuser
+.vs/
+.idea/
+*.DotSettings.user
+TestResults/

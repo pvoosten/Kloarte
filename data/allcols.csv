@@ -1,0 +1,843 @@
+No col,,0,  ffffff,,,
+Wheel,,1,  ffffff,,,
+Mix,,2,  ffffff,,,
+Maroon,,3,80,,,
+SaddleBrown,,4,  13458b,,,
+DarkRed,,5,      8b,,,
+Sienna,,6,  2d52a0,,,
+Brown,,7,  2a2aa5,,,
+Firebrick,,8,  2222b2,,,
+Crimson,,9,  3c14dc,,,
+Red,,10,      ff,,,
+OrangeRed,,11,    45ff,,,
+IndianRed,,12,  5c5ccd,,,
+Tomato,,13,  4763ff,,,
+Chocolate,,14,  1e69d2,,,
+Coral,,15,  507fff,,,
+LightCoral,,16,  8080f0,,,
+DarkSalmon,,17,  7a96e9,,,
+Salmon,,18,  7280fa,,,
+LightSalmon,,19,  7aa0ff,,,
+SandyBrown,,20,  60a4f4,,,
+Peru,,21,  3f85cd,,,
+DarkGoldenrod,,22,   b86b8,,,
+DarkOrange,,23,    8cff,,,
+Amber,,24,8cff,,,
+Orange,,25,    a5ff,,,
+Goldenrod,,26,  20a5da,,,
+DarkKhaki,,27,  6bb7bd,,,
+BurlyWood,,28,  87b8de,,,
+Tan,,29,  8cb4d2,,,
+Gold,,30,    d7ff,,,
+Yellow,,31,    ffff,,,
+Khaki,,32,  8ce6f0,,,
+GreenYellow,,33,  2fffad,,,
+YellowGreen,,34,  32cd9a,,,
+LawnGreen,,35,    fc7c,,,
+Lime,,36,    ff00,,,
+SpringGreen,,37,  7fff00,,,
+LightGreen,,38,  90ee90,,,
+PaleGreen,,39,  98fb98,,,
+MediumSpringGreen,,40,  9afa00,,,
+LimeGreen,,41,  32cd32,,,
+MediumSeaGreen,,42,  71b33c,,,
+SeaGreen,,43,  578b2e,,,
+ForestGreen,,44,  228b22,,,
+DarkGreen,,45,6400,,,
+Green,,46,8000,,,
+DarkOliveGreen,,47,  2f6b55,,,
+Olive,,48,8080,,,
+OliveDrab,,49,  238e6b,,,
+Teal,,50,808000,,,
+DarkCyan,,51,  8b8b00,,,
+LightSeaGreen,,52,  aab220,,,
+MediumTurquoise,,53,  ccd148,,,
+DarkSeaGreen,,54,  8bbc8f,,,
+Aquamarine,,55,  d4ff7f,,,
+MediumAquamarine,,56,  aacd66,,,
+LightSkyBlue,,57,  face87,,,
+LightSteelBlue,,58,  dec4b0,,,
+SkyBlue,,59,  ebce87,,,
+Turquoise,,60,  d0e040,,,
+DeepSkyBlue,,61,  ffbf00,,,
+DarkTurquoise,,62,  d1ce00,,,
+Cyan,,63,  ffff00,,,
+CadetBlue,,64,  a09e5f,,,
+LightSlateGray,,65,998877,,,
+CornflowerBlue,,66,  ed9564,,,
+DodgerBlue,,67,  ff901e,,,
+SteelBlue,,68,  b48246,,,
+MediumSlateBlue,,69,  ee687b,,,
+SlateBlue,,70,  cd5a6a,,,
+RoyalBlue,,71,40000,,,
+Blue,,72,  ff0000,,,
+MediumBlue,,73,  cd0000,,,
+DarkBlue,,74,  8b0000,,,
+MidnightBlue,,75,701919,,,
+Navy,,76,800000,,,
+Indigo,,77,  82004b,,,
+DarkSlateBlue,,78,  8b3d48,,,
+DarkMagenta,,79,  8b008b,,,
+Purple,,80,800080,,,
+DarkViolet,,81,  d30094,,,
+BlueViolet,,82,  e22b8a,,,
+DarkOrchid,,83,  cc3299,,,
+MediumOrchid,,84,  d355ba,,,
+MediumPurple,,85,  db7093,,,
+MediumVioletRed,,86,  8515c7,,,
+DeepPink,,87,  9314ff,,,
+Magenta,,88,  ff00ff,,,
+Fuchsia,,89,  ff00ff,,,
+PaleVioletRed,,90,  9370db,,,
+RosyBrown,,91,  8f8fbc,,,
+HotPink,,92,  b469ff,,,
+Orchid,,93,  d670da,,,
+Violet,,94,  ee82ee,,,
+Plum,,95,  dda0dd,,,
+Pink,,96,  cbc0ff,,,
+LightPink,,97,  c1b6ff,,,
+CTC,,98,  d8bfd8,,,
+Silver,,99,  c0c0c0,,,
+Lavender,,100,  fae6e6,,,
+Gainsboro,,101,  dcdcdc,,,
+Straw,,102,  b3def5,,,
+White,,103,  ffffff,,,
+DarkGray,,104,  a9a9a9,,,
+SlateGray,,105,908070,,,
+DimGray,,106,696969,,,
+Gray,,107,808080,,,
+DarkSlateGray,,108,  4f4f2f,,,
+Black,,109,0,,,
+L002 Rose Pink,Strong pink wash cycloramas.,1002,DC78FF,0.328,0.202,1.0
+L003 Lavender Tint,Subtle cool wash for stage and studio lighting.,1003,FAF0FA,0.303,0.3,0.98
+L004 Medium Bastard Amber,Naturally enhances skin tones.,1004,B4C8FF,0.37,0.335,1
+L007 Pale Yellow,Sunlight.,1007,D2FAFA,0.339,0.363,0.98
+L008 Dark Salmon,Enhances dark skin tones sunsets ballroom sets.,1008,809BFC,0.498,0.347,0.99
+L009 Pale Amber Gold,Late sunlight.,1009,B3D7FC,0.376,0.371,0.99
+L010 Medium Yellow,Sunlight effect.,1010,00FFFF,0.426,0.509,1
+L013 Straw Tint,Sunlight wash with gobos interior lighting.,1013,9BD8FC,0.392,0.392,0.99
+L015 Deep Straw,Strong mood effect on backings with yellow bias.,1015,00CDFF,0.517,0.46,1
+L017 Surprise Peach,Skin tones - mood light.,1017,648CE6,0.439,0.372,0.9
+L019 Fire,Disco effect - fire effect.,1019,0046FF,0.664,0.31,1
+L020 Medium Amber,Late sunlight.,1020,55BEFF,0.523,0.419,1
+L021 Gold Amber,Fire effect sunset.,1021,328CFF,0.586,0.396,1
+L022 Dark Amber,Backlight.,1022,0069FF,0.647,0.339,1
+L024 Scarlet,Pantomimes ballroom sets fire effects.,1024,645AFF,0.561,0.296,1
+L025 Sunset Red,Warm stage wash - TV studio wash - sunset effect.,1025,466EFF,0.566,0.359,1
+L026 Bright Red,Cycloramas.,1026,3C00E6,0.712,0.281,0.9
+L027 Medium Red,Cycloramas.,1027,3C00C8,0.712,0.261,0.78
+L029 PLASA Red,Fire effect musicals cycloramas.,1029,3C00E1,0.693,0.303,0.88
+L035 Light Pink,Musical reviews. Warm wash.,1035,D2C8FF,0.335,0.289,1
+L036 Medium Pink,Front of house lanterns.,1036,B9A0FF,0.36,0.268,1
+L039 Pink Carnation,Soft cool pastel pink good for backlighting and general colourwash.,1039,E1BEFF,,,
+L046 Dark Magenta,Very strong pink good for back lighting.,1046,5A00DC,0.572,0.223,0.86
+L048 Rose Purple,Musical revues discos etc. cycloramas.,1048,AF6EE6,0.288,0.167,0.9
+L049 Medium Purple,Cycloramas and pantomimes,1049,9100BE,0.283,0.101,0.75
+L052 Light Lavender,Set dressing pantomimes and musicals.,1052,FAAAE6,0.259,0.218,0.98
+L053 Paler Lavender,Subtle cool wash.,1053,FAE6E6,0.284,0.284,0.98
+L058 Lavender,Backlight.,1058,F06EB4,0.212,0.099,0.94
+L061 Mist Blue,Night scenes cool wash.,1061,FFF5DC,0.268,0.284,1
+L063 Pale Blue,Cycloramas cool wash.,1063,FFF5D2,0.252,0.27,1
+L068 Sky Blue,Night effect cycloramas.,1068,F0B446,0.151,0.128,0.94
+L071 Tokyo Blue,Deep blue use for midnight scenes cycloramas.,1071,B40000,0.151,0.03,0.7
+L075 Evening Blue,Good for night scenes romantic moonlight.,1075,F0A064,0.158,0.117,0.94
+L079 Just Blue,Cycloramas.,1079,D28C3C,0.145,0.072,0.82
+L085 Deeper Blue,Moonlight strong back lighting.,1085,B96E00,0.143,0.065,0.72
+L088 Lime Green,Use with gobos for leafy glades - pantos - slightly sinister atmosphere.,1088,64FFDC,0.356,0.511,1
+L089 Moss Green,With gobos for forest scenes.,1089,5ADC5A,0.259,0.547,0.86
+L090 Dark Yellow Green,Highlighting for forest effects.,1090,00BE00,0.184,0.641,0.75
+L100 Spring Yellow,Sunlight wash - use with gobos - disco - dark skin tones.,1100,00FFF5,0.41,0.502,1
+L101 Yellow,Sunlight and window effect - pleasant in acting areas.,1101,00F5FF,0.451,0.507,1
+L102 Light Amber,Lamplight effects - dawn sun effects - pleasant in acting areas.,1102,5FDCFF,0.434,0.44,1
+L103 Straw,Pale sunlight through window effect - warm winter effect.,1103,CCEAFC,0.336,0.359,0.99
+L104 Deep Amber,Mood effect on backings. Backlighting of floor and colour effect.,1104,00DCFF,0.496,0.462,1
+L105 Orange,Mainly light entertainment functions. Fire effect if used with 106 166 104.,1105,00A0FF,0.563,0.428,1
+L106 Primary Red,Strong red effect cycloramas.,1106,0000FF,0.699,0.285,1
+L107 Light Rose,Mood effect on backings. Backlighting of floor and colour effect.,1107,AFA5FF,0.407,0.284,1
+L108 English Rose,Warm tint wash - dark flesh tones - softer skin tones.,1108,A9BEFC,0.412,0.352,0.99
+L109 Light Salmon,Interesting backlight.,1109,AFB2FF,0.391,0.295,1
+L110 Middle Rose,Pleasing effects for theatrical lighting.,1110,C8B4FF,0.351,0.249,1
+L111 Dark Pink,Good for cycloramas.,1111,BE8CFF,0.389,0.215,1
+L113 Magenta,Very strong - used carefully for small areas on set.,1113,6400FF,0.563,0.217,1
+L115 Peacock Blue,Pleasing effect on sets cyclorama cloths back lighting (e.g. ice rinks galas etc).,1115,C8EB00,0.134,0.296,0.92
+L116 Medium Blue-Green,Pleasing effect for theatrical lighting.,1116,B9C800,0.113,0.28,0.78
+L117 Steel Blue,Gaslight effect when used in conjunction with 213.,1117,F5FAB4,0.223,0.278,0.98
+L118 Light Blue,Strong night effect,1118,EBE100,0.149,0.113,0.92
+L119 Dark Blue,Mood effects jazz clubs etc - back projection - travelling matt blue moonlight.,1119,C87800,0.142,0.054,0.78
+L120 Deep Blue,Pleasing effect for theatrical lighting.,1120,BE5F00,0.149,0.051,0.75
+L121 Lee Green,Cycloramas.,1121,64FFB4,0.302,0.534,1
+L122 Fern Green,Cycloramas - good for mood effect.,1122,6EFA78,0.234,0.543,0.98
+L124 Dark Green,Cycloramas - good for back lighting.,1124,78DC00,0.123,0.586,0.86
+L126 Mauve,Cycloramas - good for back lighting.,1126,9B00BE,0.287,0.082,0.75
+L127 Smokey Pink,Cycloramas - set lighting discos.,1127,736E04,0.397,0.265,0.45
+L128 Bright Pink,Cycloramas - good for back lighting - strong effect.,1128,B450FF,0.401,0.151,1
+L130 Clear,Used in animation and projection work.,1130,FFFFFF,0.311,0.317,1
+L131 Marine Blue,Romantic moonlight - ballet - underwater scenes.,1131,D2FA64,0.199,0.305,0.98
+L132 Medium Blue,Set lighting - travelling matt blue cycloramas night.,1132,DCA000,0.137,0.11,0.86
+L134 Golden Amber,Fire effect (doubled up).,1134,73A8FA,0.501,0.371,0.98
+L135 Deep Golden Amber,Fire effect.,1135,005FFF,0.667,0.326,1
+L136 Pale Lavender,Pantomime ballroom sets enhances dark skin tones in follow spots.,1136,E6BEF0,0.288,0.254,0.94
+L137 Special Lavender,Moonlight musical / romantic scenes enhances skin tones.,1137,E6B4C8,0.231,0.175,0.9
+L138 Pale Green,Good with gobos for wooded scenes.,1138,A0FFDC,0.331,0.433,1
+L139 Primary Green,Set lighting cycloramas.,1139,00C34B,0.196,0.712,0.76
+L140 Summer Blue,Warm blue - cycloramas - tint wash.,1140,EBF087,0.201,0.245,0.94
+L141 Bright Blue,Pretty or romantic moonlight cycloramas night.,1141,E6D200,0.129,0.159,0.9
+L142 Pale Violet,Moonlight cycloramas highlighting pot plants.,1142,F0AAAA,0.209,0.148,0.94
+L143 Pale Navy Blue,Moonlight cyclorama night effect.,1143,D2BE64,0.17,0.205,0.82
+L144 No Colour Blue,Moonlight for green seas cycloramas with 147 to produce sunsets.,1144,E6E15A,0.183,0.228,0.9
+L147 Apricot,Sunrise sunset lamplight.,1147,8CB9FC,0.446,0.381,0.98
+L148 Bright Rose,Fire effects musicals.,1148,7D50FF,0.482,0.238,1
+L151 Gold Tint,Pleasing effect for theatrical lighting.,1151,C3CDFF,0.361,0.321,1
+L152 Pale Gold,Interior lighting to enhance skin tones.,1152,C1D2FF,0.37,0.332,1
+L153 Pale Salmon,Backlighting in conjunction with white light.,1153,C8C8FF,0.362,0.303,1
+L154 Pale Rose,Pleasing effect for theatrical lighting lamplight.,1154,CFD5FF,0.35,0.318,1
+L156 Chocolate,With 103 Straw in same lantern to produce candlelight.,1156,8CB4E1,0.38,0.363,0.88
+L157 Pink,Dance sequences (useful for softening white costumes without affecting skin tones).,1157,A392FF,0.457,0.272,1
+L158 Deep Orange,Fire effect.,1158,0087FF,0.588,0.403,1
+L159 No Colour Straw,Warm effect sunlight.,1159,EBFAFF,0.325,0.337,1
+L161 Slate Blue,Moonlight and dusk.,1161,F5D27D,0.176,0.176,0.96
+L162 Bastard Amber,Warm white warm wash lamp light.,1162,D8DEFC,0.348,0.328,0.99
+L164 Flame Red,Fire effect.,1164,0032FF,0.659,0.302,1
+L165 Daylight Blue,Moonlight.,1165,EBC85A,0.159,0.158,0.92
+L166 Pale Red,Cycloramas.,1166,8773FF,,,
+L169 Lilac Tint,Ballroom - dance - backlight - front of house.,1169,F0DCFA,0.294,0.281,0.98
+L170 Deep Lavender,Set lighting - discos - theatres.,1170,DCAAE6,0.278,0.211,0.9
+L172 Lagoon Blue,Floodlit warm wash - underwater scenes - ballet.,1172,DCDC00,0.141,0.22,0.86
+L174 Dark Steel Blue,Set lighting - creates good moonlight shadows.,1174,FAE1AF,0.204,0.205,0.98
+L176 Loving Amber,Sunrise backlight.,1176,A0AAFF,0.407,0.321,1
+L179 Chrome Orange,Combination of 1/2 CTO and double strength 104 sunlight.,1179,00BEFF,0.52,0.46,1
+L180 Dark Lavender,Pleasing effects for theatrical lighting backlighting.,1180,E664A0,0.191,0.072,0.9
+L181 Congo Blue,Theatre and television effect lighting back lighting.,1181,AA0050,0.158,0.035,0.66
+L182 Light Red,Theatre and television effect lighting cycloramas.,1182,0000F5,0.67,0.313,0.96
+L183 Moonlight Blue,Moonlight cycloramas.,1183,E3D700,0.128,0.168,0.89
+L184 Cosmetic Peach,Cosmetic Peach,1184,D7E1F0,0.328,0.328,0.94
+L185 Cosmetic Burgundy,Cosmetic Burgundy,1185,D2DCF0,,,
+L186 Cosmetic Silver,Cosmetic Silver Rose,1186,DDDCF8,0.323,0.308,0.97
+L187 Cosmetic Rouge,Cosmetic Rouge,1187,D7E4F5,0.336,0.328,0.96
+L188 Cosmetic Highlight,Cosmetic Highlight,1188,D7EBFF,0.33,0.327,1
+L189 Cosmetic Silver,Cosmetic Silver Moss,1189,D8EDEE,0.327,0.347,0.93
+L190 Cosmetic Emerald,Cosmetic Emerald,1190,E4EEE9,,,
+L191 Cosmetic Aqua,Cosmetic Aqua Blue,1191,EEEEE9,0.3,0.318,0.93
+L192 Flesh Pink,Musical and pantomime key lighting.,1192,B48CFF,0.41,0.237,1
+L193 Rosy Amber,Warm emotional romantic.,1193,9B96FF,,,
+L194 Surprise Pink,With 193 for musicals.,1194,F08CBE,0.24,0.183,0.94
+L195 Zenith Blue,Moonlight for dark sets cycloramas.,1195,D26E00,0.142,0.046,0.82
+L196 True Blue,Moonlight.,1196,E6D278,0.175,0.197,0.9
+L197 Alice Blue,Moonlight cycloramas.,1197,E6AA82,0.164,0.118,0.9
+L198 Palace Blue,Dark moonlight - romantic evening.,1198,C87864,0.159,0.066,0.78
+L199 Regal Blue,Lavender Blue enhances skin tones,1199,E66464,0.161,0.07,0.9
+L200 Double C.T.Blue,Converts tungsten to daylight.,1200,F5BE91,0.179,0.155,0.96
+L201 Full C.T.Blue,Converts tungsten to photographic daylight.,1201,FAE1C3,0.228,0.233,0.98
+L202 Half C.T.Blue,Converts tungsten to daylight.,1202,FFF0D7,0.261,0.273,1
+L203 Qtr C.T.Blue,Converts tungsten to daylight.,1203,FFFCEB,0.285,0.294,1
+L204 Full C.T.Orange,Converts daylight to tungsten light.,1204,87C3FA,0.437,0.392,0.98
+L205 Half C.T.Orange,Converts daylight to tungsten light.,1205,B1D9FC,0.374,0.364,0.99
+L206 Qtr C.T.Orange,Converts daylight to tungsten light.,1206,D6EAFC,0.346,0.34,0.99
+L207 Full C.T.Orange + .3ND,Converts daylight to tungsten 6500K to 3200K and reduces light 1 stop.,1207,6BB4F0,0.435,0.386,0.94
+L208 Full C.T.Orange + .6ND,Converts daylight to tungsten 6500K to 3200K and reduces light 2 stops.,1208,50A5E6,0.442,0.394,0.90
+L209 0.3ND,0.3ND,1209,C8C8C8,0.31,0.319,0.78
+L210 0.6ND,0.6ND,1210,A5A5A5,0.308,0.317,0.64
+L211 0.9ND,0.9ND,1211,828282,0.31,0.322,0.5
+L212 L.C.T.Yellow,Reduces colour temperature of low carbon arcs to 3200K.,1212,D7FAFF,0.34,0.363,1
+L213 White Flame Green,Corrects white flame carbon arcs by absorbing ultra violet.,1213,DCFCE6,0.317,0.359,0.98
+L217 Blue Diffusion,Blue Diffusion,1217,B4BEC8,0.312,0.317,0.78
+L218 Eighth C.T.B.,Converts tungsten to daylight.,1218,FFFFF5,0.299,0.307,1
+L219 Lee Fluorescent Green,General tungsten to fluorescent correction for use when fluorescent colour temp is unknown to provide medium correction.,1219,AFDC9B,0.219,0.334,0.86
+L221 Blue Frost,Blue Frost,1221,B4C3DC,0.312,0.316,0.86
+L223 Eighth C.T.O.,Converts daylight to tungsten light.,1223,E8F3FF,0.328,0.332,1
+L224 Daylight Blue Frost,Daylight Blue Frost,1224,BEA096,0.235,0.219,0.75
+L225 Lee ND Front,Lee ND Frost,1225,8CA0B4,0.318,0.326,0.7
+L226 Lee U.V.,Transmission of less than 50% at 410nms.,1226,FAFFFF,0.314,0.321,1
+L230 Super Corr.L.C.T.Yellow,Converts yellow carbon arc (of low colour temperature) to tungsten.,1230,8CBEDC,0.367,0.368,0.86
+L232 S.Cor WF.Grn to Tungsten,Converts white flame arc to 3200K for use with tungsten film.,1232,83BEED,0.423,0.385,0.93
+L236 H.M.I. (to Tungsten),Converts HMI to 3200K for use with Tungsten film.,1236,95C7FA,0.426,0.376,0.98
+L237 C.I.D. (to Tungsten),Converts CID to 3200K for use with tungsten film.,1237,92B2FC,0.43,0.365,0.99
+L238 C.S.I. (to Tungsten),Converts CSI to 3200K for use with tungsten film.,1238,AAB9F5,0.372,0.331,0.96
+L239 Polariser,Polariser,1239,CDCDCD,,,
+L241 Lee Fluorescent 5700K,Converts tungsten to fluorescent light of 5700K (cool white/daylight).,1241,C3DCAA,0.231,0.29,0.86
+L242 Lee Fluorescent 4300K,Converts tungsten to fluorescent light of 4300K (white).,1242,B9E6B9,0.262,0.346,0.9
+L243 Lee Fluorescent 3600K,Converts tungsten to fluorescent light of 3600K (warm white).,1243,AFF5CD,0.286,0.37,0.96
+L244 Lee Plus Green,Approximately equivalent to CC30 green.,1244,BEFAE6,0.324,0.388,0.98
+L245 Half Plus Green,Approximately equivalent to CC15 green.,1245,D2FCF0,0.319,0.355,0.99
+L246 Quarter Plus Green,Approximately equivalent to CC075 green.,1246,E6FFF5,0.315,0.337,1
+L247 Lee Minus Green,Approximately equivalent to CC30 magenta.,1247,D7C3FA,0.325,0.279,0.98
+L248 Half Minus Green,Approximately equivalent to CC15 magenta.,1248,E4E2FF,0.317,0.297,1
+L249 Quarter Minus Green,Approximately equivalent to CC75 magenta.,1249,F0ECFF,0.312,0.307,1
+L269 Heat Shield,Heat Shield,1269,FFFFFF,0.311,0.317,1
+L270 Lee Scrim,Lee Scrim,1270,BEBEBE,,,
+L275 Black Scrim,Black Scrim,1275,BEBEBE,,,
+L278 Eighth Plus Green,Provides very slight green cast.,1278,F3FFF3,0.313,0.327,1
+L279 Eighth Minus Green,Provides very slight correction.,1279,F7F3FF,0.312,0.311,1
+L281 Three Quarter C.T.Blue,Converts tungsten to daylight.,1281,FAE6CD,0.239,0.258,0.98
+L283 One and a Half CT Blue,Converts tungsten to daylight.,,F5D9AF,0.201,0.188,0.96
+L285 3/4 CT Orange,Converts daylight to tungsten light.,1285,94CDFC,0.4,0.387,0.99
+L286 One and a Half C.T.Orange,Converts daylight to tungsten,1286,64B4FF,0.478,0.422,1
+L287 Double C.T.Orange,Converts daylight to Tungsten ,1287,55A0FF,0.514,0.424,1
+L298 0.15ND,0.15ND,1298,E6E6E6,0.311,0.319,0.9
+L1299 1.2ND,1.2ND,1299,5F5F5F,0.308,0.315,0.37
+L322 Soft Green,Cool green use for gobo cover pantomime cycloramas.,1322,BEF541,0.201,0.364,0.96
+L323 Jade,Use for underwater scenes cycloramas backlighting.,1323,AAE100,0.165,0.367,0.88
+L325 Mallard Green,Good for mood setting undergrowth.,1325,8CB400,,,
+L327 Forest Green,Deep green sinister forest scenes cycloramas backlighting.,1327,508C00,0.162,0.496,0.54
+L328 Follies Pink,Dramatic stage lighting.,1328,C864FF,0.335,0.18,1
+L332 Special Rose Pink,Pantomimes light entertainment etc. strong stage wash.,1332,8737FF,0.465,0.193,1
+L341 Plum,Romantic atmospheric set lighting.,1341,B496E6,,,
+L343 Special Medium Lavender,Theatre and T.V. effect lighting backlighting.,1343,D2008C,0.182,0.081,0.82
+L344 Violet,Dusk effect good skin tones romantic effect.,1344,DCAAB4,,,
+L345 Fuchsia Pink,Musical revue pantomime sultry scenes.,1345,D76ECD,0.252,0.156,0.84
+L352 Glacier Blue,Cold blue good for cool atmospheric mood setting.,1352,E1C85A,0.171,0.19,0.88
+L353 Lighter Blue,Daylight effects.,1353,E3E861,0.193,0.246,0.9
+L354 Special Steel Blue,Cooling blue-green wash for stage and set lighting.,1354,D7F000,0.173,0.265,0.94
+L363 Special Medium Blue,Cool moonlight mood effects.,1363,C36E00,0.141,0.07,0.76
+L366 Cornflower,Seasonal mood lighting pale moonlight.,1366,F0D2AA,0.193,0.19,0.94
+L441 Full C.T. Straw,Converts 6500K to 3200K - daylight to tungsten light with yellow bias.,1441,84C0FA,0.426,0.407,0.98
+L442 Half C.T. Straw,Converts 6500K to 4300K - daylight to tungsten light with yellow bias.,1442,ADDCFC,0.37,0.378,0.99
+L443 Qtr C.T. Straw,Converts 6500K to 5100K - daylight to tungsten light with yellow bias.,1443,DBEFFC,0.338,0.349,0.99
+L444 Eighth C.T. Straw,Converts 6500K to 5700K - daylight to tungsten light with yellow bias.,1444,E8F3FA,0.323,0.332,0.98
+L500 Double New Colour Blue,Double New Colour Blue,1500,FFD2B4,0.2,0.187,1
+L501 New Colour Blue (Robertson Blue),New Colour Blue (Robertson Blue),1501,FAEBD7,0.246,0.249,0.98
+L502 Half New Colour Blue,Half New Colour Blue,1502,FFF0E1,0.276,0.281,1
+L503 Quarter New Colour Blue,Quarter New Colour Blue,1503,FFFAF4,0.293,0.299,1
+L504 Waterfront Green,Waterfront Green,1504,DCF5D2,0.271,0.317,0.96
+L505 Sally Green,Sally Green,1505,5AFFE3,0.37,0.52,1
+L506 Marlene,Marlene,1506,CEDAFF,0.358,0.344,1
+L507 Madge,Madge,1507,0050F8,0.662,0.337,0.97
+L508 Midnight Maya,Midnight Maya,1508,C3465A,0.164,0.061,0.76
+L511 Bacon Brown,Bacon Brown,1511,003C96,0.563,0.406,0.59
+L512 Amber Delight,Amber Delight,1512,0061CC,0.595,0.39,0.8
+L513 Ice and a Slice,Ice and a Slice,1513,7DFFF5,0.38,0.447,1
+L514 Double G and T,Double G and T,1514,5AFFF5,0.403,0.486,1
+L525 Argent Blue,Argent Blue,1525,FAB48E,0.171,0.143,0.98
+L550 ALD Gold,ALD Gold,1550,3CCAE3,0.471,0.461,0.89
+L600 Arctic White,Arctic White,1600,AAA898,0.23,0.223,0.67
+L601 Silver,Silver,1601,A0A090,0.244,0.248,0.63
+L602 Platinum,Platinum,1602,AAA5A5,0.261,0.267,0.67
+L603 Moonlight White,Moonlight White,1603,CDCDC8,0.268,0.271,0.8
+L604 Full CT Eight Five,Full CT Eight Five,1604,95C2FF,0.422,0.389,1
+L622 One and Eighth Digital LED CTO,One and Eighth Digital LED CTO,1622,64A0FF,0.428,0.371,1
+L624 Full Digital LED CTO,Full Digital LED CTO,1624,73AAFF,0.415,0.366,1
+L626 Seven Eighths Digital LED CTO,Seven Eighths Digital LED CTO,1626,82B4FF,0.402,0.368,1
+L628 Threequarter Digital LED CTO,Threequarter Digital LED CTO,1628,8CC8FF,0.387,0.369,1
+L642 1/2 Mustard Yellow,1/2 Mustard Yellow,1642,8296,0.5,0.496,0.59
+L643 1/4 Mustard Yellow,1/4 Mustard Yellow,1643,00A0B4,0.483,0.493,0.7
+L650 Industrial Sodium,Industrial Sodium,1650,62A8C8,0.397,0.424,0.78
+L651 Hi. Sodium,Hi. Sodium,1651,5F9BFF,0.444,0.396,1
+L652 Urban Sodium,Urban Sodium,1652,4682FF,0.535,0.399,1
+L653 Lo. Sodium,Lo. Sodium,1653,5596,0.54,0.443,0.59
+L700 Perfect Lavender,Perfect Lavender,1700,CD007D,0.177,0.07,0.8
+L701 Provence,Provence,1701,DC5AB4,0.199,0.098,0.86
+L702 Special Pale Lavender,A cold lavender when used with a full tungsten source but warms as the source is dimmed. Good as a fill for slow sunset fades.,1702,F0D2E6,0.281,0.269,0.94
+L703 Cold Lavender,Cold Lavender,1703,DC82D2,0.255,0.181,0.86
+L704 Lily,A cool lavender with little red content. Good for romantic evening exteriors.,1704,FAAAF0,0.267,0.221,0.98
+L705 Lily Frost,Smoothes PAR or flood washes of large areas. Useful for houselights; a good colour wash for evening events.,1705,FAAAF0,0.264,0.217,0.98
+L706 King Fal Lavender,King Fal Lavender,1706,C8466E,0.186,0.091,0.78
+L707 Ultimate Violet,Used in musical performances for general colour washes and set lighting.,1707,B40064,0.17,0.042,0.7
+L708 Cool Lavender,Cool Lavender,1708,FAEBDC,0.257,0.26,0.98
+L709 Electric Lilac,Electric Lilac,1709,FAC8C8,0.24,0.228,0.98
+L710 Spir Special Blue,Spir Special Blue,1710,F0A08C,0.18,0.133,0.94
+L711 Cold Blue,To give a cold/grey HMI Effect from a tungsten source. Will also help blend when using both tungsten and HMI sources.,1711,DCBEAA,0.223,0.198,0.86
+L712 Bedford Blue,Bedford Blue,1712,F0BEA0,0.184,0.158,0.94
+L713 J.Winter Blue,A very dark blue with a high UV content. Good when used in high concentrations for a moody and powerful stage colour wash.,1713,A03C00,0.148,0.037,0.63
+L714 Elysian Blue,Elysian Blue,1714,D2915A,0.151,0.099,0.82
+L715 Cabana Blue,A deep blue that still has enough transmission to work encouragingly well on television.,1715,DC6E3C,0.152,0.075,0.86
+L716 Mikkel Blue,A romantic blue to produce a night effect.,1716,D26400,0.146,0.054,0.82
+L717 Shanklin Frost,Shanklin Frost,1717,FAE1C3,0.227,0.225,0.98
+L718 Half Shanklin Frost,Half Shanklin Frost,1718,FAEDD4,0.263,0.27,0.98
+L719 Colour Wash Blue,To allow low intensity tungsten to hold a cold/blue feel.,1719,F0C39B,0.188,0.171,0.94
+L720 Durham Daylight Blue,Smoothes PAR or flood washes of large areas. Useful for houselights; good for entrances from natural light.,1720,FAE1C3,0.216,0.209,0.98
+L721 Berry Blue,Used in musical performances for a rear colour wash or set lighting.,1721,DC8200,0.147,0.084,0.86
+L722 Bray Blue,Bray Blue,1722,D28C00,0.139,0.085,0.82
+L723 Virgn Blue,Virgn Blue,1723,DC8250,0.158,0.1,0.86
+L724 Ocean Blue,Useful at low levels of light dull skies moonlight.,1724,EBE169,0.189,0.222,0.92
+L725 Old Steel Blue,Cool wash useful for highlights.,1725,F3F2BE,0.239,0.27,0.95
+L727 QFD Blue,QFD Blue,1727,B4A500,0.109,0.21,0.7
+L728 Steel Green,Approaching storms. Overcast days. Cold steely light. Malevolent moonlight.,1728,D2EBC8,0.256,0.302,0.92
+L729 Scuba Blue,Used in musical performances for a rear colour wash or set lighting.,1729,AAAF00,0.11,0.241,0.69
+L730 Liberty Blue,A good green for creating mystery and suspense.,1730,E6FFDC,0.277,0.33,1
+L731 Dirty Ice,Dirty Ice,1731,D7FAE1,0.293,0.339,0.98
+L733 Damp Squib,Damp Squib,1733,CFF7EB,0.312,0.351,0.97
+L735 Velvet Green,A beautiful background colour. Victorian melodrama. A night time green.,1735,78BE00,0.103,0.536,0.75
+L736 Twickenham Green,Twickenham Green,1736,00AA00,0.175,0.74,0.67
+L738 JAS Green,A rich yellowish green: useful as a concert stage wash where darker skin tones costume and set are a consideration.,1738,00FFAA,0.315,0.587,1
+L740 Aurora Borealis Green,Aurora Borealis Green,1740,006E5A,0.337,0.617,0.43
+L741 Mustard Yellow,Mustard Yellow,1741,00646E,0.506,0.491,0.43
+L742 Bram Brown,Bram Brown,1742,509BE1,0.43,0.423,0.88
+L744 Dirty White,Dirty White,1744,82C8F8,0.421,0.412,0.97
+L746 Brown,To give a murky dirty feel to tungsten. A darker less pink chocolate.,1746,003C6E,0.498,0.437,0.43
+L747 Easy White,Easy White,1747,9FB9F5,0.389,0.344,0.96
+L748 Seedy Pink,Seedy Pink,1748,857E12,0.371,0.263,0.52
+L749 Hampshire Rose,Hampshire Rose,1749,CDD3FC,0.339,0.318,0.99
+L750 Durham Frost,A frost that almost completely softens shutter edges and removes hot spots.,1750,#VALUE!,,,
+L763 Wheat,Adds warmth sunlight.,1763,D2F0FC,0.343,0.357,0.99
+L764 Sun Colour Straw,Adds warmth bright sunlight.,1764,B4E6FC,0.365,0.38,0.99
+L765 LEE Yellow,Useful for producing a strong sunlight effect.,1765,91E5FF,0.389,0.412,1
+L767 Oklahoma Yellow,Oklahoma Yellow,1767,00E6FF,0.48,0.501,1
+L768 Egg Yolk Yellow,Egg Yolk Yellow,1768,00C6FF,0.522,0.469,1
+L770 Burnt Yellow,Burnt Yellow,1770,00B4FF,0.545,0.477,1
+L773 Cardbox Amber,Cardbox Amber,1773,B2C5FC,0.4,0.351,0.99
+L744 Soft Amber Key 1,Used for producing a warm key light colour.,1774,BED2FC,0.366,0.348,0.99
+L775 Soft Amber Key 2,Soft Amber Key 2,1775,A5C6FC,0.409,0.363,0.99
+L776 Nectarine,Romantic sunset. Period pieces.,1776,9BBEFC,0.424,0.368,0.99
+L777 Rust,A vivid rust colour effect.,1777,0082F5,0.576,0.416,0.96
+L778 Millennium Gold,Useful for lighting architecture: it produces a rich amber when used on a tungsten source or a much cooler effect when used on a HMI lamp.,1778,0076FF,0.606,0.382,1
+L779 Bastard Pink,Deep sunset. Useful on dark skin tones.,1779,8598FC,0.501,0.336,0.99
+L780 AS Golden Amber,AS Golden Amber,1780,006FFF,0.623,0.376,1
+L781 Terry Red,A strong amber red that works well when used against deep reds and dark ambers in wash combinations and on cycloramas.,1781,0050FF,0.643,0.348,1
+L787 Marius Red,Marius Red,1787,3C00B9,0.714,0.283,0.73
+L789 Blood Red,For a deep saturated red effect. Used when a strong vivid red effect is required.,1789,323CAA,0.677,0.314,0.67
+L790 Moroccan Pink,A rich natural pink good for producing late afternoon sun effects.,1790,A5B4FF,0.378,0.324,1
+L791 Moroccan Frost,Smoothes PAR or flood washes of large areas. Useful for houselights; good for interior colour washes.,1791,AAB9F5,0.376,0.322,0.96
+L793 Vanity Fair,A rich glamorous pink good for use on special occasions.,1793,A03CFF,0.419,0.17,1
+L794 Pretty 'n Pink,Pretty 'n Pink,1794,DCAFFF,0.333,0.255,1
+L795 Magical Magenta,Magical Magenta,1795,C846FA,0.323,0.138,0.98
+L797 Deep Purple,Used in musical performances for general colour washes and set lighting.,1797,9600AF,0.235,0.065,0.69
+L798 Chrysalis Pink,Chrysalis Pink,1798,BE00A0,0.191,0.061,0.75
+L799 Special KH Lavender,Special KH Lavender,1799,B4003C,0.158,0.035,0.7
+R00 Clear,A durable heat resistant polycarbonate film used in the preparation of color scrollers to allow the passage from a color to clear. (Trans.= 100%).,2000,ffffff,,,
+R01 Light Bastard Amber,,2001,7a96e9,,,
+R02 Bastard Amber,Good where a tint of color is needed. Excellent for natural skin tones. (Trans.= 78% -0.4s).,2002,b5e4ff,,,
+R03 Dark Bastard Amber,Most saturated Bastard Amber. (Trans.= 62%).,2003,d7ff,,,
+R04 Medium Bastard Amber,Especially useful when cross lit with a cool color. Excellent for natural sunlight. (Trans.= 66%).,2004,d7ff,,,
+R05 Rose Tint,A clean pale pink; useful as a blush for skin tones. (Trans.= 80%).,2005,cbc0ff,,,
+R06 No Color Straw,Slightly off white. Good for interiors. (Trans.= 92% -0.1s).,2006,d2fafa,,,
+R07 Pale Yellow,Double saturation of 06. (Trans.= 96%).,2007,8ce6f0,,,
+R08 Pale Gold,Warmer straw. Flattering to skin tones. (Trans.= 86% -0.2s).,2008,8ce6f0,,,
+R09 Pale Amber Gold,Deep straw. Good for late afternoon sunsets or firelight. (Trans.= 74%).,2009,87b8de,,,
+R10 Medium Yellow,Yellow with green. Good for special effects. Unflattering in acting areas. (Trans.= 92%).,2010,ffff,,,
+R11 Light Straw,Pale yellow with slight red content. Useful for candle effects. Can be used for area lighting. For bright day feeling. (Trans.= 82%).,2011,b3def5,,,
+R12 Straw,Greener yellow than 10. Special effects and accents. Use with caution on skin tones. (Trans.= 88% -0.2s).,2012,b3def5,,,
+R13 Straw Tint,Much less green than in other straws. Suggests warm sunlight glow when contrasted with ambers and blues. (Trans.= 78%).,2013,addeff,,,
+R14 Medium Straw,Pale amber-higher red content than 12. Sunlight accents area lighting with caution to skin tones. (Trans.= 68%).,2014,8ce6f0,,,
+R15 Deep Straw,Warm golden amber with some green. Useful for special effects-candlelight firelight. (Trans.= 65%).,2015,00d7ff,,,
+R16 Light Amber,Excellent area light. Light pink-amber tint. Safe for most light skin tones. (Trans.= 68% -0.6s).,2016,7aa0ff,,,
+R17 Light Flame,Heavier pink-amber tint. Useful for dance. Especially useful when balanced with a cool color. Good general warm tint in striplights. (Trans.= 56% -0.8s).,2017,7280fa,,,
+R18 Flame,Warm pinkish amber. Afternoon sunset. Good sidelight. (Trans.= 56% -0.8s).,2018,8080f0,,,
+R19 Fire,Strong red amber. Excellent for fire effects. (Trans.= 20%).,2019,45ff,,,
+R20 Medium Amber,Afternoon sunlight. Lamplight and candlelight. Tends to depress color pigment values. (Trans.= 54%).,2020,a5ff,,,
+R21 Golden Amber,Useful for amber cyc light and late sunsets. (Trans.= 43% -1.2s).,2021,507fff,,,
+R22 Deep Amber,Very useful as a backlight. Dramatic specials and firelight. (Trans.= 26%).,2022,008cff,,,
+R23 Orange,Provides a romantic sunlight through windows for evening effects. (Trans.= 32% -1.7s).,2023,00a5ff,,,
+R24 Scarlet,Very deep amber. Red with a touch of blue. (Trans.= 22%).,2024,3c14dc,,,
+R25 Orange Red,Good for firelight or special effects. Use when red with higher yellow content is needed. (Trans.= 14%).,2025,507fff,,,
+R26 Light Red,Vibrant red. Good alternative primary. (Trans.= 12% -3.0s).,2026,ff,,,
+R27 Medium Red,Good red primary for use with three-color light primary systems in cyclorama lighting footlights and border lights. (Trans.= 4%).,2027,8b,,,
+R30 Light Salmon Pink,Excellent for general area washes. Gives overall warming effect to skin tones. (Trans.= 44%).,2030,8080f0,,,
+R31 Salmon Pink,General wash. Good for follow spots. (Trans.= 46%).,2031,7280fa,,,
+R32 Medium Salmon Pink,Deepest of the salmon pinks. (Trans.= 28%).,2032,7280fa,,,
+R33 No Color Pink,A pale almost colorless pink. (Trans.= 65% -0.6s).,2033,cbc0ff,,,
+R34 Flesh Pink,Useful for bright musicals. Creates a happy atmosphere. (Trans.= 45% -1.2s).,2034,cbc0ff,,,
+R35 Light Pink,Similar to 33 but slightly deeper. (Trans.= 66%).,2035,cbc0ff,,,
+R36 Medium Pink,Good for general washes and cross lighting. (Trans.= 46%).,2036,dda0dd,,,
+R37 Pale Rose Pink,Blue Pink Use in general washes and toning. (Trans.= 56% -0.8s).,2037,d670da,,,
+R38 Light Rose,Similar uses as 37 but with greater saturation. (Trans.= 49%).,2038,ee82ee,,,
+R39 Skelton Exotic Sangria,A sultry deep purple. Good for musicals or concert lighting. Excellent special effects color. (Trans.= 10%).,2039,800080,,,
+R40 Light Salmon,Similar uses to 23 but a bluer color. (Trans.= 34%).,2040,7280fa,,,
+R41 Salmon,Light orange with high blue content. (Trans.= 24% -2.0s).,2041,7280fa,,,
+R42 Deep Salmon,More red than 342. (Trans.= 8% -3.7s).,2042,5c5ccd,,,
+R43 Deep Pink,Rich hot pink. Electric in effect with rich saturation. (Trans.= 28%).,2043,ff00ff,,,
+R44 Middle Rose,Musical pink. Lush accents. Very versatile color. (Trans.= 26% -2.0s).,2044,b469ff,,,
+R45 Rose,Use on scenery and background effects. Adds tone and modeling to scenery. (Trans.= 8%).,2045,9314ff,,,
+R46 Magenta,Similar uses as 45 where more saturation is needed. (Trans.= 6%).,2046,9314ff,,,
+R47 Light Rose Purple,Good for eerie or dramatic effects. Beautiful backlight color. (Trans.= 16% -2.6s).,2047,cc3299,,,
+R48 Rose Purple,Pale evening color. Excellent for backlight. (Trans.= 16%).,2048,d30094,,,
+R49 Medium Purple,Darkest of the magenta purple range. (Trans.= 4%).,2049,8b008b,,,
+R50 Mauve,Subdued sunset effect. Useful in backlights. To create seedy atmosphere. (Trans.= 14%).,2050,8515c7,,,
+R51 Surprise Pink,Touch of color when white light is not desirable. (Trans.= 54% -0.9s).,2051,cbc0ff,,,
+R52 Light Lavender,Excellent for general area or border light washes. It is a basic followspot color. (Trans.= 26%).,2052,cc3299,,,
+R53 Pale Lavender,Use when a touch of color is needed. (Trans.= 64%).,2053,dcdcdc,,,
+R54 Special Lavender,Same as 53 but warmer. Useful for beams of realistic moonlight. (Trans.= 50%).,2054,d8bfd8,,,
+R55 Lilac (bluer),Same as 53 but cooler. (Trans.= 37%).,2055,dec4b0,,,
+R56 Gypsy Lavender,Highly saturated good for side and backlighting and non-realistic effect. (Trans.= 4%).,2056,8b0000,,,
+R57 Lavender,Excellent backlight. Gives good visibility without destroying night illusions. (Trans.= 24%).,2057,dda0dd,,,
+R58 Deep Lavender,Excellent back light. Enhances dimensionality. (Trans.= 10%).,2058,d670da,,,
+R59 Indigo,The original Congo Blue. A purple-blue highly saturated for modeling effects and non-realistic atmospheres. (Trans.= 2% -5.7s).,2059,82004b,,,
+R60 No Color Blue,Helps maintain white light when dimmer is at low intensity. (Trans.= 62% -0.7s).,2060,c0c0c0,,,
+R61 Mist Blue (greener),Excellent for general area washes. Very light cool tint of blue. (Trans.= 66%).,2061,dec4b0,,,
+R62 Booster Blue,Helps maintain white light when dimmer is at low intensity. (Trans.= 54% -0.9s).,2062,face87,,,
+R63 Pale Blue (greener),Good for creating an overcast look and feeling. (Trans.= 56%).,2063,face87,,,
+R64 Light Steel Blue,Useful for beams of realistic moonlight. (Trans.= 26%).,2064,ff901e,,,
+R65 Daylight Blue,Useful for achieving depressed moods and dull skies. (Trans.= 35% -1.5s).,2065,ff901e,,,
+R66 Cool Blue,A pale green shade of blue; good for area or general washes. Creates an icy feeling on stage. (Trans.= 67%).,2066,dec4b0,,,
+R67 Light Sky Blue,Excellent sky color. Useful for cyc and border lights. (Trans.= 26%).,2067,ff0000,,,
+R68 Sky Blue,Excellent for early morning sky tones. Popular among designers for cyc and borders. (Trans.= 14%).,2068,cd0000,,,
+R69 Brilliant Blue,Used for dramatic moonlight effects. (Trans.= 18%).,2069,cd0000,,,
+R70 Nile Blue,Useful for very light midday skies. Occasionally used for general cool tint. (Trans.= 45%).,2070,ffbf00,,,
+R71 Sea Blue,Occasionally used for general cool tint and non-realistic washes. (Trans.= 30%).,2071,ebce87,,,
+R72 Azure Blue,A clean slightly green blue. Good moonlight fill. (Trans.= 44%).,2072,ccd148,,,
+R73 Peacock Blue,Good for fantasy moonlight and water effects. (Trans.= 28%).,2073,aab220,,,
+R74 Night Blue,Fantasy moonlight. Crisp and beautiful. Popular as a backlight or sidelight in contrast to area light. (Trans.= 4%).,2074,800000,,,
+R76 Light Green Blue,Distinctive greenish blues. Useful for romantic moonlight. (Trans.= 9%).,2076,8b8b00,,,
+R77 Green Blue,Distinctive greenish blues. Useful for romantic moonlight. (Trans.= 9% -3.5s).,2077,808000,,,
+R78 Trudy Blue,A rich clean red blue that warms to lavender when dimmed. (Trans.= 19%).,2078,ee687b,,,
+R79 Bright Blue,Cool clear bright blue. (Trans.= 8%).,2079,cd0000,,,
+R80 Primary Blue,Primary blue. For use with three color light primary system in cyc lighting. (Trans.= 9% -3.5s).,2080,8b0000,,,
+R81 Urban Blue,Very cold brittle feeling. (Trans.= 10%).,2081,cd0000,,,
+R82 Surprise Blue,Deep rich blue with slight amount of red. (Trans.= 6%).,2082,800000,,,
+R83 Medium Blue,Good for non-realistic night skies. (Trans.= 4% -4.7s).,2083,cd0000,,,
+R84 Zephyr Blue,A true blue with excellent punch for bright skies. Lovely contrast to pale blues; adds coldness to shadows. (Trans.= 14%).,2084,cd0000,,,
+R85 Deep Blue,Deeply saturated blue with a hint of red. (Trans.= 3%).,2085,8b0000,,,
+R86 Pea Green,Good for dense foliage and woodland effects. (Trans.= 56%).,2086,fc7c,,,
+R87 Pale Yellow Green,Sunny spring mornings. (Trans.= 85% -0.2s).,2087,98fb98,,,
+R88 Light Green (darker),Sunny spring mornings. (Trans.= 82% -0.3s).,2088,90ee90,,,
+R89 Moss Green,Useful for mood mystery and toning. (Trans.= 45% -1.2s).,2089,7fff00,,,
+R90 Dark Yellow Green,Alternate primary where higher transmission is desired. (Trans.= 13%).,2090,8000,,,
+R91 Primary Green,Primary green for three color primary system. (Trans.= 7% -3.8s).,2091,6400,,,
+R92 Turquoise,Useful for mood of mystery and for toning scenery that has been spattered in blues. (Trans.= 59% -0.8s).,2092,d0e040,,,
+R93 Blue Green (darker),Useful for mood of mystery and for toning scenery that has been spattered in blues. (Trans.= 35% -1.5s).,2093,8b8b00,,,
+R94 Kelly Green,Fantasy and unrealistic effects. Unflattering on skin tones. (Trans.= 25%).,2094,578b2e,,,
+R95 Medium Blue Green,Used on foliage in moonlight areas or for creating a mood of mystery. Good for toning scenery painted in blues blue-greens and greens. (Trans.= 15%).,2095,808000,,,
+R96 Lime,To simulate unnatural sunlight before and after a rainstorm or tornado. (Trans.= 98%).,2096,2fffad,,,
+R97 Light Grey,Neutral greys to reduce intensity without affecting color temperature. (Trans.= 50% -1.0s).,2097,a9a9a9,,,
+R98 Medium Grey,Helpful in balancing brightness of lamps of different wattage. (Trans.= 25% -2.0s).,2098,808080,,,
+R99 Chocolate,Warms light and reduces intensity. (Trans.= 35% -1.5s).,2099,13458b,,,
+R100 Frost,Frost. Changes ellipsoidal to fresnel beam pattern.,2100,ffffff,,,
+R101 Light Frost,Offers softened beam.,2101,ffffff,,,
+R102 Light Tough Frost,Changes ellipsoidal into flood or scoop.,2102,ffffff,,,
+R103 Tough Frost,Has twin qualities of wide diffusion and warm center.,2103,ffffff,,,
+R104 Tough Silk,Creates a slash of light for stretching light along stairs tables cycs etc. Diffuses while maintaining compactness of beam.,2104,ffffff,,,
+R105 Tough Spun,Good on scoops for cyc lighting.,2105,ffffff,,,
+R106 Light Tough Spun,Removes lens shadows.,2106,ffffff,,,
+R111 Tough Rolux,Densest diffusion of the series. Spreads the light almost 1800.,2111,ffffff,,,
+R112 Opal Tough Frost,Lighter than 100-103. An excellent diffuser for HMI CID and CSI sources softening the beam slightly while maintaining excellent transmission.,2112,ffffff,,,
+R113 Matte Silk,Good for striplights and specials.,2113,ffffff,,,
+R114 Hamburg Frost,A very light frost; good on followspots and PAR lamps.,2114,ffffff,,,
+R115 Light Tough Rolux,,2115,ffffff,,,
+R116 Tough White Diffusion,A range of diffusion materials adapted from cinematography-used for softening the shadow of the beam while maintaining a relatively high color temperature because of the use of ultra-white pigments in the manufacturing process.,2116,ffffff,,,
+R117 Tough 1/2 White Diffusion,A range of diffusion materials adapted from cinematography-used for softening the shadow of the beam while maintaining a relatively high color temperature because of the use of ultra-white pigments in the manufacturing process.,2117,ffffff,,,
+R118 Tough 1/4 White Diffusion,A range of diffusion materials adapted from cinematography-used for softening the shadow of the beam while maintaining a relatively high color temperature because of the use of ultra-white pigments in the manufacturing process.,2118,ffffff,,,
+R119 light Hamburg Frost,Lighter than 114. Recommended for followspots and slight diffuse focus for ellipsoldals.,2119,ffffff,,,
+R120 Red Diffusion,Combine a color with Matte Diffusion. Aids in broad even illumination of cycs and drops. (Trans.= 12%).,2120,ff,,,
+R121 Blue Diffusion,Combine a color with Matte Diffusion. Aids in broad even illumination of cycs and drops. (Trans.= 8%).,2121,8b0000,,,
+R122 Green Diffusion,Combine a color with Matte Diffusion. Aids in broad even illumination of cycs and drops. (Trans.= 13%).,2122,6400,,,
+R124 Red Cyc Silk,Combine a color with 104 Tough Silk. (Trans.= 12%).,2124,ff,,,
+R125 Blue Cyc Silk,Useful in border and striplights to prevent scalloping; helps illuminate cycs and drops. (Trans.= 8%).,2125,8b0000,,,
+R126 Green Cyc Silk,Useful in border and striplights to prevent scalloping; helps illuminate cycs and drops. (Trans.= 13%).,2126,6400,,,
+R127 Amber Cyc Silk,A secondary color combined with 104 Tough Silk. (Trans.= 32%).,2127,8cff,,,
+R160 Light Tough Silk,Retains the diffusion properties of 104 but with less light loss.,2160,ffffff,,,
+R162 Light Opal,A lighter version on the popular 112 Opal Tough Frost.,2162,ffffff,,,
+R163 Powder Frost,A good medium cosmetic diffuser.,2163,ffffff,,,
+R304 Pale Apricot,A peach amber. More yellow than 305. (Trans.= 79%).,2304,87b8de,,,
+R305 Rose Gold,A pale blush amber for skin tones and backlight. (Trans.= 75%).,2305,cbc0ff,,,
+R310 Daffodil,A soft medium yellow. Can be used for creating naturalistic effects such as early morning sunlight or for special effects. (Trans.= 82%).,2310,ffff,,,
+R312 Canary,Warmer than 10. A bright vibrant yellow that evokes exotic sunlight. Use with caution on skin. (Trans.= 85%).,2312,ffff,,,
+R316 Gallo Gold,A pale reddish gold good for creating sunrise or sunset or simulating incandescent light. A flattering naturalistic backlight color. Can be used for warm area lighting. (Trans.= 58%).,2316,d7ff,,,
+R317 Apricot,A rosy amber which produces a romantic sunset color. Useful as sidelight or backlight color. (Trans.= 51%).,2317,7aa0ff,,,
+R318 Mayan Sun,A medium salmon color which evokes feeling of a tropical island. A good sunset color. Interesting backlight and accent color. Good for warm tonal effects. (Trans.= 52% -0.9s).,2318,8cff,,,
+R321 Soft Golden Amber,An amber with some green content. A good sunlight transition color that shows the progression of the sun from white or yellow to amber later in the day. (Trans.= 39% -1.4s).,2321,507ff,,,
+R332 Cherry Rose,A tropical pink that is good for musicals or concert lighting. A good backlight color. Interesting accent color. Good for a splash of sunset color. (Trans.= 38%).,2322,008cff,,,
+R333 Blush Pink,A pink tint that is excellent for most skin tones. A good color for warm area lighting. Lighter than 33. (Trans.= 71%).,2323,4763ff,,,
+R337 True Pink,A cool pink excellent for washes and general illumination. A good follow spot color. A component of early morning sunrise. (Trans.= 55%).,2337,ee82ee,,,
+R339 Broadway Pink,A deep saturated pink created for musicals and specials. Excellent for down and backlighting. (Trans.= 15%).,2339,9314ff,,,
+R342 Rose Pink,Extremely intense hot pink. Produces strong washes of color for concert and dance. Combined with a complimentary color like turquoise will create a dynamic sculptured effect. (Trans.= 16%).,2342,8515c7,,,
+R343 Neon Pink,A bright dark pink excellent for musicals or rock and roll concert lighting. A good color for creating fake neon effects with fluorescent tubes. (Trans.= 33%).,2343,9314ff,,,
+R344 Follies Pink,A vibrant almost fluorescent pink with a cool component. Traditionally important as a special effects color in the Broadway musical. Follow spot and dance applications as a modeling color. (Trans.= 21%).,2344,ff00ff,,,
+R349 Fisher Fuchsia,A medium fuchsia good for special effects. An interesting backlight or accent color. (Trans.= 11%).,2349,800080,,,
+R355 Pale Violet,A cool lavender which acts as a neutral in a three color area lighting system. Will work well as a wash for drops or set pieces. Tones the space. Effective as moonlight shadows. (Trans.= 20%).,2355,db7093,,,
+R356 Middle Lavender,A lavender halfway between 52 and 57 in hue and value. Useful for general illumination and side-lighting. (Trans.= 27%).,2356,cc3299,,,
+R357 Royal Lavender,A rich lavender which will enhance blue and red costumes and scenic pieces. Excellent for nightime scenes. Rich vivid accents good in backgrounds. (Trans.= 5%).,2357,dda0dd,,,
+R358 Rose Indigo,A warm red purple that recalls the Jazz Age. Useful for creating saturated color effects in live performance situations-club and musical group lighting. (Trans.= 10%).,2358,82004b,,,
+R359 Medium Violet,Midnight and moonlight illusions. Enforces mysterious mood. Useful for evening cyc wash.,2359,800000,,,
+R360 Clearwater,The slightest blue tint. Excellent for eliminating amber shift when lights are running low on a dimmer. Good for cool area light. (Trans.= 52%).,2360,dcdcdc,,,
+R362 Tipton Blue,A soft clean blue. Good choice for cool area lighting. Can also be used to shift the amber of lamps running at low dimmer levels. (Trans.= 32%).,2362,face87,,,
+R363 Aquamarine,A pale blue-green color. Can be used for area lighting. A soft backlight color. (Trans.= 52%).,2363,face87,,,
+R364 Blue Bell,A clean light red blue. Creates naturalistic daylight fill color. Good cool area light. (Trans.= 32%).,2364,cd5a6a,,,
+R365 Tharon Delft Blue,"""Clean blue with more red than 364. A true color correction filter for film. Converts 3200"""">K to 5500"""">K. Good for area light. (Trans.= 36%).""",2365,ff901e,,,
+R367 Slate Blue,Clean medium blue. Good for sky color or moonlight. (Trans.= 20%).,2367,ee687b,,,
+R370 Italian Blue,Good to create eerie and mysterious effects. Good for night time water effects. (Trans.= 31%).,2370,aab220,,,
+R376 Bermuda Blue,A soothing green blue. More blue than 76. A good conventional moonlight color. Interesting tonal color. (Trans.= 6%).,2376,8b8b00,,,
+R378 Alice Blue,A rich clean red blue that warms to lavender when dimmed. (Trans.= 15% -2.7s).,2378,ee687b,,,
+R382 Congo Blue,Deep blue more saturated than Roscolux 385. Good for dark night skies or for a backlight color. A great color for rock and roll concert lighting. (Trans.= 56%).,2382,82004b,,,
+R383 Sapphire,A deep romantic blue on the red side. (Trans.= 4%).,2383,800000,,,
+R385 Royal Blue,Excellent for non-realistic backgrounds. A very saturated blue. Pronounced red content that will shift toward purple when dimmed. Low transmission but will offer a striking contrast when used as a background with lighter accents. (Trans.= 4%).,2385,8b0000,,,
+R388 Gaslight Green,A yellow-green similar to the color emitted by gas lighting fixtures. Appropriate for period pieces i.e. La Boheme and useful for creating reflections from fields and meadows. (Trans.= 76%).,2388,2fffad,,,
+R389 Chroma Green,Suggests reflected light from dense foliage. A brilliant cyc lighting color which will work for chroma-keying effects in television production. (Trans.= 40%).,2389,7fff00,,,
+R395 Teal Green,A medium green-blue which can be used as a mystical special effect color. Also an interesting side or backlight color in concert lighting. (Trans.= 13%).,2395,808000,,,
+R397 Pale Grey,A half stop neutral density. (Trans.= 70%).,2397,a9a9a9,,,
+G100 Dizzy Pink,Dizzy Pink,3100,650083,,,,
+G101 Lavender Blue,Lavender Blue,3101,B6269B,,,,
+G103 Blue Rose,Blue Rose,3103,832577,,,,
+G104 Broadway Rose,Broadway Rose,3104,8E3293,,,,
+G105 Antique Rose,Antique Rose,3105,D37FDD,,,,
+G106 1/2 Antique Rose,1/2 Antique Rose,3106,DF9CDD,,,,
+G107 1/4 Antique Rose,1/4 Antique Rose,3107,E4BAE7,,,,
+G108 1/8 Antique Rose,1/8 Antique Rose,3108,DDBFD6,,,,
+G109 Naked Pink,Naked Pink,3109,DDBFD6,,,,
+G110 Dark Rose,Dark Rose,3110,8E00B0,,,,
+G120 Bright Pink,Bright Pink,3120,A100C8,,,,
+G130 Rose,Rose,3130,B539D5,,,,
+G135 Soft Pink,Soft Pink,3135,99478C,,,,
+G140 Dark Magenta,Dark Magenta,3140,650083,,,,
+G150 Pink Punch,Pink Punch,3150,7E00C6,,,,
+G152 Party Pink,Party Pink,3152,9519DF,,,,
+G154 Baby Pink,Baby Pink,3154,D086EC,,,,
+G155 Light Pink,Light Pink,3155,CF95EF,,,,
+G160 Chorus Pink,Chorus Pink,3160,C677F2,,,,
+G170 Dark Flesh Pink,Dark Flesh Pink,3170,9519DF,,,,
+G180 Cherry,Cherry,3180,5800CE,,,,
+G190 Cold Pink,Cold Pink,3190,9975F6,,,,
+G195 Nymph Ruby,Nymph Ruby,3195,814AEF,,,,
+G220 Pink Magenta,Pink Magenta,3220,3F12A4,,,,
+G235 Pink Red,Pink Red,3235,2E19A6,,,,
+G245 Light Red,Light Red,3245,35229D,,,,
+G250 Medium Red XT,Medium Red XT,3250,3A34A4,,,,
+G270 Red Orange,Red Orange,3270,2E10C8,,,,
+G280 Fire Red,Fire Red,3280,2B00E4,,,,
+G290 Fire Orange,Fire Orange,3290,2B00E4,,,,
+G305 French Rose,French Rose,3305,B39BFC,,,,
+G310 English Rose,English Rose,3310,7552F6,,,,
+G315 Autumn Glory,Autumn Glory,3315,1C29DA,,,,
+G320 Peachy,Peachy,3320,313CE0,,,,
+G323 Indian Summer,Indian Summer,3323,343ABE,,,,
+G324 Deep Bastard Amber,Deep Bastard Amber,3324,5D58FF,,,,
+G325 Bastard Amber,Bastard Amber,3325,ABB3FF,,,,
+G327 Pale Sepia,Pale Sepia,3327,C5C4D0,,,,
+G328 Tan Tone,Tan Tone,3328,837CB0,,,,
+G330 Sepia,Sepia,3330,4852A4,,,,
+G335 Coral,Coral,3335,024CFC,,,,
+G338 Forever Amber,Forever Amber,3338,CDC7EC,,,,
+G340 Light Bastard Amber,Light Bastard Amber,3340,ABB3FF,,,,
+G342 Light Honey,Light Honey,3342,2E8DF6,,,,
+G343 Honey,Honey,3343,0076EA,,,,
+G345 Deep Amber,Deep Amber,3345,1646FA,,,,
+G350 Dark Amber,Dark Amber,3350,0050FE,,,,
+G355 Amber Ginger,Amber Ginger,3355,0050FE,,,,
+G360 Amber Blush,Amber Blush,3360,54A1EC,,,,
+G363 Sand,Sand,3363,C3C2DF,,,,
+G364 Pale Honey,Pale Honey,3364,A3C8ED,,,,
+G365 Warm Straw,Warm Straw,3365,8AB7E7,,,,
+G368 Cinnamon,Cinnamon,3368,1C53BE,,,,
+G370 Spice,Spice,3370,1D3873,,,,
+G375 Flame,Flame,3375,417FFF,,,,
+G380 Golden Tan,Golden Tan,3380,124277,,,,
+G382 Brass,Brass,3382,005DD4,,,,
+G385 Light Amber,Light Amber,3385,5BB2FF,,,,
+G388 Gold Rush,Gold Rush,3388,0082FF,,,,
+G390 Walnut,Walnut,3390,29364E,,,,
+G395 Golden Sunset,Golden Sunset,3395,1B9EFF,,,,
+G410 Yellow Gold,Yellow Gold,3410,00A3FF,,,,
+G420 Medium Amber,Medium Amber,3420,00BEF6,,,,
+G425 Sunflower,Sunflower,3425,00BEF6,,,,
+G430 Warm Ivory,Warm Ivory,3430,7494BF,,,,
+G433 Double Ivory,Double Ivory,3433,88B8CE,,,,
+G435 Ivory,Ivory,3435,BDCCD1,,,,
+G440 Very Light Straw,Very Light Straw,3440,A4CBDD,,,,
+G450 Saffron,Saffron,3450,00C4F1,,,,
+G455 Yellow Sun,Yellow Sun,3455,007CDE,,,,
+G460 Mellow Yellow,Mellow Yellow,3460,22E1FB,,,,
+G470 Pale Gold,Pale Gold,3470,26C8D7,,,,
+G480 Medium Yellow,Medium Yellow,3480,00CDE1,,,,
+G515 Lime Yellow,Lime Yellow,3515,D7E0D1,,,,
+G520 New Straw,New Straw,3520,89E1C2,,,,
+G525 Lilly Sun,Lilly Sun,3525,D8E3B5,,,,
+G535 Lime,Lime,3535,B8E4A2,,,,
+G540 Pale Green,Pale Green,3540,7CD026,,,,
+G570 Light Green Yellow,Light Green Yellow,3570,2AB043,,,,
+G650 Grass Green,Grass Green,3650,3D8400,,,,
+G655 Rich Green,Rich Green,3655,449A00,,,,
+G660 Medium Green,Medium Green,3660,3D8400,,,,
+G666 Wicked Green,Wicked Green,3666,399600,,,,
+G670 Emerald Green,Emerald Green,3670,537A00,,,,
+G680 Kelly Green,Kelly Green,3680,98B300,,,,
+G685 Pistachio,Pistachio,3685,99A400,,,,
+G690 Bluegrass,Bluegrass,3690,A69C00,,,,
+G710 Blue Green,Blue Green,3710,AA8E00,,,,
+G720 Light Steel Blue,Light Steel Blue,3720,E6B641,,,,
+G725 Princess Blue,Princess Blue,3725,E0A900,,,,
+G730 Azure Blue,Azure Blue,3730,A66B00,,,,
+G740 Off Blue,Off Blue,3740,CA8500,,,,
+G750 Nile Blue,Nile Blue,3750,B85700,,,,
+G760 Aqua Blue,Aqua Blue,3760,9B6200,,,,
+G770 Glenister Blue,Glenister Blue,3770,C87700,,,,
+G780 Shark Blue,Shark Blue,3780,E0A900,,,,
+G785 Beverly Blue,Beverly Blue,3785,E7C25B,,,,
+G790 Electric Blue,Electric Blue,3790,DE9C00,,,,
+G810 Moon Blue,Moon Blue,3810,B85E00,,,,
+G813 Dark Moon Blue,Dark Moon Blue,3813,A53D00,,,,
+G815 Moody Blue,Moody Blue,3815,CE7200,,,,
+G820 Full Light Blue,Full Light Blue,3820,E4AC6C,,,,
+G830 North Sky Blue,North Sky Blue,3830,E9C192,,,,
+G835 Aztec Blue,Aztec Blue,3835,A03300,,,,
+G840 Steel Blue,Steel Blue,3840,CE7200,,,,
+G841 Diamond Blue,Diamond Blue,3841,A53D00,,,,
+G842 Whisper Blue,Whisper Blue,3842,E4AC6C,,,,
+G845 Cobalt,Cobalt,3845,BB4700,,,,
+G847 City Blue,City Blue,3847,A53D00,,,,
+G848 Bonus Blue,Bonus Blue,3848,891400,,,,
+G850 Primary Blue,Primary Blue,3850,A03300,,,,
+G855 Blue Jazz,Blue Jazz,3855,8F1C17,,,,
+G860 Sky Blue,Sky Blue,3860,DE8F41,,,,
+G870 Winter White,Winter White,3870,EED7C3,,,,
+G872 Opera White,Opera White,3872,EDC6A7,,,,
+G880 Daylight Blue,Daylight Blue,3880,E27F30,,,,
+G882 Southern Sky,Southern Sky,3882,E27F30,,,,
+G885 Blue Ice,Blue Ice,3885,E4AC6C,,,,
+G888 Blue Belle,Blue Belle,3888,EBCB9B,,,,
+G889 Hot Blue,Hot Blue,3889,8D0306,,,,
+G890 Dark Sky Blue,Dark Sky Blue,3890,AA221E,,,,
+G905 Dark Blue,Dark Blue,3905,8F1C17,,,,
+G910 Alice Blue,Alice Blue,3910,BB4700,,,,
+G915 Twilight,Twilight,3915,AA221E,,,,
+G920 Pale Lavender,Pale Lavender,3920,EACCB8,,,,
+G925 Cosmic Blue,Cosmic Blue,3925,AA221E,,,,
+G930 Real Congo Blue,Real Congo Blue,3930,710028,,,,
+G940 Light Purple,Light Purple,3940,C75B68,,,,
+G945 Royal Purple,Royal Purple,3945,720033,,,,
+G948 African Violet,African Violet,3948,8F1C17,,,,
+G950 Purple,Purple,3950,990044,,,,
+G960 Medium Lavender,Medium Lavender,3960,BD3B75,,,,
+G970 Special Lavender,Special Lavender,3970,CD6390,,,,
+G980 Surprise Pink,Surprise Pink,3980,E2A7C1,,,,
+G982 Lovely Lavender,Lovely Lavender,3982,E3B4C5,,,,
+G985 Ripe Plum,Ripe Plum,3985,8C065C,,,,
+G990 Dark Lavender,Dark Lavender,3990,AF4682,,,,
+G995 Orchid,Orchid,3995,B6269B,,,,
+AP1100 Hard Diffusion,Hard Diffusion,4110,CAC8C6,,,
+AP1150 Linear Diffusion,Linear Diffusion,4115,0,,,
+AP1200 Early Morning Frost,Early Morning Frost,4120,0,,,
+AP1400 Weaved Diffusion,Weaved Diffusion,4140,0,,,
+AP1450 Light Weaved Diffusion,Light Weaved Diffusion,4145,0,,,
+AP1500 Flat Diffusion,Flat Diffusion,4150,D4D3D1,,,
+AP1550 Textured Diffusion,Textured Diffusion,4155,E8E7E6,,,
+AP1600 White Diffusion,White Diffusion,4160,0,,,
+AP1650 Light Textured Diffusion,Light Textured Diffusion,4165,E8E7E6,,,
+AP1800 Red Diffusion,Red Diffusion,4180,4212D1,,,
+AP1900 Blue Diffusion,Blue Diffusion,4190,BF7600,,,
+AP1950 Green Diffusion,Green Diffusion,4195,7A9B00,,,
+AP2000 Apollo Blue Full CTB,Apollo Blue Full CTB,4200,C68965,,,
+AP2010 Apollo Blue 3/4 CTB,Apollo Blue 3/4 CTB,4201,E6C096,,,
+AP2020 Apollo Blue 1/2 CTB,Apollo Blue 1/2 CTB,4202,AF8156,,,
+AP2030 Apollo Blue 1/3 CTB,Apollo Blue 1/3 CTB,4203,EACAB0,,,
+AP2040 Apollo Blue 1/4 CTB,Apollo Blue 1/4 CTB,4204,EDD0B8,,,
+AP2080 Apollo Blue 1/8 CTB,Apollo Blue 1/8 CTB,4208,F3E0CF,,,
+AP2090 Apollo Blue 2X CTB,Apollo Blue 2X CTB,4209,AB5C00,,,
+AP2100 Apollo Orange Full CTO,Apollo Orange Full CTO,4210,5EA2F9,,,
+AP2110 Apollo Orange 3/4 CTO,Apollo Orange 3/4 CTO,4211,81C1FD,,,
+AP2120 Apollo Orange 1/2 CTO,Apollo Orange 1/2 CTO,4212,90CAFD,,,
+AP2140 Apollo Orange 1/4 CTO,Apollo Orange 1/4 CTO,4214,BBE0FF,,,
+AP2180 Apollo Orange 1/8 CTO,Apollo Orange 1/8 CTO,4218,D9EEFF,,,
+AP2190 Apollo Orange 2X CTO,Apollo Orange 2X CTO,4219,1C79DE,,,
+AP2200 Apollo Straw Full CTS,Apollo Straw Full CTS,4220,3FB0FB,,,
+AP2220 Apollo Straw 1/2 CTS,Apollo Straw 1/2 CTS,4222,99CCFD,,,
+AP2240 Apollo Straw 1/4 CTS,Apollo Straw 1/4 CTS,4224,C7E4FF,,,
+AP2280 Apollo Straw 1/8 CTS,Apollo Straw 1/8 CTS,4228,DBEDFF,,,
+AP2310 .3 Neutral Density,.3 Neutral Density,4231,B6B4B1,,,
+AP2320 .6 Neutral Density,.6 Neutral Density,4232,989593,,,
+AP2330 .9 Neutral Density,.9 Neutral Density,4233,716F6D,,,
+AP3000 Simply Mauvelous,Simply Mauvelous,4300,5C00B1,,,
+AP3050 Purple Mist,Purple Mist,4305,99405A,,,
+AP3100 Precious Purple,Precious Purple,4310,A86140,,,
+AP3150 Sour Grape,Sour Grape,4315,8B2777,,,
+AP3180 Purplexed,Purplexed,4318,C28FB1,,,
+AP3200 Submissive Lavender,Submissive Lavender,4320,D8B0AD,,,
+AP3230 Lavender Retriever ,Lavender Retriever ,4323,D5B0B6,,,
+AP3250 Dominant Lavender,Dominant Lavender,4325,BF8175,,,
+AP3270 Not What You Pink,Not What You Pink,4327,B36F71,,,
+AP3300 Whispering Lavender,Whispering Lavender,4330,F3E0CF,,,
+AP3350 Breathless Lavender,Breathless Lavender,4335,D9B2B5,,,
+AP3400 Luscious Lilac,Luscious Lilac,4340,E6C096,,,
+AP3450 Bodacious Blueberry,Bodacious Blueberry,4345,BF7600,,,
+AP3500 Apollo Lavender,Apollo Lavender,4350,D9B2B5,,,
+AP3520 Alexander The Grape,Alexander The Grape,4352,A85948,,,
+AP3540 Malice Blue,Malice Blue,4354,CD9051,,,
+AP3550 Late Night Lavender,Late Night Lavender,4355,973C57,,,
+AP3600 Flirtatious Lavender,Flirtatious Lavender,4360,C28576,,,
+AP3700 Groovy Grape,Groovy Grape,4370,923033,,,
+AP3800 Cowboys & Indigo,Cowboys & Indigo,4380,913627,,,
+AP3850 King Congo Blue,King Congo Blue,4385,88392C,,,
+AP3900 Voodoo Lavender,Voodoo Lavender,4390,AB5C00,,,
+AP4050 Seductive Blue,Seductive Blue,4405,AA5D00,,,
+AP4100 Mournful Blue,Mournful Blue,4410,A45400,,,
+AP4130 Blurple,Blurple,4413,914E47,,,,
+AP4150 New York Blue,New York Blue,4415,B16700,,,
+AP4200 Bright Blue,Bright Blue,4420,A46500,,,
+AP4250 Apollo Blue,Apollo Blue,4425,C17800,,,
+AP4270 Rhythm & Blue,Rhythm & Blue,4427,E7C5AD,,,
+AP4300 London Blue,London Blue,4430,AC3500,,,
+AP4350 Sultry Blue,Sultry Blue,4435,C68100,,,
+AP4400 After Hours Blue,After Hours Blue,4440,A86738,,,
+AP4450 Heavenly Blue,Heavenly Blue,4445,EFAD00,,,
+AP4500 Ozone Blue,Ozone Blue,4450,DC9D00,,,
+AP4600 Electric Blue,Electric Blue,4460,CD9333,,,
+AP4630 Kablueie,Kablueie,4463,C27C00,,,
+AP4650 Crisp Blue,Crisp Blue,4465,D69600,,,
+AP4680 Blue Moon,Blue Moon,4468,EBBC54,,,
+AP4700 Timid Blue,Timid Blue,4470,DFAD6C,,,
+AP4720 Baby Boy Blue,Baby Boy Blue,4472,F4D6A4,,,
+AP4750 Monday Morning Blue,Monday Morning Blue,4475,E8BD78,,,
+AP4800 Ice Blue,Ice Blue,4480,EDCB9F,,,
+AP4830 Blue My Mind,Blue My Mind,4483,E3CD70,,,
+AP4850 Robin's Egg Blue,Robin's Egg Blue,4485,E3A400,,,
+AP4870 Bluetylicious,Bluetylicious,4487,E4BC00,,,
+AP4900 Island Blue,Island Blue,4490,C29F00,,,
+AP4950 Caribbean Blue,Caribbean Blue,4495,AC9600,,,
+AP4970 Atlantic Green Blue,Atlantic Green Blue,4497,AE7800,,,
+AP4990 Hero Blue,Hero Blue,4499,AE7200,,,
+AP5300 Apollo Green,Apollo Green,4530,658200,,,
+AP5400 Rock 'n Roll Green,Rock 'n Roll Green,4540,4FA900,,,
+AP5430 Green Gello,Green Gello,4543,42C17A,,,
+AP5500 Neptune Blue Green,Neptune Blue Green,4550,A88C00,,,
+AP5600 Montego Blue Green,Montego Blue Green,4560,B9BC22,,,
+AP5700 Kelly Green ,Kelly Green ,4570,939E00,,,,
+AP5800 Envy Green,Envy Green,4580,67C173,,,
+AP5900 Cactus Juice Green,Cactus Juice Green,4590,5AB100,,,
+AP5940 Putting Green,Putting Green,4594,48B954,,,
+AP5960 Margarita Green,Margarita Green,4596,A6E4D0,,,
+AP6150 Yellow Snow,Yellow Snow,4615,81E8F5,,,
+AP6200 Banana Yellow,Banana Yellow,4620,04F2FF,,,
+AP6300 Neon Yellow,Neon Yellow,4630,00EEFF,,,
+AP6400 Pilsner Yellow,Pilsner Yellow,4640,57D4FF,,,
+AP6500 Bikini Yellow,Bikini Yellow,4650,00DDFF,,,
+AP6600 Harvest Gold,Harvest Gold,4660,D4F2FF,,,
+AP6800 Mustard,Mustard,4680,25C4FF,,,
+AP6900 Butterscotch,Butterscotch,4690,13B8FD,,,
+AP7050 Fatherless Amber,Fatherless Amber,4705,AAC2FD,,,
+AP7100 Hot Cocoa,Hot Cocoa,4710,5A7A90,,,
+AP7150 Santa Fe Amber,Santa Fe Amber,4715,81C1FD,,,
+AP7200 Adobe Orange,Adobe Orange,4720,84ABF9,,,
+AP7250 Nude Gold,Nude Gold,4725,82CFFF,,,
+AP7300 Bashful Amber,Bashful Amber,4730,C1D2FC,,,
+AP7330 Rust Assured,Rust Assured,4733,41B9EC,,,
+AP7350 Fool's Gold Amber,Fool's Gold Amber,4735,34A6FA,,,
+AP7400 Apollo Gold,Apollo Gold,4740,5FBCFD,,,
+AP7420 Just Peachy,Just Peachy,4742,85B4FA,,,
+AP7450 Golden Amber,Golden Amber,4745,2898F8,,,
+AP7500 Burnt Orange,Burnt Orange,4750,61B1FB,,,
+AP7550 Spiced Rum Amber,Spiced Rum Amber,4755,1994E8,,,
+AP7570 Trick Or Treat,Trick Or Treat,4757,50A3F9,,,
+AP7600 Apollo Orange,Apollo Orange,4760,2684F5,,,
+AP7630 Peach My Interest,Peach My Interest,4763,BFB2F7,,,
+AP7650 Coral Amber,Coral Amber,4765,BFC9FB,,,
+"AP7670 Slamon""illa'","Slamon""illa'",4767,8BA0F7,,,,
+AP7700 Peach Amber,Peach Amber,4770,A7CDFD,,,
+AP7750 Sailor's Delight Orange,Sailor's Delight Orange,4775,307CF4,,,
+AP7770 Hot Wings,Hot Wings,4777,207BF4,,,
+AP7800 Apricot Orange,Apricot Orange,4780,9BBCFB,,,
+AP7850 Hot Lava Orange,Hot Lava Orange,4785,3678F4,,,
+AP7900 Kiss Me Tint,Kiss Me Tint,4790,CBC8FA,,,
+AP8100 Mango Craze,Mango Craze,4810,3541EF,,,
+AP8200 Scandalous Scarlet,Scandalous Scarlet,4820,7C5FF1,,,
+AP8250 Vixen Red,Vixen Red,4825,3351F0,,,
+AP8300 Diva Red,Diva Red,4830,3618E3,,,,
+AP8310 Cherry Lewis,Cherry Lewis,4831,4F1AC0,,,
+AP8320 Tasty Apple Red,Tasty Apple Red,4832,4212D1,,,
+AP8350 Bludgeon Red,Bludgeon Red,4835,380086,,,
+AP8400 Lipstick Red,Lipstick Red,4840,6C00CA,,,
+AP8430 Front Rose,Front Rose,4843,8C0CD6,,,
+AP8440 Watermelon Wine,Watermelon Wine,4844,916FF1,,,
+AP8445 Flamingo Pink,Flamingo Pink,4844,CBAAF6,,,
+AP8450 Spanked Pink,Spanked Pink,4845,BBA2F2,,,
+AP8500 Tease Pink,Tease Pink,4850,BF95EF,,,
+AP8530 Pink Pong,Pink Pong,4853,C3A0E0,,,
+AP8550 Bit Of Pink,Bit Of Pink,4855,D9BFEA,,,
+AP8600 Cotton Candy Pink,Cotton Candy Pink,4860,C996DA,,,
+AP8630 V.I.Pink,V.I.Pink,4863,B987DB,,,
+AP8650 In The Pink,In The Pink,4865,B983BF,,,
+AP8680 Pinkerbell,Pinkerbell,4868,E5D2E4,,,
+AP8700 Tickled Pink,Tickled Pink,4870,CCA6D7,,,
+AP8710 Rebecca's Pink Ribbon,Rebecca's Pink Ribbon,4871,B27EE3,,,
+AP8730 Screamin' Pink,Screamin' Pink,4873,A159C8,,,
+AP8750 Hot Pink,Hot Pink,4875,8E21A9,,,
+AP8800 Sassy Pink,Sassy Pink,4880,B16F93,,,
+AP8840 Ruby Slippers,Ruby Slippers,4884,6F00C6,,,
+AP8850 Apollo Magenta,Apollo Magenta,4885,5D0097,,,
+AP8900 Passion Pink,Passion Pink,4890,8F2791,,,
