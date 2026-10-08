@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kloarte lamp (mechanics)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "rigItem": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The lamp: the id of its MagicVis fixture (H record) in the show. The key of this file; the file name is only for reading."
+    },
+    "model": {
+      "type": "string",
+      "description": "Catalogue model (data/fixture_catalog.json), e.g. adb-c103"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "profile",
+        "fresnel",
+        "pc",
+        "par",
+        "flood",
+        "ledbar",
+        "moving"
+      ],
+      "description": "Kind, only for a lamp without a catalogue model"
+    },
+    "fieldAngle": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 120,
+      "description": "Beam (field) angle: the zoom or spot-flood (°)"
+    },
+    "softness": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Edge softness (focus) in gate radii: 0 = a hard edge"
+    },
+    "fieldFalloff": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Intensity at the beam edge relative to the centre"
+    },
+    "energy": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Light energy, only for a lamp without catalogue photometrics"
+    },
+    "output": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 4,
+      "description": "Output trim: 1 = the catalogue value"
+    },
+    "color": {
+      "type": "string",
+      "description": "Lamp colour \"#rrggbb\" (the gel comes from MagicQ)"
+    },
+    "shutters": {
+      "$ref": "#/$defs/LampFileShutters",
+      "description": "Framing shutters (profiles), named after the beam edge they cut, seen from behind the lamp"
+    },
+    "iris": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Iris: 1 = open"
+    },
+    "gobo": {
+      "$ref": "#/$defs/LampFileGobo",
+      "description": "The gobo in the gobo holder"
+    },
+    "barndoors": {
+      "$ref": "#/$defs/LampFileBarndoors",
+      "description": "Barndoors (PC / fresnel)"
+    },
+    "lamp": {
+      "type": "string",
+      "description": "PAR lamp: CP60, CP61, CP62..."
+    },
+    "ovalRotation": {
+      "type": "number",
+      "minimum": -360,
+      "maximum": 360,
+      "description": "PAR: rotation of the oval (°)"
+    },
+    "mounting": {
+      "type": "string",
+      "enum": [
+        "top",
+        "bottom",
+        "hanging",
+        "standing"
+      ],
+      "description": "Flood: top / bottom; moving head: hanging / standing"
+    },
+    "focusPoint": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Where the lamp is focused: [x, y, z] in stage coordinates (x to the audience's right, y up, z towards the audience) (m)"
+    }
+  },
+  "$defs": {
+    "LampFileBarndoors": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "top": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Top flap: 0 = open, 1 = closed"
+        },
+        "right": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Right flap: 0 = open, 1 = closed"
+        },
+        "bottom": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Bottom flap: 0 = open, 1 = closed"
+        },
+        "left": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Left flap: 0 = open, 1 = closed"
+        },
+        "rotation": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360,
+          "description": "Rotation of the barndoor ring (°)"
+        }
+      }
+    },
+    "LampFileBlade": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Depth: 0 = out, 1 = to the beam axis, 2 = fully across"
+        },
+        "angle": {
+          "type": "number",
+          "minimum": -45,
+          "maximum": 45,
+          "description": "Tilt of the blade, counter-clockwise (°)"
+        }
+      }
+    },
+    "LampFileGobo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "The gobo image, e.g. res://gobos/window.png or a gobo of the gobo editor"
+        },
+        "rotation": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360,
+          "description": "Rotation of the gobo (°)"
+        },
+        "size": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 4,
+          "description": "Image width relative to the gate: 1 = fills it"
+        }
+      }
+    },
+    "LampFileShutters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "top": {
+          "$ref": "#/$defs/LampFileBlade",
+          "description": "Blade cutting the top of the beam"
+        },
+        "right": {
+          "$ref": "#/$defs/LampFileBlade",
+          "description": "Blade cutting the right of the beam (seen from behind the lamp)"
+        },
+        "bottom": {
+          "$ref": "#/$defs/LampFileBlade",
+          "description": "Blade cutting the bottom of the beam"
+        },
+        "left": {
+          "$ref": "#/$defs/LampFileBlade",
+          "description": "Blade cutting the left of the beam (seen from behind the lamp)"
+        },
+        "rotation": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360,
+          "description": "Rotation of the whole shutter assembly (°)"
+        }
+      }
+    }
+  }
+}

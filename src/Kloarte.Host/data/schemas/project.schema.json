@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kloarte project",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The project's name: its folder and this document are named after it"
+    },
+    "showFile": {
+      "type": "string",
+      "description": "The project's current console show file (absolute path)"
+    },
+    "created": {
+      "type": "string",
+      "description": "When the project was created (UTC, ISO 8601)"
+    },
+    "saved": {
+      "type": "string",
+      "description": "When the project was last saved by Kloarte (UTC, ISO 8601)"
+    },
+    "strayLight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "Stray light of the room: spill, haze scatter and bounce that keep it from going fully dark (0 = pitch black around the beams; Kloarte's default 0.5)"
+    },
+    "haze": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 0.10000000149011612,
+      "description": "Haze density in the beams (0 = clean air; Kloarte's default 0.015)"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Format version of this document (2 = YAML)"
+    }
+  }
+}

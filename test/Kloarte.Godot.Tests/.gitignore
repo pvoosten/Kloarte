@@ -1,0 +1,19 @@
+# Copied from src/Kloarte.Host before every build (Kloarte.Godot.Tests.csproj)
+/project.godot
+/main.tscn
+/icon.svg
+/splash.png
+/icon.svg
+/splash.png.import
+/host/
+/render/
+/shows/
+/data/
+/venue/
+/gobos/
+/fixtures/
+/environment/
+# Godot cache and the tests' output
+/.godot/
+/tests/output/*
+!/tests/output/.gdignore

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kloarte.MagicQ</RootNamespace>
+    <!-- Code style: every public type and member has an XML doc comment (missing ones are warning CS1591). -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Kloarte.Model/Kloarte.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Tests use internal helpers (e.g. MagicQPc.Existing). -->
+    <InternalsVisibleTo Include="Kloarte.MagicQ.Tests" />
+    <InternalsVisibleTo Include="Kloarte.Godot.Tests" />
+
+  </ItemGroup>
+</Project>

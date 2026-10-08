@@ -1,0 +1,41 @@
+// Fixture types for the Risquons-Tout show, used for lamps without saved mechanics. The show file only says
+// "generic dimmer", so the model (data/fixture_catalog.json: adb-ds104, adb-c103, adb-f101, par64, adb-acp1001...)
+// is chosen here by absolute DMX address (byAddress), MagicQ personality (byPersonality) or head name (byName).
+// Old kind names (profile, pc, fresnel, par64, flood, ledbeam, t1profile) still work: they map to a default model.
+// These are first guesses; correct them to the real rig (or change the model per lamp in the app).
+{
+  // Real heads are typed by their MagicQ personality (name contains the key); wins over byName.
+  "byPersonality": {
+    "RobinT1Profile": "robe-t1-profile",
+    "LEDBeam": "robe-ledbeam150"
+  },
+  "default": "adb-c103",
+  "byName": {
+    "PAR autostrade": "par64",
+    "Weverij raam": "adb-ds104",
+    "TL machine": "adb-acp1001",
+    "Water T": "adb-c103",
+    "Binnen T": "adb-c103",
+    "Top controleur": "adb-c103",
+    "Patria T": "adb-c103",
+    "Patria F": "adb-f101",
+    "Dimmer": "adb-c103",
+    "Buiten F": "adb-ds104",
+    "Front controleu": "adb-ds104",
+    "P huis Victor": "adb-ds104",
+    "Buiten T": "adb-c103",
+    "Schemer F": "adb-f101",
+    "Nacht F": "adb-ds104",
+    "Schemer T": "adb-c103",
+    "Nacht T": "adb-c103",
+    "Weverij T": "adb-c103",
+    "Horizon RT": "adb-acp1001",
+    "Horizon Patria": "adb-acp1001",
+    "Horizon Weverij": "adb-acp1001",
+    "Horizon acciden": "adb-acp1001",
+    "accident": "robe-ledbeam150",
+    "Rob150LEDBeam": "robe-ledbeam150"
+  },
+  "byAddress": {
+  }
+}

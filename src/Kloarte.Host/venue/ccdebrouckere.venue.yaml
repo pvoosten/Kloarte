@@ -1,0 +1,175 @@
+# yaml-language-server: $schema=../data/schemas/venue.schema.json
+# Kloarte: the venue CC De Brouckere (Torhout): stage, cyc, hoists, stands, auditorium
+name: CC De Brouckere, Torhout
+forestage: 2.15
+stageWidth: 15
+cyc:
+  truss: T 22
+  z: -9
+  offset: -0.1
+  width: 15
+  height: 7.5
+  albedo: 0.8
+hoistDatum: -0.45
+hoists:
+  - name: T1
+    distance: 0.9
+    maxHeight: 0
+  - name: T2
+    distance: 1.2
+    maxHeight: 0
+  - name: T3
+    distance: 1.75
+    maxHeight: 0
+  - name: T4
+    distance: 2.3
+    maxHeight: 0
+  - name: FILM
+    distance: 2
+    maxHeight: 0
+  - name: LT5
+    distance: 2.7
+    maxHeight: 0
+  - name: T6
+    distance: 3.2
+    maxHeight: 0
+  - name: T7
+    distance: 3.5
+    maxHeight: 0
+  - name: T8
+    distance: 3.85
+    maxHeight: 0
+  - name: T9
+    distance: 4.3
+    maxHeight: 0
+  - name: T10
+    distance: 4.7
+    maxHeight: 0
+  - name: LT11
+    distance: 5.1
+    maxHeight: 0
+  - name: T12
+    distance: 5.5
+    maxHeight: 0
+  - name: T13
+    distance: 5.8
+    maxHeight: 0
+  - name: T14
+    distance: 6.1
+    maxHeight: 0
+  - name: LT15
+    distance: 6.5
+    maxHeight: 0
+  - name: T16
+    distance: 6.9
+    maxHeight: 0
+  - name: T17
+    distance: 7.5
+    maxHeight: 0
+  - name: T18
+    distance: 7.9
+    maxHeight: 0
+  - name: T19
+    distance: 8.2
+    maxHeight: 0
+  - name: T20
+    distance: 8.55
+    maxHeight: 0
+  - name: T21
+    distance: 8.9
+    maxHeight: 0
+  - name: T22
+    distance: 9.15
+    maxHeight: 0
+  - name: Portaalbrug
+    distance: 0
+    maxHeight: 6.1
+maxHeightByPrefix:
+  LT: 7.5
+  T: 8
+  Portaalbrug: 6.1
+defaultMaxHeight: 8
+stands:
+  - name: Floor stand
+    min: 0
+    max: 0.5
+    count: 12
+  - name: Manfrotto 070U
+    min: 0.9
+    max: 1.48
+    count: 2
+  - name: Manfrotto 111U
+    min: 1.48
+    max: 3.8
+    count: 4
+  - name: Manfrotto 087U wind-up
+    min: 1.6
+    max: 3.8
+    count: 4
+  - name: T-bar
+    min: 0.3
+    max: 4
+    count: 4
+  - name: Ballet tower
+    min: 0.2
+    max: 3
+    count: 6
+auditorium:
+  firstRowDistance: 0.5
+  firstRowDrop: 1
+  rowPitch: 1
+  rake: 0.27
+  seatWidth: 0.52
+  eyeHeight: 1.15
+  width: 13
+  depth: 22
+  rows:
+    - names: ABCDEFGHIJKLMNOPQRS
+      seats: 20
+      even: 0
+      odd: 0
+      stagger: 0.5
+    - names: T
+      seats: 18
+      even: 0
+      odd: 0
+      stagger: 0
+    - names: U
+      seats: 0
+      even: 8
+      odd: 9
+      stagger: 0
+  viewpoints:
+    - name: Regie
+      row: N
+      seats:
+        - 20
+        - 19
+    - name: Front centre
+      row: A
+      seats:
+        - 20
+        - 19
+    - name: Middle
+      row: J
+      seats:
+        - 20
+        - 19
+    - name: Back corner
+      row: U
+      seats:
+        - 2
+    - name: Front side (house right)
+      row: B
+      seats:
+        - 1
+  reserved:
+    - name: Regie (control, removable)
+      rows: NO
+      seats:
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20

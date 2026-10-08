@@ -2,9 +2,6 @@
 .godot/
 /android/
 
-# Test output (keep the .gdignore so Godot doesn't import the screenshots)
-tests/output/*
-!tests/output/.gdignore
 
 # .NET / C# build output
 bin/
@@ -19,3 +16,13 @@ mono_crash.*
 .idea/
 *.DotSettings.user
 TestResults/
+
+# Show-specific project files (mechanics, blocking, own venue): local data, not in git
+Projects/
+
+# Distribution (tools/make_dist.ps1)
+build/
+dist/
+
+# xUnit test output
+test/output/

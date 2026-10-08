@@ -1,0 +1,46 @@
+THIRD-PARTY NOTICES
+
+Kloarte up de plankn uses the following software and data. Their licences require that these notices come with the
+application. The full licence text of Godot Engine and of the components inside it is listed below this section.
+
+
+Godot Engine  (https://godotengine.org)
+Copyright (c) 2014-present Godot Engine contributors.
+Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.
+MIT licence (see the Godot licence text below). Includes GodotSharp, the Godot .NET bindings (same licence), and the
+third-party components listed in Godot's own copyright information.
+
+
+.NET runtime and libraries  (https://github.com/dotnet/runtime)
+Copyright (c) .NET Foundation and Contributors.
+MIT licence.
+
+
+YamlDotNet  (https://github.com/aaubry/YamlDotNet)
+Copyright (c) Antoine Aubry and contributors.
+MIT licence.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+  documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+  persons to whom the Software is furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+  Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+  WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+  COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+Fixture descriptions (GDTF)
+The Robe Robin LEDBeam 150 and Robin T1 Profile GDTF files in data\gdtf (descriptions, wheel images, 3D models) are
+made by Robe Lighting s.r.o. and distributed through the GDTF Share (https://gdtf-share.com). Robe and Robin are
+trademarks of Robe Lighting s.r.o. They are used to show those fixtures; Kloarte is not made or endorsed by Robe.
+
+
+ChamSys MagicQ
+MagicQ is a trademark of ChamSys Ltd. Kloarte reads and writes MagicQ show files and listens to Art-Net; it contains
+no MagicQ software and is not made or endorsed by ChamSys.
+Art-Net(TM) is a trademark of Artistic Licence Engineering Ltd.

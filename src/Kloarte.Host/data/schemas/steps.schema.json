@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kloarte steps (blocking)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/CueEntry"
+      },
+      "description": "The cues with a hold or actor movement, in cue order"
+    }
+  },
+  "$defs": {
+    "ActorStateEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "delay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 600,
+          "description": "Wait before this step starts, after GO or the previous step (s)"
+        },
+        "moveTime": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 600,
+          "description": "Time to walk to this step's position; missing = walking speed (s)"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "On stage (false = off stage, not drawn)"
+        },
+        "pose": {
+          "type": "string",
+          "enum": [
+            "standing",
+            "seated",
+            "lying"
+          ],
+          "description": "Pose"
+        },
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Position [x, y, z] in stage coordinates (x to the audience's right, y up, z towards the audience) (m)"
+        },
+        "facing": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360,
+          "description": "Facing, around the vertical: 0 = towards the audience (°)"
+        }
+      }
+    },
+    "CueEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cue": {
+          "type": "string",
+          "description": "Cue number as in MagicQ, e.g. 12.5 (for reading; the id wins when both are there)"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "MagicQ's cue id (S record); missing = found by the cue number"
+        },
+        "hold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3600,
+          "description": "Wait after this cue has finished until the next GO (timeline, Auto, movie); missing = the default hold (s)"
+        },
+        "smoke": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Smoke (haze) this cue sets, in % of the densest haze (the Haze slider's scale); it stays in the later cues until one sets another; missing = this cue leaves the smoke as it is (%)"
+        },
+        "smokeTime": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3600,
+          "description": "Seconds the haze takes to build or thin to this cue's smoke amount, like a hazer; missing = 20 s (s)"
+        },
+        "actors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ActorStateEntry"
+            }
+          },
+          "description": "Per actor id: the movement steps in this cue, one after the other"
+        }
+      }
+    }
+  }
+}

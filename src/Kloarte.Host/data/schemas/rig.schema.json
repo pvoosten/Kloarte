@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kloarte rig and patch",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "The MagicQ show this project was imported from (exports are written into a copy of it)"
+    },
+    "types": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DesignPersonality"
+      },
+      "description": "The fixture types (personalities) of the rig"
+    },
+    "heads": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DesignHead"
+      },
+      "description": "The heads of the patch"
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DesignGroup"
+      },
+      "description": "The groups of heads"
+    },
+    "curves": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DesignCurve"
+      },
+      "description": "The dimmer curves heads can use"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DesignItem"
+      },
+      "description": "The rig: lamps and objects (trusses, pipes, boxes, people, models)"
+    }
+  },
+  "$defs": {
+    "DesignCurve": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Curve id (heads refer to it)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Curve name"
+        },
+        "table": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Output (0..65535) for each input 0..254; input 255 = full"
+        }
+      }
+    },
+    "DesignGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Group number"
+        },
+        "name": {
+          "type": "string",
+          "description": "Group name"
+        },
+        "heads": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Head numbers in the group"
+        }
+      }
+    },
+    "DesignHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Head number (cues and palettes refer to heads by it)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Head name"
+        },
+        "type": {
+          "type": "string",
+          "description": "Fixture type (a personality of the rig, by name)"
+        },
+        "address": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "DMX address of the first channel (absolute, 1-based: 513 = universe 2, channel 1)"
+        },
+        "channels": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of DMX channels from the address"
+        },
+        "gel": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Gel (colour table id: 1000 + n = Lee n, 2000 + n = Rosco n); missing = open white"
+        },
+        "beam": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Beam angle set in the patch (whole degrees); missing = the fixture type's (°)"
+        },
+        "shape": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Beam shape id set in the patch (MagicVis); missing = none"
+        },
+        "curve": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Dimmer curve (a curve of the rig, by id); missing = linear"
+        }
+      }
+    },
+    "DesignItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The item's id, unique in the show (lamp files and blocking refer to it; the MagicVis id when imported)"
+        },
+        "kind": {
+          "type": "string",
+          "description": "What it is: fixture, proscenium, pipe, box, person, podium, model, border (or a MagicVis object type number)"
+        },
+        "parent": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Id of the truss / pipe / stand it hangs on; missing = none"
+        },
+        "at": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Position x, y, z (m)"
+        },
+        "rot": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Rotation about x, y, z (Euler order Y-X-Z; lamps point down at 0) (°)"
+        },
+        "size": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Sizes of an object (a pipe: length; a box: depth, width, height) (m)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of an object (e.g. the truss name LX1)"
+        },
+        "code": {
+          "type": "string",
+          "description": "MagicVis object code (e.g. 20001 truss, 60001 person)"
+        },
+        "model": {
+          "type": "string",
+          "description": "File name of a custom model (MagicVis .mvm)"
+        },
+        "address": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "DMX address of a lamp (absolute, 1-based: 513 = universe 2, channel 1); missing = not patched"
+        },
+        "head": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Head number of a lamp (the head of the patch it belongs to)"
+        },
+        "type": {
+          "type": "string",
+          "description": "Fixture type of a lamp (a personality of the rig, by name)"
+        }
+      }
+    },
+    "DesignPersonality": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the fixture type (MagicQ's personality name, e.g. generic_dimmer, Robe_RobinT1Profile_Mode1)"
+        },
+        "mode": {
+          "type": "string",
+          "description": "The console's mode name"
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The DMX channels' names, in DMX order"
+        },
+        "classes": {
+          "type": "string",
+          "description": "What each channel is, one letter per channel in DMX order: I intensity, P position, C colour, B beam"
+        },
+        "gdtf": {
+          "type": "string",
+          "description": "GDTF file of the fixture type (file name prefix in data/gdtf), for its attributes in physical values"
+        },
+        "gdtfMode": {
+          "type": "string",
+          "description": "The GDTF mode matching the channels, e.g. \"Mode 1 - CMY\""
+        }
+      }
+    }
+  }
+}

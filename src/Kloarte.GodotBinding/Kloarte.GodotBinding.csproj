@@ -1,0 +1,42 @@
+<Project Sdk="Godot.NET.Sdk/4.7.2">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kloarte.GodotBinding</RootNamespace>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <!-- A library: the Godot project (the host) has the plugin initializer (GodotPlugins.Game.Main). -->
+    <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
+    <!-- Code style: every public type and member has an XML doc comment (missing ones are warning CS1591). -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Kloarte.Model/Kloarte.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The Godot tests use internal helpers (e.g. NativeFileDialogs). -->
+    <InternalsVisibleTo Include="Kloarte.Godot.Tests" />
+  </ItemGroup>
+  <!-- Help > About shows the build: date and git commit (+ " + changes" for a working tree with uncommitted changes). -->
+  <Target Name="StampVersion" BeforeTargets="GetAssemblyAttributes">
+    <Exec Command="git rev-parse --short HEAD" ConsoleToMSBuild="true" IgnoreExitCode="true" StandardOutputImportance="low"
+          StandardErrorImportance="low" WorkingDirectory="$(MSBuildThisFileDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="KloarteCommit" />
+    </Exec>
+    <Exec Command="git status --porcelain --untracked-files=no" ConsoleToMSBuild="true" IgnoreExitCode="true"
+          StandardOutputImportance="low" StandardErrorImportance="low" WorkingDirectory="$(MSBuildThisFileDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="KloarteChanges" />
+    </Exec>
+    <PropertyGroup>
+      <KloarteCommit Condition="'$(KloarteChanges)' != ''">$(KloarteCommit) + changes</KloarteCommit>
+    </PropertyGroup>
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>Commit</_Parameter1>
+        <_Parameter2>$(KloarteCommit)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>BuildDate</_Parameter1>
+        <_Parameter2>$([System.DateTime]::Now.ToString('yyyy-MM-dd'))</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+</Project>

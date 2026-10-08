@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kloarte palettes",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "palettes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DesignPalette"
+      },
+      "description": "The palettes of the show"
+    }
+  },
+  "$defs": {
+    "DesignPalette": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The palette's name (unique; cues refer to it as \"@name\")"
+        },
+        "magicq": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "The MagicQ palettes this palette is (MagicQ's palette ids: type * 4096 + entry); kept for the next export"
+        },
+        "heads": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "number",
+                "string"
+              ],
+              "description": "A number (intensity %, degrees, ...), a slot or set name (\"Stars\"), a function and its value (\"Shutter1Strobe 5\"), an exact DMX value (\"dmx 37\", or after a readable value: \"Stars (dmx 37)\"), or a palette (\"@Front\")"
+            }
+          },
+          "description": "Per head number: the palette's values (intensity in %, GDTF attributes in their units, slot names)"
+        }
+      }
+    }
+  }
+}

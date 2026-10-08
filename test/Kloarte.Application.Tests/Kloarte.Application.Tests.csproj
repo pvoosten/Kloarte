@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kloarte.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- Code style: every public type and member has an XML doc comment (missing ones are warning CS1591). -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Shared test support (paths, app paths without Godot, Check). -->
+    <Compile Include="../Shared/*.cs" Link="Shared/%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Kloarte.Model/Kloarte.Model.csproj" />
+    <ProjectReference Include="../../src/Kloarte.Yaml/Kloarte.Yaml.csproj" />
+    <ProjectReference Include="../../src/Kloarte.MagicQ/Kloarte.MagicQ.csproj" />
+    <ProjectReference Include="../../src/Kloarte.Application/Kloarte.Application.csproj" />
+  </ItemGroup>
+</Project>

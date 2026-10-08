@@ -1,0 +1,52 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Kloarte up de plankn"
+run/main_scene="res://main.tscn"
+run/main_scene.dist="res://shows/risquons_tout.tscn"
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+config/icon="res://icon.svg"
+boot_splash/image="res://splash.png"
+boot_splash/fullsize=true
+boot_splash/bg_color=Color(0.0235294, 0.0235294, 0.0352941, 1)
+run/flush_stdout_on_print=true
+
+[autoload]
+
+Startup="*res://host/Startup.cs"
+
+[display]
+
+window/stretch/mode="disabled"
+window/stretch/aspect="expand"
+
+[dotnet]
+
+project/assembly_name="Kloarte.Host"
+project/solution_directory="../.."
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+environment/volumetric_fog/volume_size=128
+environment/volumetric_fog/volume_depth=128
+
+[shader_globals]
+
+haze_density={
+"type": "float",
+"value": 0.015
+}

@@ -1,2 +1,7 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+# MagicQ show files are CRLF and must stay byte-identical (MagicQ writes them; Kloarte copies them as they are).
+*.shw -text
+*.sbk -text
+*.xhw binary

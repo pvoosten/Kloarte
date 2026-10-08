@@ -1,0 +1,77 @@
+// House rig of CC De Brouckere (technical sheet 28/02/2023). Light output: estimates where no datasheet value
+// was available ("estimated": true) - replace them with datasheet values when found.
+// lumens = flux through the lens; peak candela follows from the field angle (fixtures/Photometrics.cs).
+{
+  "kindDefaults": {
+    "profile": "adb-ds104",
+    "fresnel": "adb-f101",
+    "pc": "adb-c103",
+    "par": "par64",
+    "par64": "par64",
+    "flood": "adb-acp1001",
+    "ledbar": "fos100",
+    "ledbeam": "robe-ledbeam150",
+    "t1profile": "robe-t1-profile",
+    "moving": "robe-t1-profile"
+  },
+  "models": [
+    { "id": "adb-ds104", "short": "DS104", "name": "ADB DS104 1 kW zoom profile", "kind": "profile", "watts": 1000, "count": 9,
+      "lumens": 6500, "zoom": [15, 31], "fieldAngle": 26, "falloff": 0.85, "softness": 0.01, "focus": true,
+      "shutters": true, "iris": true, "goboSize": "A", "estimated": true },
+    { "id": "adb-dw104", "short": "DW104", "name": "ADB DW104 1 kW zoom profile", "kind": "profile", "watts": 1000, "count": 5,
+      "lumens": 6000, "zoom": [15, 38], "fieldAngle": 30, "falloff": 0.85, "softness": 0.01, "focus": true,
+      "shutters": true, "iris": true, "goboSize": "A", "estimated": true },
+    { "id": "adb-ds204", "short": "DS204", "name": "ADB DS204 2 kW zoom profile", "kind": "profile", "watts": 2000, "count": 6,
+      "lumens": 13000, "zoom": [13, 36], "fieldAngle": 24, "falloff": 0.85, "softness": 0.01, "focus": true,
+      "shutters": true, "iris": true, "goboSize": "B", "estimated": true },
+    { "id": "adb-dn204", "short": "DN204", "name": "ADB DN204 2 kW zoom profile", "kind": "profile", "watts": 2000, "count": 4,
+      "lumens": 11000, "zoom": [10, 20], "fieldAngle": 15, "falloff": 0.85, "softness": 0.01, "focus": true,
+      "shutters": true, "iris": true, "goboSize": "B", "estimated": true },
+    { "id": "etc-s4-zoom", "short": "S4 Zoom", "name": "ETC Source Four Zoom 25-50°", "kind": "profile", "watts": 575, "count": 8,
+      "lumens": 5000, "zoom": [25, 50], "fieldAngle": 36, "falloff": 0.8, "softness": 0.01, "focus": true,
+      "shutters": true, "iris": true, "goboSize": "B", "color": "#ffd6a8", "estimated": true },
+
+    { "id": "adb-c103", "short": "C103", "name": "ADB C103 1 kW PC", "kind": "pc", "watts": 1000, "count": 28,
+      "lumens": 8000, "zoom": [8, 60], "fieldAngle": 30, "falloff": 0.5, "softness": 0.12,
+      "barndoors": true, "estimated": true },
+    { "id": "adb-c203", "short": "C203", "name": "ADB C203 2 kW PC", "kind": "pc", "watts": 2000, "count": 12,
+      "lumens": 16000, "zoom": [8, 60], "fieldAngle": 30, "falloff": 0.5, "softness": 0.12,
+      "barndoors": true, "estimated": true },
+    { "id": "adb-f101", "short": "F101", "name": "ADB F101 1 kW fresnel", "kind": "fresnel", "watts": 1000, "count": 12,
+      "lumens": 9000, "zoom": [10, 60], "fieldAngle": 45, "falloff": 0.25, "softness": 0.3,
+      "barndoors": true, "estimated": true },
+
+    { "id": "par64", "short": "PAR64", "name": "PAR64 long nose 1 kW", "kind": "par", "watts": 1000, "count": 41,
+      "falloff": 0.3, "softness": 0.2, "color": "#ffd6a8", "defaultLamp": "CP62",
+      "lamps": [
+        { "id": "CP60", "name": "CP60 VNSP", "beam": [9, 12], "candela": 400000 },
+        { "id": "CP61", "name": "CP61 NSP", "beam": [10, 14], "candela": 270000 },
+        { "id": "CP62", "name": "CP62 MFL", "beam": [12, 28], "candela": 125000 }
+      ], "estimated": true, "source": "typical PAR64 lamp catalogue values" },
+    { "id": "par64-floor", "short": "PAR64 floor", "name": "PAR64 floor can (short nose) 1 kW", "kind": "par", "watts": 1000, "count": 6,
+      "falloff": 0.3, "softness": 0.25, "color": "#ffd6a8", "defaultLamp": "CP62",
+      "lamps": [
+        { "id": "CP60", "name": "CP60 VNSP", "beam": [9, 12], "candela": 400000 },
+        { "id": "CP61", "name": "CP61 NSP", "beam": [10, 14], "candela": 270000 },
+        { "id": "CP62", "name": "CP62 MFL", "beam": [12, 28], "candela": 125000 }
+      ], "estimated": true },
+    { "id": "par36", "short": "PAR36", "name": "PAR36 pinspot", "kind": "par", "watts": 30, "count": 6,
+      "falloff": 0.4, "softness": 0.1, "color": "#ffe2b8", "defaultLamp": "4515",
+      "lamps": [ { "id": "4515", "name": "4515 6 V 30 W", "beam": [5, 5], "candela": 25000 } ],
+      "estimated": true },
+
+    { "id": "adb-acp1001", "short": "ACP1001", "name": "ADB ACP1001 1 kW asymmetric flood", "kind": "flood", "watts": 1000, "count": 15,
+      "lumens": 12000, "fieldAngle": 170, "falloff": 0.5, "softness": 0.35, "asymmetric": true, "estimated": true },
+
+    { "id": "fos100", "short": "FOS100", "name": "FOS100 Power Solo IP20 LED bar, 15° lens", "kind": "ledbar", "watts": 100, "count": 4,
+      "lumens": 3000, "fieldAngle": 15, "falloff": 0.6, "softness": 0.1, "color": "#ffffff", "estimated": true },
+
+    { "id": "robe-ledbeam150", "short": "LEDBeam", "name": "Robe LEDBeam 150", "kind": "moving", "watts": 150, "count": 12,
+      "lumens": 2900, "zoom": [3.8, 60], "fieldAngle": 10, "falloff": 0.8, "softness": 0.05, "color": "#ffffff",
+      "gdtf": "Robe_Lighting@Robin_LEDBeam_150", "magicq": "Robe_Rob150LEDBeam_Mode 1", "estimated": true },
+    { "id": "robe-t1-profile", "short": "T1", "name": "Robe T1 Profile", "kind": "moving", "watts": 550, "count": 4,
+      "lumens": 18000, "zoom": [5.5, 48], "fieldAngle": 30, "falloff": 0.9, "softness": 0.01, "focus": true,
+      "shutters": true, "iris": true, "color": "#f4f2ff",
+      "gdtf": "Robe_Lighting@Robin_T1_Profile", "magicq": "Robe_RobinT1Profile_Mode3", "estimated": true }
+  ]
+}

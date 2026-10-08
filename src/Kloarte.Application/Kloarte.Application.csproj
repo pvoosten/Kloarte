@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kloarte.Application</RootNamespace>
+    <!-- Code style: every public type and member has an XML doc comment (missing ones are warning CS1591). -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Kloarte.Model/Kloarte.Model.csproj" />
+    <ProjectReference Include="../Kloarte.MagicQ/Kloarte.MagicQ.csproj" />
+    <ProjectReference Include="../Kloarte.GodotBinding/Kloarte.GodotBinding.csproj" />
+  </ItemGroup>
+</Project>

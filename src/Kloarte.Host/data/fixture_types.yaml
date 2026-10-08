@@ -1,0 +1,93 @@
+# Kloarte: the fixture types of the catalogue's lamps (made from data/magicq_templates.shw by DesignImportTests)
+types:
+  - name: generic_dimmer
+    channels:
+      - Dimmer
+    classes: I
+  - name: Robe_Rob150LEDBeam_Mode 1
+    mode: Mode 1
+    channels:
+      - Pan
+      - Pan F
+      - Tilt
+      - Tilt F
+      - P/T Speed
+      - Control
+      - VCol
+      - Red
+      - Red F
+      - Green
+      - Green F
+      - Blue
+      - Blue F
+      - White
+      - White F
+      - CTC
+      - Col Macro
+      - Zoom
+      - Zoom F
+      - Shutter
+      - Dimmer
+      - Dimmer F
+    classes: PPPPBBCCCCCCCCCBCBBBII
+    gdtf: Robe_Lighting@Robin_LEDBeam_150
+    gdtfMode: Mode 1 - Standard 16 - bit
+  - name: Robe_RobinT1Profile_Mode3
+    mode: Mode3
+    channels:
+      - Pan
+      - Pan F
+      - Tilt
+      - Tilt F
+      - P/T Speed
+      - Control
+      - LED Freq Select
+      - LED Freq Fine
+      - Colour Function
+      - CRI Select
+      - VCol Wheel
+      - Red
+      - Red F
+      - Green
+      - Green F
+      - Blue
+      - Blue F
+      - Amber
+      - Amber F
+      - Lime
+      - Lime F
+      - CTC
+      - Green Correct
+      - Colour Mix
+      - Gobo Speed
+      - Beam Speed
+      - FX Wheel
+      - FX Wheel Rot
+      - FX Animation
+      - Rot Gobo
+      - Gobo Rot
+      - Gobo Rot F
+      - Prism
+      - Prism Rot
+      - Frost
+      - Iris
+      - Iris F
+      - Zoom
+      - Zoom F
+      - Focus
+      - Focus F
+      - Framing Rot
+      - Frame 1 Move
+      - Frame 1 Swivel
+      - Frame 2 Move
+      - Frame 2 Swivel
+      - Frame 3 Move
+      - Frame 3 Swivel
+      - Frame 4 Move
+      - Frame 4 Swivel
+      - Shutter
+      - Dimmer
+      - Dimmer F
+    classes: PPPPBBBBCBCCCCCCCCCCCBCCBBBBBBBBBBBBBBBBBBBBBBBBBBBII
+    gdtf: Robe_Lighting@Robin_T1_Profile
+    gdtfMode: Mode 3 - RGBAL

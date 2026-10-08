@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kloarte actors (blocking)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "actors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ActorEntry"
+      },
+      "description": "The actors on stage"
+    }
+  },
+  "$defs": {
+    "ActorEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The actor's id (stable across renames; blocking/steps.yaml refers to it)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name, as shown in Kloarte and printed on the shirt"
+        },
+        "female": {
+          "type": "boolean",
+          "description": "true = a woman mannequin (missing = a man)"
+        },
+        "shirtColor": {
+          "type": "string",
+          "description": "Shirt colour \"#rrggbb\"; missing = a colour from the palette"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0.8,
+          "maximum": 2.3,
+          "description": "Height; missing = the default for a man / woman (m)"
+        },
+        "initial": {
+          "$ref": "#/$defs/ActorStateEntry",
+          "description": "Where and how the actor is before the first cue"
+        }
+      }
+    },
+    "ActorStateEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "delay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 600,
+          "description": "Wait before this step starts, after GO or the previous step (s)"
+        },
+        "moveTime": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 600,
+          "description": "Time to walk to this step's position; missing = walking speed (s)"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "On stage (false = off stage, not drawn)"
+        },
+        "pose": {
+          "type": "string",
+          "enum": [
+            "standing",
+            "seated",
+            "lying"
+          ],
+          "description": "Pose"
+        },
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Position [x, y, z] in stage coordinates (x to the audience's right, y up, z towards the audience) (m)"
+        },
+        "facing": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360,
+          "description": "Facing, around the vertical: 0 = towards the audience (°)"
+        }
+      }
+    }
+  }
+}

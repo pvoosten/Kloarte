@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Environment" path="res://environment/theatre_environment.tres" id="1_env"]
+[ext_resource type="Script" path="res://host/HostFlyCamera.cs" id="2_cam"]
+[ext_resource type="Script" path="res://host/HostShowBuilder.cs" id="3_show"]
+[ext_resource type="Script" path="res://host/HostFixturePanel.cs" id="9_panel"]
+[ext_resource type="Script" path="res://host/HostStrayLight.cs" id="10_stray"]
+
+[node name="RisquonsTout" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("1_env")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 12)
+fov = 55.0
+script = ExtResource("2_cam")
+LookAtOnStart = Vector3(0, 1, -4)
+
+[node name="Show" type="Node3D" parent="."]
+script = ExtResource("3_show")
+ShowFile = "C:/Users/pvoos_nnvpp5d/OneDrive/Documents/MagicQ/show/Risquons-Tout/RT2025_031.shw"
+FixtureConfig = "res://shows/risquons-tout.fixtures.json"
+
+[node name="FixturePanel" type="CanvasLayer" parent="."]
+script = ExtResource("9_panel")
+
+[node name="StrayLight" type="Node" parent="."]
+script = ExtResource("10_stray")

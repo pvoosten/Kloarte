@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kloarte venue",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "forestage": {
+      "type": "number"
+    },
+    "stageWidth": {
+      "type": "number"
+    },
+    "cyc": {
+      "$ref": "#/$defs/Cyc"
+    },
+    "hoistDatum": {
+      "type": "number"
+    },
+    "hoists": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Hoist"
+      }
+    },
+    "maxHeightByPrefix": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "defaultMaxHeight": {
+      "type": "number"
+    },
+    "stands": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/StandType"
+      }
+    },
+    "auditorium": {
+      "$ref": "#/$defs/Auditorium"
+    }
+  },
+  "$defs": {
+    "Auditorium": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firstRowDistance": {
+          "type": "number"
+        },
+        "firstRowDrop": {
+          "type": "number"
+        },
+        "rowPitch": {
+          "type": "number"
+        },
+        "rake": {
+          "type": "number"
+        },
+        "seatWidth": {
+          "type": "number"
+        },
+        "eyeHeight": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "depth": {
+          "type": "number"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RowSpec"
+          }
+        },
+        "viewpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Viewpoint"
+          }
+        },
+        "reserved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SeatBlock"
+          }
+        }
+      }
+    },
+    "Cyc": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "truss": {
+          "type": "string"
+        },
+        "z": {
+          "type": "number"
+        },
+        "offset": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "albedo": {
+          "type": "number"
+        }
+      }
+    },
+    "Hoist": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "distance": {
+          "type": "number"
+        },
+        "maxHeight": {
+          "type": "number"
+        }
+      }
+    },
+    "RowSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "names": {
+          "type": "string"
+        },
+        "seats": {
+          "type": "integer"
+        },
+        "even": {
+          "type": "integer"
+        },
+        "odd": {
+          "type": "integer"
+        },
+        "stagger": {
+          "type": "number"
+        }
+      }
+    },
+    "SeatBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "string"
+        },
+        "seats": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "StandType": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "Viewpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "row": {
+          "type": "string"
+        },
+        "seats": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

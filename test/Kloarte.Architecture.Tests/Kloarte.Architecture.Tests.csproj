@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kloarte.Tests</RootNamespace>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- Code style: every public type and member has an XML doc comment (missing ones are warning CS1591). -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Only to build them first: the tests read the assemblies' metadata from the src projects' bin folders and
+         never load them (no Godot needed). -->
+    <ProjectReference Include="../../src/Kloarte.Model/Kloarte.Model.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../src/Kloarte.MagicQ/Kloarte.MagicQ.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../src/Kloarte.GodotBinding/Kloarte.GodotBinding.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../src/Kloarte.Application/Kloarte.Application.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>

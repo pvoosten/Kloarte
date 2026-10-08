@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kloarte.Yaml</RootNamespace>
+    <!-- Code style: every public type and member has an XML doc comment (missing ones are warning CS1591). -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Internals visible to the tests of the codec. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Project files in YAML (user, 11 Oct 2026). Only this project uses YAML: the model stays .NET only. -->
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Kloarte.Model/Kloarte.Model.csproj" />
+  </ItemGroup>
+</Project>
