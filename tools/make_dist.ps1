@@ -83,11 +83,3 @@ foreach ($pattern in @("venue\*.yaml", "gobos\*.png", "shows\*.fixtures.json")) 
     New-Item -ItemType Directory -Force $folder | Out-Null
     Copy-Item (Join-Path $project $pattern) $folder
 }
-
-# --- 4. Zip ------------------------------------------------------------------------------------------------------
-$dist = Join-Path $root $OutDir
-New-Item -ItemType Directory -Force $dist | Out-Null
-$zip = Join-Path $dist ("Kloarte-{0:yyyy-MM-dd}.zip" -f (Get-Date))
-if (Test-Path $zip) { Remove-Item -Force $zip }
-Compress-Archive -Path $build -DestinationPath $zip
-Write-Host "Distribution: $zip ($([math]::Round((Get-Item $zip).Length / 1MB, 1)) MB)"

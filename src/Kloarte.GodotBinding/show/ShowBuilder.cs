@@ -257,7 +257,8 @@ public partial class ShowBuilder : Node3D, IStage
             return;   // in the editor: the host's services don't exist there
         if (!Files.CanLoad)
         {
-            GD.PushWarning($"ShowBuilder: show file not found: '{ShowFile}'");
+            if (!string.IsNullOrEmpty(ShowFile))   // no show at all = starting without a project
+                GD.PushWarning($"ShowBuilder: show file not found: '{ShowFile}'");
             return;
         }
 

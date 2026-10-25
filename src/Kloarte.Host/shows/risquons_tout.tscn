@@ -19,7 +19,7 @@ LookAtOnStart = Vector3(0, 1, -4)
 
 [node name="Show" type="Node3D" parent="."]
 script = ExtResource("3_show")
-ShowFile = "C:/Users/pvoos_nnvpp5d/OneDrive/Documents/MagicQ/show/Risquons-Tout/RT2025_031.shw"
+OpenMagicQLastShow = false
 FixtureConfig = "res://shows/risquons-tout.fixtures.json"
 
 [node name="FixturePanel" type="CanvasLayer" parent="."]

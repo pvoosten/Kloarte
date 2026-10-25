@@ -64,10 +64,9 @@ dotnet build Kloarte.sln
 ```
 
 Open `src/Kloarte.Host` (the Godot project) in the Godot .NET editor, click **Build** (hammer icon, top right) and run
-`shows/risquons_tout.tscn` (F6 in that scene). It opens the show MagicQ PC had loaded last: the show named in MagicQ's `status.dat`
-(`Documents\MagicQ\show`; often its `.sbk` autosave), else `lastshow.shw` (MagicQ's copy, unsaved changes included;
-the real show's name comes from its header), with the project that show belongs to. Without MagicQ PC it opens the
-`ShowFile` of the `Show` node (turn `OpenMagicQLastShow` off to always use it).
+`shows/risquons_tout.tscn` (F6 in that scene). It starts without a project: open one from the File menu (or start with `-- --project=<folder>`, see `run.ps1 -Project`).
+Set `OpenMagicQLastShow` on the `Show` node to open the show MagicQ PC had loaded last instead (the show named in MagicQ's
+`status.dat`, else `lastshow.shw`), with the project that show belongs to; otherwise the node's `ShowFile` opens.
 
 ### Projects
 
