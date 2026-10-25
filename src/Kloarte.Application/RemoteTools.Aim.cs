@@ -204,7 +204,7 @@ public sealed partial class RemoteTools
     {
         float? height = args.Number("height") is { } h ? (float)h : null;
         if (args.Point("at") is { } at)
-            return (at, $"[{string.Join(", ", Rounded(at))}]");
+            return (at, $"[{string.Join(", ", Rounded(at).Select(v => v.ToString(CultureInfo.InvariantCulture)))}]");
         var names = args.Strings("actors").Concat(args.OptionalString("actor") is { } one ? new[] { one } : Array.Empty<string>()).ToList();
         if (names.Count == 0)
             throw new ArgumentException("No target: give 'actor', 'actors' or 'at'");

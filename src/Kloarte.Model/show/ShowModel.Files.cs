@@ -46,6 +46,8 @@ public sealed partial class ShowModel<TShow>
         var model = new ShowModel<TShow> { Show = show, ShwPath = shwPath };
         var lamps = show.RigItems.Where(v => v.IsFixture).ToDictionary(v => v.Id);
         var read = folder.LampFiles().Select(folder.Read<LampFile>).ToList();
+        if (show is DesignShow design)
+            design.ReservedItemIds.UnionWith(read.Select(r => LampIdIn(r.Text)).OfType<int>());   // new lamps don't take their ids
         foreach (var broken in read.Where(r => r.HasError && LampIdIn(r.Text) is not null))
             model._brokenLamps.Add(LampIdIn(broken.Text).Value);
         foreach (var file in read)

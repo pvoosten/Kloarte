@@ -62,7 +62,7 @@ public sealed partial class RemoteTools
 
     /// <summary>Every tool, in the order a client lists them.</summary>
     private IEnumerable<RemoteTool> All() =>
-        ShowTools().Concat(RigTools()).Concat(CueTools()).Concat(PaletteTools()).Concat(StageTools()).Concat(AimTools());
+        ShowTools().Concat(RigTools()).Concat(CueTools()).Concat(PaletteTools()).Concat(StageTools()).Concat(AimTools()).Concat(LampTools()).Concat(GelTools());
 
     /// <summary>A tool that answers with JSON (a text answer goes as it is).</summary>
     private static RemoteTool Tool(string name, string title, string description, JsonObject schema, bool readOnly,

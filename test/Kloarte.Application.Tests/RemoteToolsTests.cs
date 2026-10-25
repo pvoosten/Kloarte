@@ -412,6 +412,100 @@ public sealed class RemoteToolsTests : TestBase
         Assert.Contains("aim_moving_heads", mover.Text);
     }
 
+    /// <summary>
+    /// add_lamps: lamps of a catalogue type on a support, spread over it or at given x, each on a head of its own (the
+    /// next free one, or from a given head / address on); one undo step; a wrong type or an x off the support is refused.
+    /// </summary>
+    [Fact]
+    public async Task LampsAreHungOnASupport()
+    {
+        var supports = JsonNode.Parse((await Call("list_supports")).Text)!.AsArray();
+        var pipe = supports.First(s => s!["stand"] == null && (double)s!["length"] > 4)!;
+        string name = (string)pipe["name"];
+        double z = (double)pipe["start"]![2], x0 = (double)pipe["start"]![0], x1 = (double)pipe["end"]![0];
+        int heads = Design.Rig.Heads.Count;
+
+        var hung = await Call("add_lamps", new JsonObject
+        {
+            ["type"] = "robe-ledbeam150", ["support"] = name.Replace(" ", ""), ["count"] = 4,
+        });
+        Assert.False(hung.Error, hung.Text);
+        var lamps = JsonNode.Parse(hung.Text)!["lamps"]!.AsArray();
+        Assert.Equal(4, lamps.Count);
+        Assert.Equal(heads + 4, Design.Rig.Heads.Count);
+        Assert.Equal(4, lamps.Select(l => (int)l!["head"]).Distinct().Count());
+        foreach (var lamp in lamps)
+        {
+            var item = Design.Rig.Items.First(i => i.Id == (int)lamp!["lamp"]);
+            Assert.Equal((int)pipe["id"], item.Parent);
+            Assert.Equal(z, (double)lamp!["position"]![2], 1);   // on the pipe (in plan)
+            Assert.InRange((double)lamp["position"]![0], System.Math.Min(x0, x1), System.Math.Max(x0, x1));
+        }
+        Assert.StartsWith("Hang 4", _session.UndoName);
+
+        var patched = await Call("add_lamps", new JsonObject
+        {
+            ["type"] = "robe-ledbeam150", ["support"] = name, ["x"] = new JsonArray((x0 + x1) / 2),
+            ["firstHead"] = 301, ["firstAddress"] = 401,
+        });
+        Assert.False(patched.Error, patched.Text);
+        var one = JsonNode.Parse(patched.Text)!["lamps"]![0]!;
+        Assert.Equal(301, (int)one["head"]);
+        Assert.Equal(401, (int)one["address"]);
+
+        Assert.True((await Call("add_lamps", new JsonObject { ["type"] = "no-such-lamp", ["support"] = name, ["count"] = 1 })).Error);
+        var off = await Call("add_lamps", new JsonObject { ["type"] = "robe-ledbeam150", ["support"] = name, ["x"] = new JsonArray(99) });
+        Assert.True(off.Error);
+        Assert.Contains("is off", off.Text);
+    }
+
+    /// <summary>
+    /// remove_lamps: refused while the head lights a cue (with the cues); a head dark in every cue goes, and its values
+    /// leave the cues and palettes.
+    /// </summary>
+    [Fact]
+    public async Task OnlyDarkLampsAreRemoved()
+    {
+        int dimmer = _dimmers[0], spot = _spots[0];
+        var refused = await Call("remove_lamps", new JsonObject { ["heads"] = new JsonArray(dimmer) });
+        Assert.True(refused.Error);
+        Assert.Contains("lights cue 1", refused.Text);
+        Assert.Contains(Design.Rig.Items, i => i.IsLamp && i.Head == dimmer);
+
+        // The spot has values in a cue and a palette, but its intensity is 0 everywhere: it may go.
+        await Call("set_palette_values", new JsonObject { ["name"] = "Centre", ["values"] = Values(spot, new JsonObject { ["Pan"] = 0 }) });
+        await Call("set_cue_values", new JsonObject { ["cue"] = 2, ["values"] = Values(spot, new JsonObject { ["Pan"] = "@Centre", ["intensity"] = 0 }) });
+        var removed = await Call("remove_lamps", new JsonObject { ["heads"] = new JsonArray(spot) });
+        Assert.False(removed.Error, removed.Text);
+        Assert.DoesNotContain(Design.Rig.Items, i => i.IsLamp && i.Head == spot);
+        Assert.Null(Design.Head(spot));
+        Assert.Null(Design.CueOrder[1].Of(spot));
+        Assert.Null(Design.Palette("Centre").Of(spot));
+        Assert.StartsWith("Remove lamp", _session.UndoName);
+
+        // A dimmer set to 0 in the one cue that lit it is dark too.
+        await Call("set_cue_values", new JsonObject { ["cue"] = 1, ["values"] = Values(dimmer, new JsonObject { ["intensity"] = 0 }) });
+        Assert.False((await Call("remove_lamps", new JsonObject { ["heads"] = new JsonArray(dimmer) })).Error);
+        Assert.Null(Design.Head(dimmer));
+        Assert.DoesNotContain(dimmer, Design.Rig.Groups.First(g => g.Name == "Front").Heads);
+    }
+
+    /// <summary>find_gels / set_gel: a gel by code into the head's patch (every cue), one undo step; moving heads refused.</summary>
+    [Fact]
+    public async Task GelsAreSetPerHead()
+    {
+        var found = JsonNode.Parse((await Call("find_gels", new JsonObject { ["text"] = "119" })).Text)!.AsArray();
+        Assert.Equal("L119", (string)found[0]!["code"]);
+        var set = await Call("set_gel", new JsonObject { ["heads"] = new JsonArray(_dimmers[0]), ["gel"] = "L119" });
+        Assert.False(set.Error, set.Text);
+        Assert.Equal(1119, Design.Head(_dimmers[0]).Gel);
+        Assert.StartsWith("Gel L119", _session.UndoName);
+        var mover = await Call("set_gel", new JsonObject { ["heads"] = new JsonArray(_spots[0]), ["gel"] = "L119" });
+        Assert.True(mover.Error);
+        Assert.Contains("set_cue_values", mover.Text);
+        Assert.True((await Call("set_gel", new JsonObject { ["heads"] = new JsonArray(_dimmers[0]), ["gel"] = "L9999" })).Error);
+    }
+
     /// <summary>The <c>values</c> argument for one head: its number (as the key) and its channel values.</summary>
     private static JsonObject Values(int head, JsonObject channels) => new() { [head.ToString()] = channels };
 

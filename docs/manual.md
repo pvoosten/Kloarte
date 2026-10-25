@@ -160,7 +160,7 @@ palettes need a native show (a project of before: save it once).
 | `export_magicq` | the next numbered MagicQ show; says what was written and what to check in MagicQ PC |
 | `list_heads` | the patch: heads (number, name, type, address, gel, lamps) and groups |
 | `get_head` | a head's channel keys, the values they take and their value after a cue |
-| `list_lamps` | the lamps: rig item id, head, model, position, which mechanics they have |
+| `list_lamps` | the lamps: rig item id, head, model, position on stage, which mechanics they have |
 | `get_lamp` | a lamp's mechanics (field angle, iris, barndoors, shutters, gobo, focus point) |
 | `set_lamp_mechanics` | changes a lamp's mechanics (merged in; the beam is rebuilt) |
 | `list_cues` | every cue: number, text, times, heads set, smoke, the current one |
@@ -182,6 +182,10 @@ palettes need a native show (a project of before: save it once).
 | `list_actors` | the actors at the end of a cue: on stage, pose, position, facing, height, the face point aimed at |
 | `aim_moving_heads` | **moving-head aiming**: pan / tilt in a cue (later cues track it) at an actor's face, the middle of several actors or a stage point; per head or one target for many |
 | `focus_lamps` | **mechanical aiming**: a conventional lamp's focus point in its mechanics, the same in **every** cue (as focused by hand), at an actor (where they are at a cue) or a point |
+| `list_fixture_types` | the fixture types of the house catalogue that can be hung (id, name, kind, watts, zoom) |
+| `list_supports` | the trusses, pipes and stands: name, start and end on stage, length, the lamps on them |
+| `add_lamps` | hangs lamps of a type on a support (by name, e.g. "LT 5") at x positions or spread over it, each on a head of its own (the next free head and address, or from a given one on); they start dark |
+| `remove_lamps` | takes lamps down, **only when their intensity is 0 in every cue** (palettes counted; otherwise refused with the cues that use them); a head no lamp is left on is unpatched and leaves the cues, palettes and groups |
 
 Values are the ones of `cues.yaml` (see *The show's files*): intensity %, pan / tilt °, slot names, `dmx 37`, `"@Front"`.
 Aiming: a moving head is aimed per cue; a conventional lamp is focused once for the show. Each tool refuses the other

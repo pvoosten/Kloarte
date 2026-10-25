@@ -104,8 +104,15 @@ public sealed partial class DesignShow
     /// <summary>The next free cue id.</summary>
     public int NextCueId => CueOrder.Select(c => c.Id ?? 0).DefaultIfEmpty(0).Max() + 1;
 
-    /// <summary>The next free rig item id.</summary>
-    public int NextItemId => Rig.Items.Select(i => i.Id).DefaultIfEmpty(0).Max() + 1;
+    /// <summary>
+    /// Rig item ids the project's lamp files name (also files of lamps that are gone): a new item never gets one, else
+    /// such a file would be taken as the new item's mechanics (and overwritten by its next save). Not saved: the session
+    /// fills it from the files.
+    /// </summary>
+    public ISet<int> ReservedItemIds { get; } = new HashSet<int>();
+
+    /// <summary>The next free rig item id: above every item's and every <see cref="ReservedItemIds"/> id.</summary>
+    public int NextItemId => Rig.Items.Select(i => i.Id).Concat(ReservedItemIds).DefaultIfEmpty(0).Max() + 1;
 
     /// <summary>The channel layout of a head (cached until the next <see cref="Changed"/>).</summary>
     public HeadLayout LayoutOf(DesignHead head)

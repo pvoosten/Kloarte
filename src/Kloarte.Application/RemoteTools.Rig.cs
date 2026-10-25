@@ -32,7 +32,7 @@ public sealed partial class RemoteTools
 
         yield return Tool("list_lamps", "Lamps",
             "The lamps of the rig: rig item id (mechanics and selection use it), name, head, address, catalogue model, " +
-            "position (m), and which of barndoors / shutters / iris / gobo they have.",
+            "position [x, y, z] (m, stage coordinates), and which of barndoors / shutters / iris / gobo they have.",
             Object(), readOnly: true, _ => Lamps());
 
         yield return Tool("get_lamp", "Lamp mechanics",
@@ -109,7 +109,7 @@ public sealed partial class RemoteTools
             return new
             {
                 lamp = i.Id, name = i.Name, head = i.Head, address = i.Address, model = i.Model ?? m?.Model,
-                at = i.At,
+                position = StagePosition(i),
                 has = m == null
                     ? null
                     : new[] { m.Barndoors != null ? "barndoors" : null, m.Shutters != null ? "shutters" : null,
@@ -137,7 +137,7 @@ public sealed partial class RemoteTools
         Model.Mechanics.TryGetValue(lamp.Id, out var mechanics);
         return new
         {
-            lamp = lamp.Id, name = lamp.Name, head = lamp.Head, address = lamp.Address, model = lamp.Model, at = lamp.At,
+            lamp = lamp.Id, name = lamp.Name, head = lamp.Head, address = lamp.Address, model = lamp.Model, position = StagePosition(lamp),
             rot = lamp.Rot,
             mechanics = mechanics == null ? null : JsonSerializer.SerializeToNode(mechanics, ShowModel<DesignShow>.Json),
         };

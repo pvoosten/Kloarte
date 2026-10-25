@@ -131,7 +131,7 @@ Solution `Kloarte.sln`; `src/` runs the app, `test/` tests it. `README.md` is us
   `scenery/`, `ui/` (`FixturePanel` partial incl. `FixturePanel.Remote`, `ViewHost`, views, `KeyMap`, `StatusBar`, ...).
 - `src/Kloarte.Mcp/` — the MCP binding: `McpServer`, `IMcpServer`, `IMcpTool`, `IMcpReply`, `McpReply`.
 - `src/Kloarte.Application/` — `EditHistory<TShow>`, `ProjectLibrary`, `ShowSession<TShow>`, `RigEditor`, `ShowPlayback`,
-  `ConsoleLink`, `LiveInput`, `ShowServices<TShow>`, `RemoteTools` (partial per area: Show, Rig, Cues, Palettes, Stage, Aim,
+  `ConsoleLink`, `LiveInput`, `ShowServices<TShow>`, `RemoteTools` (partial per area: Show, Rig, Cues, Palettes, Stage, Aim, Lamps,
   Values; `RemoteTool`, `ToolArgs`, `ToolSchema`).
 - `src/Kloarte.Yaml/` — the codec. `src/Kloarte.Host/` — Godot project, `host/Startup.cs` composition root, `host/Host*.cs`
   scripts scenes attach, scenes, shaders, `data/` (`.gdignore`), `Projects/` (git-ignored, one folder per project).

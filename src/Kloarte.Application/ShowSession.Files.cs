@@ -198,6 +198,8 @@ public sealed partial class ShowSession<TShow>
         int id = read.Value.RigItem;
         if (!Model.IsLampInShow(id))
         {
+            if (Model.Show is DesignShow design)
+                design.ReservedItemIds.Add(id);   // a lamp added later must not take this file's id
             folder.Remember(path, text);
             return Change(path, ProjectFileKind.Lamp, id, false, false,
                 new[] { new FileProblem(path, 0, 0, $"no lamp {id} in the show (not applied)", false) });

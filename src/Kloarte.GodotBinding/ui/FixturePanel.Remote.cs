@@ -220,6 +220,108 @@ public partial class FixturePanel : IRemoteControl
     }
 
     /// <inheritdoc />
+    StageFrame IRemoteControl.Frame => CurrentBuilder?.Frame ?? throw new InvalidOperationException("No show loaded");
+
+    /// <inheritdoc />
+    IReadOnlyList<int> IRemoteControl.AddLamps(string name, string modelId, int supportId, IReadOnlyList<float> stageX,
+        int? firstHead, int? firstAddress)
+    {
+        var builder = CurrentBuilder;
+        if (builder?.Model == null)
+            throw new InvalidOperationException("No show loaded");
+        var support = new Rig(builder.Document).Find(supportId) ?? throw new ArgumentException($"No support {supportId}");
+        float z = builder.Frame.ToStage(support.Start.X, support.Start.Y, support.Start.Z).Z;
+        var ids = new List<int>();
+        string entry = null;
+        builder.Checkpoint();   // an edit made in the UI before is its own undo step
+        try
+        {
+            int? head = firstHead, address = firstAddress;
+            foreach (float x in stageX)
+            {
+                // Added near its place on the support (the plan snaps it to the nearest one), then hung on that one.
+                int id = builder.RigCommands.AddLamp(modelId, new System.Numerics.Vector2(x, z));
+                builder.RigCommands.SetParent(id, supportId);
+                if (head != null || address != null)
+                {
+                    var lamp = builder.Document.RigItems.First(i => i.Id == id);
+                    int channels = CueEditing.Design(builder)?.ChannelCountOfHead(lamp.HeadNumber) ?? 1;
+                    builder.RigCommands.ApplyLampPatch(id, head ?? lamp.HeadNumber, address ?? lamp.Address);
+                    head = head + 1;
+                    address = address + Math.Max(1, channels);
+                }
+                ids.Add(id);
+            }
+            builder.Files.NameNextEdit(name);   // the commands name each step; the whole call is one
+            entry = builder.Checkpoint();
+        }
+        finally
+        {
+            if (entry == null)
+                builder.Files.NameNextEdit(null);
+        }
+        RefreshUnsaved();
+        UpdateProjectBox();
+        return ids;
+    }
+
+    /// <inheritdoc />
+    string IRemoteControl.RemoveLamps(string name, IReadOnlyCollection<int> lampIds)
+    {
+        var builder = CurrentBuilder;
+        if (builder?.Model == null)
+            throw new InvalidOperationException("No show loaded");
+        foreach (int id in lampIds)
+            if (builder.FixtureOf(id) == null)
+                throw new ArgumentException($"Lamp {id} is not on stage");
+        var heads = lampIds.Select(id => builder.Document.RigItems.First(i => i.Id == id).HeadNumber).Distinct().ToList();
+        var done = new List<string>();
+        string entry = null;
+        Deselect();   // the removed lamps' nodes go
+        builder.Checkpoint();
+        try
+        {
+            foreach (int id in lampIds)
+                done.Add(builder.RigCommands.RemoveLamp(id));
+            if (CueEditing.Design(builder) is { } design)
+            {
+                var forgotten = heads.Where(h => design.Head(h) != null && DesignEdits.ForgetHead(design, h)).ToList();
+                if (forgotten.Count > 0)
+                {
+                    design.Changed();
+                    builder.PatchChanged();
+                    CueEditing.Refresh();
+                    done.Add($"head{(forgotten.Count == 1 ? "" : "s")} {string.Join(", ", forgotten)} unpatched and taken out of the cues");
+                }
+            }
+            builder.Files.NameNextEdit(name);
+            entry = builder.Checkpoint();
+        }
+        finally
+        {
+            if (entry == null)
+                builder.Files.NameNextEdit(null);
+        }
+        RefreshUnsaved();
+        UpdateProjectBox();
+        return string.Join("; ", done);
+    }
+
+    /// <inheritdoc />
+    string IRemoteControl.SetGel(IReadOnlyCollection<int> lampIds, int gelId)
+    {
+        var builder = CurrentBuilder;
+        if (builder?.Model == null)
+            throw new InvalidOperationException("No show loaded");
+        builder.Checkpoint();   // an edit made in the UI before is its own undo step
+        string result = builder.RigCommands.SetGel(lampIds, gelId);   // names the step "Gel L119"
+        builder.Checkpoint();
+        Selection.Touch();   // the lamp settings and the fixture list show the gel
+        RefreshUnsaved();
+        return result;
+    }
+
+    /// <inheritdoc />
     Task<string> IRemoteControl.Undo() => RemoteHistory(redo: false);
 
     /// <inheritdoc />

@@ -71,6 +71,30 @@ public interface IRemoteControl
     /// </summary>
     string FocusLamps(string name, IReadOnlyDictionary<int, System.Numerics.Vector3> points);
 
+    /// <summary>Where the show sits in the venue: rig (MagicVis) &lt;-&gt; stage coordinates.</summary>
+    StageFrame Frame { get; }
+
+    /// <summary>
+    /// Hangs lamps of a catalogue type on a support (truss, pipe, stand) at stage x positions along it, each on a head of
+    /// its own: the next free head number and DMX address, or from `firstHead` / `firstAddress` on (one after the other).
+    /// One undo step named `name`; the scene shows them at once. Returns their rig item ids.
+    /// </summary>
+    IReadOnlyList<int> AddLamps(string name, string modelId, int supportId, IReadOnlyList<float> stageX, int? firstHead,
+        int? firstAddress);
+
+    /// <summary>
+    /// Takes lamps out of the rig; a head no lamp is left on is forgotten too (its patch, and its values in cues, palettes
+    /// and groups: <see cref="DesignEdits.ForgetHead"/>). One undo step named `name`. Returns what was removed. The caller
+    /// checks that it may (their intensity is 0 in every cue).
+    /// </summary>
+    string RemoveLamps(string name, IReadOnlyCollection<int> lampIds);
+
+    /// <summary>
+    /// Sets the gel (colour table id, 0 = open white) of the heads of these lamps, for the whole show (the console keeps
+    /// it per head). One undo step. Returns a status line.
+    /// </summary>
+    string SetGel(IReadOnlyCollection<int> lampIds, int gelId);
+
     /// <summary>Undoes the last edit (the scene is built from the model again). Returns its name, or null.</summary>
     Task<string> Undo();
 

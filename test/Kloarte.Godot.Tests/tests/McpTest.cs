@@ -39,6 +39,9 @@ public partial class McpTest : Node
     /// <summary>Frames so far.</summary>
     private int _frame;
 
+    /// <summary>The show scene.</summary>
+    private Node _scene;
+
     /// <summary>Loads the show scene on a copy of the show.</summary>
     public override void _Ready()
     {
@@ -58,6 +61,7 @@ public partial class McpTest : Node
         var scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
         scene.GetNode<ShowBuilder>("Show").ShowFile = copy.Replace('\\', '/');
         AddChild(scene);
+        _scene = scene;
         string port = OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--mcp-port="))?["--mcp-port=".Length..]
                       ?? System.Environment.GetEnvironmentVariable("KLOARTE_MCP_PORT") ?? "8462";
         _url = $"http://localhost:{port}/mcp";
@@ -151,6 +155,25 @@ public partial class McpTest : Node
             cue = Json(await Tool("get_cue", new JsonObject { ["cue"] = "999" }));
             value = cue["values"]?[head.ToString()]?["intensity"]?.GetValue<string>();
             Check(value == null, $"undo: the value in cue 999 is gone (got {value})");
+
+            // Lamps hung on a truss through the app's rig commands (the scene shows them), and taken down again (dark).
+            var supports = Json(await Tool("list_supports")).AsArray();
+            var truss = supports.First(s => s!["stand"] == null && s!["length"]!.GetValue<double>() > 4)!;
+            var builder = _scene.GetNode<ShowBuilder>("Show");
+            int lampsBefore = builder.Document.RigItems.Count(i => i.IsFixture);
+            var hung = Json(await Tool("add_lamps", new JsonObject
+            {
+                ["type"] = "robe-ledbeam150", ["support"] = truss["name"]!.GetValue<string>(), ["count"] = 2,
+            }));
+            var newLamps = hung["lamps"]!.AsArray().Select(l => l!["lamp"]!.GetValue<int>()).ToList();
+            GD.Print($"MCP add_lamps: {hung["done"]} ({string.Join(", ", newLamps)})");
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            Check(newLamps.Count == 2 && newLamps.All(id => builder.FixtureOf(id) != null), "add_lamps: 2 lamps on stage");
+            string removed = Text(await Tool("remove_lamps", new JsonObject { ["lamps"] = new JsonArray(newLamps.Select(id => (JsonNode)id).ToArray()) }));
+            GD.Print($"MCP remove_lamps: {removed}");
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            Check(builder.Document.RigItems.Count(i => i.IsFixture) == lampsBefore && newLamps.All(id => builder.FixtureOf(id) == null),
+                "remove_lamps: the lamps are gone");
 
             // A tool error is a result with isError, not a JSON-RPC error.
             var bad = await Rpc("tools/call", new JsonObject { ["name"] = "go_to_cue", ["arguments"] = new JsonObject { ["cue"] = "12345" } });

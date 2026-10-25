@@ -18,7 +18,70 @@ public sealed class FakeRemoteControl : IRemoteControl
     private readonly ShowSession<DesignShow> _session;
 
     /// <summary>The app on a loaded session.</summary>
-    public FakeRemoteControl(ShowSession<DesignShow> session) => _session = session;
+    public FakeRemoteControl(ShowSession<DesignShow> session)
+    {
+        _session = session;
+        _rig = new RigEditor<DesignShow>(session, _stage);
+    }
+
+    /// <summary>The stage the rig edits go to (shows nothing).</summary>
+    private readonly NullStage _stage = new();
+
+    /// <summary>The application's rig editor, as the UI's show scene has it.</summary>
+    private readonly RigEditor<DesignShow> _rig;
+
+    /// <inheritdoc />
+    public StageFrame Frame => _stage.Frame;
+
+    /// <inheritdoc />
+    public IReadOnlyList<int> AddLamps(string name, string modelId, int supportId, IReadOnlyList<float> stageX, int? firstHead,
+        int? firstAddress)
+    {
+        var support = new Rig(Design).Find(supportId);
+        float z = Frame.ToStage(support.Start.X, support.Start.Y, support.Start.Z).Z;
+        _session.Checkpoint();
+        var ids = new List<int>();
+        int? head = firstHead, address = firstAddress;
+        foreach (float x in stageX)
+        {
+            int id = _rig.AddLamp(modelId, new System.Numerics.Vector2(x, z));
+            _rig.SetParent(id, supportId);
+            if (head != null || address != null)
+            {
+                var lamp = Design.Rig.Items.First(i => i.Id == id);
+                int channels = Design.ChannelCountOfHead(lamp.Head.Value);
+                _rig.ApplyLampPatch(id, head ?? lamp.Head.Value, address ?? lamp.Address.Value);
+                head++;
+                address += channels;
+            }
+            ids.Add(id);
+        }
+        _session.NameNextEdit(name);
+        _session.Checkpoint();
+        return ids;
+    }
+
+    /// <inheritdoc />
+    public string SetGel(IReadOnlyCollection<int> lampIds, int gelId)
+    {
+        _session.Checkpoint();
+        string result = _rig.SetGel(lampIds, gelId);
+        _session.Checkpoint();
+        return result;
+    }
+
+    /// <inheritdoc />
+    public string RemoveLamps(string name, IReadOnlyCollection<int> lampIds)
+    {
+        _session.Checkpoint();
+        var heads = lampIds.Select(id => Design.Rig.Items.First(i => i.Id == id).Head ?? 0).Distinct().ToList();
+        var done = lampIds.Select(_rig.RemoveLamp).ToList();
+        if (heads.Count(h => Design.Head(h) != null && DesignEdits.ForgetHead(Design, h)) > 0)
+            Design.Changed();
+        _session.NameNextEdit(name);
+        _session.Checkpoint();
+        return string.Join("; ", done);
+    }
 
     /// <summary>The messages shown on the status bar.</summary>
     public List<string> Reports { get; } = new();
