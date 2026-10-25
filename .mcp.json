@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "kloarte": {
+      "type": "http",
+      "url": "http://localhost:8462/mcp"
+    }
+  }
+}

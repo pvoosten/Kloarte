@@ -51,8 +51,9 @@ or a lamp drag is one step; the Edit menu names the step ("Undo Remove lamp"). T
 In the gobo editor's window the same keys undo the drawing. Resetting all keys and restarting a running MagicQ PC still ask
 first.
 
-**Smoke per cue** (Playback tab, *Smoke in cue N*): tick *This cue sets the smoke*, set the *Amount* (0-100 % of the
-densest haze, the scale of the Look's Haze slider) and *Builds in* (seconds the hazer takes; default 20 s). From that
+**Smoke per cue** (Playback tab, *Smoke in cue N*): set the *Amount* (0-100 % of the densest haze, the scale of the
+Look's Haze slider) and *Builds in* (seconds the hazer takes; default 20 s); changing either ticks *This cue sets the
+smoke* (untick it to take the cue's smoke out again). From that
 cue's GO the haze in the room builds or thins to the amount, eased, taking that time; a cue that doesn't set smoke leaves it
 as it is (it tracks, like the lights); cues that do set it show "smoke 60 %" in the cue list. The haze before the first
 smoke cue is the project's (Look > Haze). GO, Auto, Play, scrubbing the timeline, stills and the movie all follow it; Back,
@@ -132,6 +133,59 @@ that doesn't read is not applied and never overwritten.
   technical rehearsal), choose the MagicQ show (the newest one of the project is proposed): Kloarte lists what differs
   (cues added, removed, renumbered, changed; palettes; the patch; the rig) and takes it as one undo step. Mechanics,
   blocking, smoke and cue delays stay Kloarte's.
+
+**Claude / MCP** (an MCP server inside the running app): Claude Code (or another MCP client on this PC) reads the open
+show, edits it, plays it and looks at it. While Kloarte runs, connect once:
+
+```sh
+claude mcp add --transport http kloarte http://localhost:8462/mcp
+```
+
+or open Claude Code in the Kloarte folder: its `.mcp.json` names the same server. The server listens on this PC only
+(not the network) and refuses requests from web pages of other sites. Port: default 8462; start Kloarte with
+`-- --mcp-port=N` or set `KLOARTE_MCP_PORT=N` for another one (then use that port in the client), `-- --no-mcp` (or port
+0) for no server. When the port is taken (a second Kloarte) that Kloarte runs without a server.
+
+Every edit is **one undo step** (Ctrl+Z undoes it like your own, the Edit menu names it) and shows on the status bar
+("MCP: ..."); **nothing is saved** until `save_project` (or your Save); `export_magicq` writes the project's next
+numbered MagicQ show and **never overwrites**. A call waits while a dialog is open (an error after 2 minutes). Cues and
+palettes need a native show (a project of before: save it once).
+
+| Tool | What it does |
+|---|---|
+| `get_status` | what is open: project, files, unsaved parts, undo / redo, current cue, haze, counts, views, selected lamps |
+| `get_problems` | errors and warnings in the project's YAML files (file, line, column) |
+| `undo` / `redo` | as Ctrl+Z / Ctrl+Y, also for edits made in the UI |
+| `save_project` | as File > Save |
+| `export_magicq` | the next numbered MagicQ show; says what was written and what to check in MagicQ PC |
+| `list_heads` | the patch: heads (number, name, type, address, gel, lamps) and groups |
+| `get_head` | a head's channel keys, the values they take and their value after a cue |
+| `list_lamps` | the lamps: rig item id, head, model, position, which mechanics they have |
+| `get_lamp` | a lamp's mechanics (field angle, iris, barndoors, shutters, gobo, focus point) |
+| `set_lamp_mechanics` | changes a lamp's mechanics (merged in; the beam is rebuilt) |
+| `list_cues` | every cue: number, text, times, heads set, smoke, the current one |
+| `get_cue` | what a cue sets; with `tracked` the full state after it |
+| `set_cue_values` | values in a cue, per head, or one set for heads / groups |
+| `add_cue` | a new cue (copy of another, blackout, times, values) |
+| `update_cue` | a cue's number, text or times |
+| `delete_cue` | deletes a cue (later cues track from the one before) |
+| `set_cue_smoke` | the smoke amount and build time from a cue on |
+| `list_palettes` | every palette: heads, channel keys, cues that use it |
+| `get_palette` | a palette's values per head |
+| `set_palette_values` | values in a palette (made when new); cues that use it follow |
+| `delete_palette` | deletes a palette no cue uses |
+| `go_to_cue` | shows a cue's end state at once (or "before") |
+| `go` | GO: the next cue with its fades |
+| `set_look` | the room's haze (%) and stray light |
+| `select_lamps` | selects lamps (ids, heads or groups) so you see what Claude means |
+| `screenshot` | a picture of the window or of one view ("3D", "Audience", ...) |
+| `list_actors` | the actors at the end of a cue: on stage, pose, position, facing, height, the face point aimed at |
+| `aim_moving_heads` | **moving-head aiming**: pan / tilt in a cue (later cues track it) at an actor's face, the middle of several actors or a stage point; per head or one target for many |
+| `focus_lamps` | **mechanical aiming**: a conventional lamp's focus point in its mechanics, the same in **every** cue (as focused by hand), at an actor (where they are at a cue) or a point |
+
+Values are the ones of `cues.yaml` (see *The show's files*): intensity %, pan / tilt °, slot names, `dmx 37`, `"@Front"`.
+Aiming: a moving head is aimed per cue; a conventional lamp is focused once for the show. Each tool refuses the other
+kind of lamp. An actor is aimed at their face for their pose (or `height` metres above the floor at them).
 
 **Inspector** (right panel, always there so the views keep their width; » / Ctrl+I collapses it to a strip that
 names the selection, drag its left edge to resize; both remembered): with nothing selected the show's info and the

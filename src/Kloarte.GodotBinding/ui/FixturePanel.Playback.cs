@@ -340,6 +340,7 @@ public partial class FixturePanel
         RefreshStepTiming();
         ApplyLiveInput();
         CheckMagicQ(delta);
+        CheckProjectArg();
         RefreshChips();
         if (_playStatus == null || _player?.Stack == null)
             return;

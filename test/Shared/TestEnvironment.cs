@@ -36,6 +36,19 @@ public static class TestEnvironment
         return dir;
     }
 
+    /// <summary>
+    /// Deletes a folder of the test output with everything in it, read-only files too (such as git's objects in a copied
+    /// project); nothing when it doesn't exist.
+    /// </summary>
+    public static void DeleteFolder(string dir)
+    {
+        if (!Directory.Exists(dir))
+            return;
+        foreach (string file in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+            System.IO.File.SetAttributes(file, FileAttributes.Normal);
+        Directory.Delete(dir, true);
+    }
+
     /// <summary>A show file of the MagicQ show folder, by file name (searched in the subfolders).</summary>
     public static string Show(string name) => Directory.EnumerateFiles(ShowFolder, name, SearchOption.AllDirectories).First();
 

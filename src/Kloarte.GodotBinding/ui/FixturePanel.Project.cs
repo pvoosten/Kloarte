@@ -236,6 +236,23 @@ public partial class FixturePanel
         NativeFileDialogs.Popup(_folderDialog, new Vector2I(900, 600));
     }
 
+    /// <summary>
+    /// The project folder given on the command line (<c>-- --project=&lt;folder&gt;</c>), opened once the show scene is
+    /// ready; null when none was given or it is open.
+    /// </summary>
+    private string _projectArg = OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--project="))?["--project=".Length..].Trim('"');
+
+    /// <summary>Every frame until done: opens the command line's project folder when the show scene is there.</summary>
+    private void CheckProjectArg()
+    {
+        if (_projectArg == null || !Builders().Any())
+            return;
+        string folder = _projectArg;
+        _projectArg = null;
+        GD.Print($"--project: opening {folder}");
+        OpenProjectFolder(folder);
+    }
+
     /// <summary>Opens the project in a chosen folder.</summary>
     private async void OpenProjectFolder(string folder)
     {

@@ -43,6 +43,10 @@ GDTF, and actors moving through the cues.
   their shirt) to send to the cast.
 - **Live Art-Net** input from MagicQ; **Open in MagicQ PC** exports the show, starts MagicQ PC with it and checks every
   look it outputs against the app's cues (MagicQ user dimmer curves included).
+- **Claude / MCP**: an MCP server inside the app (`http://localhost:8462/mcp`) lets Claude Code read the open show, set
+  cue and palette values, change lamp mechanics, play cues and take screenshots of the views; every edit is one undo
+  step, nothing is saved until you (or `save_project`) save. Connecting and the tools: [manual](docs/manual.md),
+  *Claude / MCP*.
 - **Key map**: every function can get its own keys; changes are saved.
 
 ## Requirements
@@ -152,11 +156,12 @@ folder the first time the show opens; the old files stay.
 | `src/Kloarte.Model` | the model, without Godot or MagicQ: the native show (`DesignShow`: rig, palettes, cues in physical units, projected to DMX), show model and mechanics, fixture catalogue, photometrics, GDTF, rig and stage frame, venue, plan and its PDF writer, playback timeline, gobo documents, and the interfaces the rest implements |
 | `src/Kloarte.MagicQ` | everything that touches MagicQ: show files (.shw / .xhw), import and export of native shows, `status.dat` and MagicQ PC, Art-Net input |
 | `src/Kloarte.GodotBinding` | everything Godot: the lamps (`ProfileFixture`, moving heads), the scene builder, views, plan view, cue table, palettes, panel, key map |
-| `src/Kloarte.Application` | the open show (files, loading, saving, re-import), rig and patch edits, playback, the round trip with MagicQ PC; it uses MagicQ and Godot only through the bindings' interfaces |
+| `src/Kloarte.Application` | the open show (files, loading, saving, re-import), rig and patch edits, playback, the round trip with MagicQ PC, the MCP tools; it uses MagicQ, Godot and the MCP server only through the bindings' interfaces |
+| `src/Kloarte.Mcp` | the MCP server in the app (the protocol, .NET only; the tools are the application's) |
 | `src/Kloarte.Yaml` | the codec of the project files (YAML, on YamlDotNet); the host sets it, so the model stays free of it |
 | `src/Kloarte.Host` | the Godot project: `project.godot`, scenes, shaders, data, venue, gobos, the start-up code that puts it all together, the movie renderer |
 | `test/Kloarte.Architecture.Tests` | the dependency rules between the projects (checked on the compiled assemblies) |
-| `test/Kloarte.Model.Tests`, `test/Kloarte.MagicQ.Tests` | xUnit tests (no Godot) |
+| `test/Kloarte.Model.Tests`, `test/Kloarte.MagicQ.Tests`, `test/Kloarte.Mcp.Tests`, `test/Kloarte.Application.Tests` | xUnit tests (no Godot) |
 | `test/Kloarte.Godot.Tests` | Godot tests: captures of the real scenes, diagnostics |
 
 ## Limitations

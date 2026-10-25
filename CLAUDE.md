@@ -35,15 +35,17 @@ change the design (an interface in the right project, a factory set by the host)
    the application.
 3. **Godot binding** (`Kloarte.GodotBinding`): the model and Godot. Knows nothing of MagicQ or the application; what
    it needs from them it gets through its own interfaces (`IShowServices`, `ILiveInput`, ...) or the model's.
-4. **Application** (`Kloarte.Application`): the model and the two bindings, but **never acts on MagicQ or Godot
-   directly**: no Godot API at all, and from the bindings **only their interfaces** (no classes, records, enums,
-   static helpers). Generic over the show type (`ShowSession<TShow>`); scenes are built from model data only.
-5. **Host** (`Kloarte.Host`, the Godot project) is the only composition root: it picks the implementations
+4. **MCP binding** (`Kloarte.Mcp`: the MCP protocol of the server in the app): .NET only. Knows nothing of the model,
+   Godot, MagicQ or the application; the tools are the application's (`IMcpTool`).
+5. **Application** (`Kloarte.Application`): the model and the three bindings, but **never acts on MagicQ, Godot or the
+   MCP server directly**: no Godot API at all, and from the bindings **only their interfaces** (no classes, records,
+   enums, static helpers). Generic over the show type (`ShowSession<TShow>`); scenes are built from model data only.
+6. **Host** (`Kloarte.Host`, the Godot project) is the only composition root: it picks the implementations
    (`host/Startup.cs`) and holds the scripts scenes attach.
-6. **Codec** (`Kloarte.Yaml`, YamlDotNet): the model and YamlDotNet only. The only project that uses YAML: the model
+7. **Codec** (`Kloarte.Yaml`, YamlDotNet): the model and YamlDotNet only. The only project that uses YAML: the model
    defines the project files and the codec interface (`IFileCodec`); the host sets `FileCodec.Current` (the codec
    reads and writes the files; Model, Application and bindings never name YamlDotNet).
-7. Namespaces = project names; every type of a project is in its project's namespace.
+8. Namespaces = project names; every type of a project is in its project's namespace.
 Enforced by `test/Kloarte.Architecture.Tests` (`DependencyRuleTests`, part of `dotnet test Kloarte.sln`): it reads the
 compiled assemblies' metadata, so a fully qualified name or a new project reference can't slip past. A failing rule
 test is a design problem to fix, not a test to relax (ask the user before changing a rule).
@@ -94,6 +96,13 @@ test is a design problem to fix, not a test to relax (ask the user before changi
   overwrite; a MagicQ save of the project comes back by re-import. Project data is keyed by project.
 - Actor ids are slugs of the name (`ActorIds.For`); renaming keeps the id.
 - Undo = snapshots (`EditHistory`), the scene is rebuilt from the model; `ShowSession.Editor` must follow `Model.Show`.
+- **MCP server in the app (decided 25 Oct 2026)**: Claude (or any MCP client) reads, edits, plays and looks at the open
+  show. Hand-written (`Kloarte.Mcp/McpServer`, `HttpListener`; no ASP.NET Core in the Godot process, no NuGet package):
+  Streamable HTTP, POST JSON-RPC to `http://localhost:8462/mcp`, one JSON answer per request (no SSE, no sessions),
+  localhost only, a foreign `Origin` is refused (403). Tool calls are queued and run on Godot's main thread
+  (`HostFixturePanel._Process` -> `Pump()`). Tools = `RemoteTools` (application) on `IRemoteControl` (UI's own paths:
+  `CueEditing.Edit`, undo, Save, export): every edit one undo step, nothing saved until `save_project`, the export is
+  the next numbered show. Port: `-- --mcp-port=N`, `KLOARTE_MCP_PORT`, `--no-mcp` / 0 = off; a taken port = no server.
 
 ## Godot findings (4.7.2) (detail: docs/godot-findings.md)
 - `light_projector` refuses a `ViewportTexture`; `ImageTexture.Update()` doesn't refresh it: make a new texture per change.
@@ -117,20 +126,23 @@ Solution `Kloarte.sln`; `src/` runs the app, `test/` tests it. `README.md` is us
   `fixtures/`, `gdtf/`, `gobos/`, `rig/`, `venue/`, `plan/` (plan drawing, own PDF writer), `playback/` (`PlaybackTimeline`).
 - `src/Kloarte.MagicQ/` — `.shw` format (`ShwDocument`, `MagicQShow` partial per view, `PatchEditor`), `MagicQStore`,
   `MagicQShowEditor`, `MagicQPc`, `design/` (`MagicQImport`, `MagicQExport`, `MagicQExchange`), Art-Net (`dmx/`).
-- `src/Kloarte.GodotBinding/` — `binding/` (`IShowServices`, `IStage`, `ILiveInput`), `show/ShowBuilder` (partial),
-  `fixtures/ProfileFixture` + `MovingHead`, `camera/`, `environment/`, `gobos/`, `plan/`, `playback/`, `scenery/`,
-  `ui/` (`FixturePanel` partial, `ViewHost`, views, `KeyMap`, `StatusBar`, ...).
+- `src/Kloarte.GodotBinding/` — `binding/` (`IShowServices`, `IStage`, `ILiveInput`, `IRemoteControl`), `show/ShowBuilder`
+  (partial), `fixtures/ProfileFixture` + `MovingHead`, `camera/`, `environment/`, `gobos/`, `plan/`, `playback/`,
+  `scenery/`, `ui/` (`FixturePanel` partial incl. `FixturePanel.Remote`, `ViewHost`, views, `KeyMap`, `StatusBar`, ...).
+- `src/Kloarte.Mcp/` — the MCP binding: `McpServer`, `IMcpServer`, `IMcpTool`, `IMcpReply`, `McpReply`.
 - `src/Kloarte.Application/` — `EditHistory<TShow>`, `ProjectLibrary`, `ShowSession<TShow>`, `RigEditor`, `ShowPlayback`,
-  `ConsoleLink`, `LiveInput`, `ShowServices<TShow>`.
+  `ConsoleLink`, `LiveInput`, `ShowServices<TShow>`, `RemoteTools` (partial per area: Show, Rig, Cues, Palettes, Stage, Aim,
+  Values; `RemoteTool`, `ToolArgs`, `ToolSchema`).
 - `src/Kloarte.Yaml/` — the codec. `src/Kloarte.Host/` — Godot project, `host/Startup.cs` composition root, `host/Host*.cs`
   scripts scenes attach, scenes, shaders, `data/` (`.gdignore`), `Projects/` (git-ignored, one folder per project).
-- `test/` — `Kloarte.Architecture.Tests`, `Model.Tests`, `MagicQ.Tests`, `Application.Tests` (xUnit, shared in `test/Shared`),
+- `test/` — `Kloarte.Architecture.Tests`, `Model.Tests`, `MagicQ.Tests`, `Mcp.Tests` (`McpServerTests`: the protocol over
+  HTTP), `Application.Tests` (incl. `RemoteToolsTests` on `FakeRemoteControl`; xUnit, shared in `test/Shared`),
   `Kloarte.Godot.Tests` (Godot project). `tools/make_dist.ps1` builds the distribution.
 - UI: workspaces Rig / Focus / Blocking / Present (`ViewHost`), tools (key map F6, gobo editor F7) in native windows, inspector
   right, status bar bottom, every function an `AppAction` in `KeyMap` (never hard-code keys in texts: `KeyMap.Tooltip`, `Hint`).
 - UI of the native show: cue table (F9, `CueTableView`), palettes (F10, `PaletteView`), the values of a head in a cue
   (`LookEditor`, also in the lamp settings), shared state and edits in `CueEditing`.
-- User manual (menus, views, cue values, cue table, palettes, MagicQ import / export, keys): `docs/manual.md`.
+- User manual (menus, views, cue values, cue table, palettes, MagicQ import / export, Claude / MCP, keys): `docs/manual.md`.
 
 ## MagicQ files (detail: docs/magicq-format.md)
 Shows are in `C:\Users\pvoos_nnvpp5d\OneDrive\Documents\MagicQ\show\`, **read-only for us**. Everything MagicQ stores is
@@ -142,7 +154,7 @@ kept **lossless** (unchanged records byte-identical; `MagicQRoundTripTests` chec
 - **Unverified in MagicQ PC:** written palettes (trailer), inserted cue pairs, floor stands as pipes with rz = 90, people codes.
 
 ## Tests
-- `dotnet test Kloarte.sln` = Architecture, Model, MagicQ, Application tests. Godot tests need `dotnet build Kloarte.sln` first, then
+- `dotnet test Kloarte.sln` = Architecture, Model, MagicQ, Mcp, Application tests. Godot tests need `dotnet build Kloarte.sln` first, then
   `<godot>_console.exe [--headless] --path test/Kloarte.Godot.Tests res://tests/<scene>.tscn` (markers like "BINDING OK",
   "PLAYBACK OK", "PANEL...": see the scene names in test/Kloarte.Godot.Tests/tests).
 - Exploratory testing: scene `explore` with `-- --steps="...;shot:a;dump;quit"`; look at the shots with Read. Never press

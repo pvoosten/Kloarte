@@ -24,7 +24,10 @@ public sealed partial class NativeProjectTests
         string project = Path.Combine(_projects, "Kruimels");
         foreach (string file in Directory.EnumerateFiles(user, "*", SearchOption.AllDirectories))
         {
-            string target = Path.Combine(project, Path.GetRelativePath(user, file));
+            string relative = Path.GetRelativePath(user, file);
+            if (relative.Split(Path.DirectorySeparatorChar)[0] == ".git")
+                continue;   // the user's version control of the project, not the project
+            string target = Path.Combine(project, relative);
             Directory.CreateDirectory(Path.GetDirectoryName(target));
             File.Copy(file, target);
         }

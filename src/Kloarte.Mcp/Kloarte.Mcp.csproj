@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kloarte.Mcp</RootNamespace>
+    <!-- Code style: every public type and member has an XML doc comment (missing ones are warning CS1591). -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The MCP binding (user, 25 Oct 2026): the protocol only, .NET only; the tools are the application's. -->
+    <InternalsVisibleTo Include="Kloarte.Mcp.Tests" />
+  </ItemGroup>
+</Project>

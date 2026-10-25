@@ -9,7 +9,7 @@
 param(
     # The Godot .NET console executable (also from the GODOT environment variable).
     [string]$Godot = $(if ($env:GODOT) { $env:GODOT } else {
-        "$env:USERPROFILE\Downloads\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe" }),
+        "c:\tools\godot\Godot_v4.7.2-stable_mono_win64_console.exe" }),
     # Seed of the random gel colours.
     [int]$Seed = 11
 )

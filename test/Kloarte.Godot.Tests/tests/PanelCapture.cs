@@ -227,16 +227,17 @@ public partial class PanelCapture : Node
             string info = FindAll<Label>().First(l => l.Name == "SmokeInfo").Text;
             string shown = amount.GetParent().GetChildren().OfType<Label>().Last().Text;
             float baseHaze0 = player.Timeline.BaseHaze;
-            bool idle = !sets.ButtonPressed && !amount.Editable && title == $"Smoke in cue {player.Stack.Steps[2].CueNumberText}" && info.StartsWith("Leaves the smoke as it is");
+            // Amount and time can be changed before the box is ticked (user, 25 Oct 2026: locked, they looked broken).
+            bool idle = !sets.ButtonPressed && amount.Editable && title == $"Smoke in cue {player.Stack.Steps[2].CueNumberText}" && info.StartsWith("Leaves the smoke as it is");
             // The amount shows what the cue inherits (the project's haze here), also in its value text (explored 12 Oct 2026: it said 0 %).
             bool inherits = Mathf.IsEqualApprox((float)amount.Value, (float)ProjectLook.PercentOf(baseHaze0), 0.01f) && shown == $"{amount.Value:0} %";
             GD.Print($"smoke amount shows the inherited {amount.Value:0.#} % ('{shown}'): {(inherits ? "OK" : "FAIL")}");
-            sets.ButtonPressed = true;   // emits Toggled: the cue sets the smoke
-            amount.Value = 60;
+            amount.Value = 60;   // no tick: changing the amount makes the cue set the smoke
+            bool ticked = sets.ButtonPressed;
             FindAll<SpinBox>().First(sp => sp.TooltipText.StartsWith("Seconds the haze takes") && sp.IsVisibleInTree()).Value = 4;
             var smoke = _scene.GetNode<ShowBuilder>("Show").Model.Blocking.Smoke;
-            GD.Print($"smoke rows idle before ticking {idle}; ticked: {smoke.Count} cue, amount {smoke.Values.FirstOrDefault()?.Amount}, time {smoke.Values.FirstOrDefault()?.Time}: " +
-                     (idle && smoke.Count == 1 && smoke.Values.First() is { Amount: 60, Time: 4f } ? "OK" : "FAIL"));
+            GD.Print($"smoke rows editable before ticking {idle}; the amount ticked the box {ticked}: {smoke.Count} cue, amount {smoke.Values.FirstOrDefault()?.Amount}, time {smoke.Values.FirstOrDefault()?.Time}: " +
+                     (idle && ticked && smoke.Count == 1 && smoke.Values.First() is { Amount: 60, Time: 4f } ? "OK" : "FAIL"));
         }
         if (_frame == 164)
         {
@@ -270,6 +271,14 @@ public partial class PanelCapture : Node
             var player = _panel.GetNode<CuePlayer>("CuePlayer");
             bool gone = _scene.GetNode<ShowBuilder>("Show").Model.Blocking.Smoke.Count == 0 && Mathf.IsEqualApprox(Panel.Haze, player.Timeline.BaseHaze, 1e-4f);
             GD.Print($"smoke taken out again: the haze is the project's again ({Panel.Haze:0.0000}): {(gone ? "OK" : "FAIL")}");
+            // Only the time changed: the cue sets the smoke at the amount it inherited.
+            var smoke = _scene.GetNode<ShowBuilder>("Show").Model.Blocking.Smoke;
+            double inherited = System.Math.Round(ProjectLook.PercentOf(player.Timeline.BaseHaze), 1);
+            FindAll<SpinBox>().First(sp => sp.TooltipText.StartsWith("Seconds the haze takes") && sp.IsVisibleInTree()).Value = 8;
+            var timed = smoke.Values.FirstOrDefault();
+            bool timeOnly = smoke.Count == 1 && timed is { Time: 8f } && System.Math.Abs(timed.Amount - inherited) < 0.051;
+            GD.Print($"smoke time alone: {smoke.Count} cue, amount {timed?.Amount} (inherited {inherited}), time {timed?.Time}: {(timeOnly ? "OK" : "FAIL")}");
+            FindAll<CheckBox>().First(c => c.Text == "This cue sets the smoke" && c.IsVisibleInTree()).ButtonPressed = false;
             player.Jump(4);   // as before for the next step
         }
         if (_frame == 170)

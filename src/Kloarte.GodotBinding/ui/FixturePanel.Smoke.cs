@@ -12,7 +12,8 @@ namespace Kloarte.GodotBinding;
 /// data in the project, like the actors' blocking; a hazer takes its time to build). The current cue can set the amount
 /// (0..100 % of the densest haze) and the seconds the haze takes to get there; a cue that doesn't, leaves it as it is
 /// (tracking). The haze of the room follows (<see cref="CuePlayer"/>, <see cref="HazeControl"/>); the real hazer is
-/// still programmed in MagicQ. Edits are undoable blocking edits.
+/// still programmed in MagicQ. Edits are undoable blocking edits. Amount and time can be changed in any cue: changing
+/// one makes the cue set the smoke (user, 25 Oct 2026: locked until the check box was ticked, they looked broken).
 /// </summary>
 public partial class FixturePanel
 {
@@ -36,8 +37,8 @@ public partial class FixturePanel
         {
             Text = "This cue sets the smoke",
             TooltipText = "Off: this cue leaves the smoke as it is (it tracks, like the lights). On: from this cue's GO the haze " +
-                          "builds or thins to the amount below. Saved in the project (blocking/steps.yaml); the real hazer is " +
-                          "programmed in MagicQ",
+                          "builds or thins to the amount below (changing the amount or the time turns it on). Saved in the " +
+                          "project (blocking/steps.yaml); the real hazer is programmed in MagicQ",
         };
         _smokeSets.Toggled += on => EditSmoke(smoke => on ? smoke ?? new CueSmoke { Amount = _smokeAmount.Value } : null);
         box.AddChild(_smokeSets);
@@ -46,7 +47,7 @@ public partial class FixturePanel
             0, 100, 1, 0, v => $"{v:0} %", null, v =>
             {
                 if (!_smokeSyncing)
-                    EditSmoke(smoke => smoke == null ? null : new CueSmoke { Amount = Math.Round(v, 1), Time = smoke.Time });
+                    EditSmoke(smoke => new CueSmoke { Amount = Math.Round(v, 1), Time = smoke?.Time });
             });
         _smokeAmount = amount;
         box.AddChild(amountRow);
@@ -60,9 +61,9 @@ public partial class FixturePanel
         _smokeTime.ValueChanged += v =>
         {
             if (!_smokeSyncing)
-                EditSmoke(smoke => smoke == null ? null : new CueSmoke
+                EditSmoke(smoke => new CueSmoke
                 {
-                    Amount = smoke.Amount,
+                    Amount = smoke?.Amount ?? Math.Round(_smokeAmount.Value, 1),   // the amount the cue inherits
                     Time = Math.Abs(v - Blocking.DefaultSmokeTime) < 0.05 ? null : (float)v,
                 });
         };
@@ -131,17 +132,18 @@ public partial class FixturePanel
         _smokeTitle.Text = cue ? $"Smoke in cue {stack.Steps[_player.Step].CueNumberText}" : "Smoke (choose a cue)";
         _smokeSets.Disabled = !cue;
         _smokeSets.SetPressedNoSignal(own != null);
-        _smokeAmount.Editable = own != null;
+        _smokeAmount.Editable = cue;
         // A range that is not in the tree yet (the first sync) doesn't emit value_changed, so the value text would stay at 0:
         // the signal is raised by hand (the handler ignores it while syncing).
         double shown = own?.Amount ?? amount;
         _smokeAmount.SetValueNoSignal(shown);
         _smokeAmount.EmitSignal(Godot.Range.SignalName.ValueChanged, shown);
-        _smokeTime.Editable = own != null;
+        _smokeTime.Editable = cue;
         _smokeTime.Value = own?.Seconds ?? Blocking.DefaultSmokeTime;
         inherited = !cue ? "Smoke is set per cue; the haze before the first cue is the project's (Look > Haze)."
             : own != null ? $"From this cue's GO the haze takes {own.Seconds:0.#} s to reach {own.Amount:0.#} %. Later cues keep it."
-            : $"Leaves the smoke as it is: {amount.ToString("0.#", CultureInfo.InvariantCulture)} % from {from}.";
+            : $"Leaves the smoke as it is: {amount.ToString("0.#", CultureInfo.InvariantCulture)} % from {from}. " +
+              "Change the amount or the time to make this cue set it.";
         _smokeInfo.Text = inherited;
         _smokeSyncing = false;
     }

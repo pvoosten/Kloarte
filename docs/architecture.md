@@ -54,7 +54,7 @@ Moved out of CLAUDE.md; the per-project file listing was dropped (code and XML d
     doesn't parse; errors on the status bar in red with file:line:column, a click opens `code -g file:line:col`
     (else Explorer); unknown keys and out-of-range values are warnings, not errors.
   - Decided while building it (11 Oct 2026): YamlDotNet 16.3.0 in its own project `Kloarte.Yaml` (the model stays
-    .NET only, rule 6); schemas generated from the attributes, a copy per project in `.schemas/` (the house venue
+    .NET only: the codec rule, now rule 7); schemas generated from the attributes, a copy per project in `.schemas/` (the house venue
     points at the committed copies in `src/Kloarte.Host/data/schemas/`, a test checks they are current); a hand
     comment survives until Kloarte changes that file (the comparison ignores comment lines except the modeline and
     Kloarte's `# Kloarte:` header); the JSON files are kept (no `.json.bak`); the watcher is polled by the window
@@ -122,4 +122,44 @@ Moved out of CLAUDE.md; the per-project file listing was dropped (code and XML d
   - Deviation from the plan: the host switched to native projects **before** a native Kruimels export was checked in
     MagicQ PC (that check can only be done by the user): to do before the next performance. Not exported (warnings):
     dimmer curves, cue delays; the S record's millisecond copies of the times are not changed with them.
+
+## MCP server (user, decided and built 25 Oct 2026)
+Claude (Claude Code, or any MCP client) works on the show open in the running app: reads it, edits it, plays it and
+looks at the result. User manual: `docs/manual.md`, *Claude / MCP*.
+- **Layers** (dependency rule 4, approved by the user 25 Oct 2026):
+  - `Kloarte.Mcp` (MCP binding, .NET only): the protocol. `McpServer` (`IMcpServer`: `Add(IMcpTool)`, `Instructions`),
+    `IMcpTool` (name, title, description, JSON-Schema input, read-only hint, `CallAsync(args, IMcpReply)`), `IMcpReply`
+    (text / image content; `McpReply` builds the result). Knows nothing of the show.
+  - `Kloarte.Application`: the tools, `RemoteTools` (partial per area: Show, Rig, Cues, Palettes, Stage, Values;
+    `RemoteTool` implements `IMcpTool`, `ToolArgs` reads arguments, `ToolSchema` builds the input schemas). It names
+    only `IMcpServer` / `IMcpTool` / `IMcpReply` from the binding and acts on the app only through `IRemoteControl`.
+  - `Kloarte.GodotBinding`: `IRemoteControl` (files, native show, current cue, GO / go to cue, haze, stray light,
+    selection, `EditShow`, `EditModel`, undo / redo, Save, export, view titles, `Capture`, `Report`), implemented by
+    `FixturePanel.Remote` through the UI's own paths (cue edits via `CueEditing.Edit`, mechanics / blocking as one
+    `EditHistory` step, scene rebuilt where needed).
+  - Host: `Startup` makes the server (`McpFactory`: `new McpServer(...)` + `new RemoteTools(ui).AddTo(server)`);
+    `HostFixturePanel` starts it in `_Ready`, pumps it in `_Process`, disposes it on `TreeExiting`.
+- **Transport**: Streamable HTTP, one endpoint `POST /mcp` with one JSON-RPC message, one `application/json` answer
+  (notifications: 202, no body). No SSE stream (GET = 405), no sessions (no `Mcp-Session-Id`), no batches: the spec
+  allows a server all three. Methods: `initialize` (versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05; an unknown
+  one gets the newest), `ping`, `tools/list` (`listChanged: false`), `tools/call`. Tool annotations: `readOnlyHint` from
+  the tool, `destructiveHint` false (every edit is one undo step), `openWorldHint` false.
+- **Threading**: `HttpListener` accepts on a background thread; a `tools/call` is queued (`ConcurrentQueue`) and the
+  request waits. `Pump()`, called every frame on Godot's main thread, runs the queued calls one at a time there (the
+  scene and the model are only touched on the main thread). An async tool (undo, mechanics, screenshot: waits for
+  rendered frames) finishes in later frames, resumed by Godot's main thread. A call not finished within `CallTimeout`
+  (2 min: a modal dialog open, the app busy) is answered with an error and skipped by a later `Pump`. On exit waiting
+  calls get "Kloarte is closing".
+- **Security**: listens on `http://localhost:<port>/` only (not the network); a request with an `Origin` header that is
+  not localhost / loopback is refused with 403 (a web page of another site using DNS rebinding); no authentication
+  (the PC's own user). Nothing is saved without `save_project`; `export_magicq` is the project's next numbered show
+  (never an overwrite); the user sees every edit (status bar "MCP: ...") and can undo it.
+- **Port**: default 8462 (`McpServer.DefaultPort`); `-- --mcp-port=N`, else `KLOARTE_MCP_PORT`; 0 or `--no-mcp` = no
+  server. A taken port (a second Kloarte) = this one runs without a server (logged).
+- **Why hand-written, not the C# MCP SDK** (`ModelContextProtocol.AspNetCore`): its HTTP transport needs ASP.NET Core
+  (Kestrel, hosting, DI) inside the Godot process, and a NuGet dependency for a few hundred lines of JSON-RPC; the subset Kloarte needs (tools only, JSON answers, no sessions) fits `HttpListener` + `System.Text.Json`.
+- **Tests**: `Kloarte.Mcp.Tests` (`McpServerTests` over real HTTP: handshake and tool list, calls run when pumped,
+  errors, timeout of an unpumped call, refused requests),
+  `Application.Tests/RemoteToolsTests` (the tools on `FakeRemoteControl`), the dependency rules in
+  `DependencyRuleTests`.
 

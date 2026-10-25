@@ -31,6 +31,9 @@ public sealed class DependencyRuleTests
     /// <summary>The project files' codec (YamlDotNet): the only project that uses YAML; the host sets it.</summary>
     private const string Yaml = "Kloarte.Yaml";
 
+    /// <summary>The MCP binding (the protocol of the MCP server in the app; the tools are the application's).</summary>
+    private const string Mcp = "Kloarte.Mcp";
+
     /// <summary>Godot's C# API.</summary>
     private const string Godot = "GodotSharp";
 
@@ -50,19 +53,23 @@ public sealed class DependencyRuleTests
     [Fact]
     public void YamlCodecUsesOnlyTheModelAndYamlDotNet() => AssertReferences(Yaml, Model, "YamlDotNet");
 
-    /// <summary>The application never uses Godot itself, only the model and the two bindings.</summary>
+    /// <summary>The MCP binding uses .NET only: it knows nothing of the model, Godot, MagicQ or the application.</summary>
     [Fact]
-    public void ApplicationDoesNotUseGodot() => AssertReferences(Application, Model, MagicQ, GodotBinding);
+    public void McpBindingUsesOnlyDotNet() => AssertReferences(Mcp);
+
+    /// <summary>The application never uses Godot itself, only the model and the bindings.</summary>
+    [Fact]
+    public void ApplicationDoesNotUseGodot() => AssertReferences(Application, Model, MagicQ, GodotBinding, Mcp);
 
     /// <summary>
-    /// The application acts on MagicQ and Godot only through the bindings' interfaces: every type it names from a
-    /// binding is an interface (the host, the composition root, hands it the implementations).
+    /// The application acts on MagicQ, Godot and the MCP server only through the bindings' interfaces: every type it
+    /// names from a binding is an interface (the host, the composition root, hands it the implementations).
     /// </summary>
     [Fact]
     public void ApplicationUsesOnlyTheBindingsInterfaces()
     {
         using var application = Open(Application);
-        var bindings = new[] { MagicQ, GodotBinding }.ToDictionary(n => n, Open);
+        var bindings = new[] { MagicQ, GodotBinding, Mcp }.ToDictionary(n => n, Open);
         try
         {
             var notInterfaces = new List<string>();
@@ -92,7 +99,7 @@ public sealed class DependencyRuleTests
     public void TypesAreInTheirProjectsNamespace()
     {
         var misplaced = new List<string>();
-        foreach (var name in new[] { Model, MagicQ, GodotBinding, Application, Yaml })
+        foreach (var name in new[] { Model, MagicQ, GodotBinding, Mcp, Application, Yaml })
         {
             using var assembly = Open(name);
             var reader = assembly.Reader;

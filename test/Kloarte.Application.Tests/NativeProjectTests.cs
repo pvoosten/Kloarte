@@ -27,8 +27,7 @@ public sealed partial class NativeProjectTests : TestBase
     /// <summary>Fresh folders for every test.</summary>
     public NativeProjectTests() : base("app_native")
     {
-        if (Directory.Exists(_out))
-            Directory.Delete(_out, true);
+        TestEnvironment.DeleteFolder(_out);
         _shows = Path.Combine(_out, "show");
         _projects = Path.Combine(_out, "projects");
         Directory.CreateDirectory(_shows);

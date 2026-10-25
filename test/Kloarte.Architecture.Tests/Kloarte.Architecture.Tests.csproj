@@ -19,6 +19,7 @@
     <ProjectReference Include="../../src/Kloarte.Model/Kloarte.Model.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="../../src/Kloarte.MagicQ/Kloarte.MagicQ.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="../../src/Kloarte.GodotBinding/Kloarte.GodotBinding.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../src/Kloarte.Mcp/Kloarte.Mcp.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="../../src/Kloarte.Application/Kloarte.Application.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>
