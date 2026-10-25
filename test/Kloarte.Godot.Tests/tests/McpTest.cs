@@ -142,6 +142,8 @@ public partial class McpTest : Node
 
             await Picture("3D", "mcp_3d");
             await Picture(null, "mcp_window");
+            // A small card (or a hidden view) is rendered at a picture's size (user, 25 Oct 2026: a few dark pixels).
+            await Picture("Audience", "mcp_audience", minWidth: 1280);
 
             string undone = Text(await Tool("undo"));
             GD.Print($"MCP undo: {undone}");
@@ -162,8 +164,8 @@ public partial class McpTest : Node
         }
     }
 
-    /// <summary>A screenshot of a view (null: the window), saved as tests/output/mcp/`name`.png.</summary>
-    private async Task Picture(string view, string name)
+    /// <summary>A screenshot of a view (null: the window), saved as tests/output/mcp/`name`.png, at least `minWidth` wide.</summary>
+    private async Task Picture(string view, string name, int minWidth = 0)
     {
         var args = new JsonObject { ["maxWidth"] = 0 };
         if (view != null)
@@ -178,6 +180,8 @@ public partial class McpTest : Node
         string caption = result["content"]!.AsArray().FirstOrDefault(c => c!["type"]!.GetValue<string>() == "text")?["text"]?.GetValue<string>();
         GD.Print($"MCP screenshot {view ?? "window"}: {png.Length} bytes, '{caption}'");
         Check(png.Length > 1000 && png[1] == 'P' && png[2] == 'N' && png[3] == 'G', "screenshot: a PNG");
+        int width = png[16] << 24 | png[17] << 16 | png[18] << 8 | png[19];   // IHDR width, big-endian
+        Check(width >= minWidth, $"screenshot {view ?? "window"}: {width} px wide (at least {minWidth})");
     }
 
     /// <summary>Calls a tool; its result (throws on an error result).</summary>

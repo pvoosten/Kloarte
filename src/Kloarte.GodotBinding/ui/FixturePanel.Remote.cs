@@ -17,6 +17,12 @@ public partial class FixturePanel : IRemoteControl
     /// <summary>Frames a 3D view is rendered for a picture before it is taken.</summary>
     private const int CaptureFrames = 3;
 
+    /// <summary>The size a 3D view is rendered at for a picture when it is hidden or small (a card): 16:9.</summary>
+    private static readonly Vector2I PictureSize = new(1280, 720);
+
+    /// <summary>A 3D view smaller than this (a small card) is rendered at <see cref="PictureSize"/> for a picture.</summary>
+    private static readonly Vector2I SmallView = new(640, 360);
+
     /// <inheritdoc />
     IShowFiles IRemoteControl.Files => CurrentBuilder?.Files;
 
@@ -281,19 +287,11 @@ public partial class FixturePanel : IRemoteControl
                             $"No view '{view}' (views: {string.Join(", ", _host?.Views.Select(v => v.Title) ?? Array.Empty<string>())})");
             if (found is View3D view3D)
             {
-                var target = view3D.Viewport3D;
-                if (target.Size.X <= 0 || target.Size.Y <= 0)
-                {
-                    // A view that is not shown has no size: render it at the size of the main view (or the window).
-                    var size = _host?.Main is { } main && main.Size.X >= 1 && main.Size.Y >= 1
-                        ? (Vector2I)main.Size
-                        : (Vector2I)GetViewport().GetVisibleRect().Size;
-                    target.Size = new Vector2I(Math.Max(1, size.X), Math.Max(1, size.Y));
-                }
-                view3D.ForceRender(CaptureFrames + 1);
-                for (int i = 0; i < CaptureFrames; i++)
-                    await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
-                image = ToSrgb(view3D.Capture(), target, $"the view '{found.Title}'");
+                // A small card or a hidden view renders tiny (or not at all): it is rendered at a picture's size for it.
+                var size = view3D.Viewport3D.Size;
+                if (!view3D.IsVisibleInTree() || size.X < SmallView.X || size.Y < SmallView.Y)
+                    size = PictureSize;
+                image = ToSrgb(await view3D.CaptureAt(size, CaptureFrames), view3D.Viewport3D, $"the view '{found.Title}'");
             }
             else
             {

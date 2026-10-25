@@ -152,4 +152,28 @@ public partial class View3D : ViewBase
 
     /// <summary>The rendered image of the view.</summary>
     public Image Capture() => Viewport3D.GetTexture().GetImage();
+
+    /// <summary>
+    /// Renders the view at `size` for `frames` frames and returns the picture, then gives the view back its own size: a
+    /// small card or a hidden view is rendered as large as asked (its container would size it back while it stretches).
+    /// </summary>
+    public async System.Threading.Tasks.Task<Image> CaptureAt(Vector2I size, int frames)
+    {
+        bool stretch = _container.Stretch;
+        var own = Viewport3D.Size;
+        _container.Stretch = false;
+        Viewport3D.Size = size;
+        try
+        {
+            ForceRender(frames + 1);
+            for (int i = 0; i < frames; i++)
+                await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+            return Capture();
+        }
+        finally
+        {
+            Viewport3D.Size = own;
+            _container.Stretch = stretch;
+        }
+    }
 }
