@@ -117,6 +117,8 @@ test is a design problem to fix, not a test to relax (ask the user before changi
 - `FileDialog` replaces its `Title` unless `ModeOverridesTitle = false` (set before `FileMode`); a wrapping `Label` in a
   dialog needs a minimum width.
 - Native tool windows: set `ForceNative` while hidden; key handlers must be child nodes (`ToolWindowKeys`).
+- **An export template refuses a scene on the command line** (`disable_path_overrides`, aborts): the exported build
+  starts `boot.tscn` (`HostBoot`), which runs the movie render on `-- --render-movie`, else the show scene.
 
 ## Files
 Solution `Kloarte.sln`; `src/` runs the app, `test/` tests it. `README.md` is user-facing: keep it in sync with features.
@@ -166,7 +168,7 @@ kept **lossless** (unchanged records byte-identical; `MagicQRoundTripTests` chec
   `GoboLibrary.Folder = "res://tests/output/gobos"`.
 
 ## Build / run (detail: docs/build-and-release.md)
-- Godot 4.7.2 mono: `C:\Users\pvoos_nnvpp5d\Downloads\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64\`
+- Godot 4.7.2 mono: `c:\tools\godot\Godot_v4.7.2-stable_mono_win64[_console].exe`
   (`_console.exe` for logs). `dotnet build Kloarte.sln`, then `--path src/Kloarte.Host` (e.g. `res://shows/risquons_tout.tscn`).
 - After adding assets: `<godot>_console.exe --headless --path src/Kloarte.Host --import` (and for the test project).
 - Patch scripts: write Python helpers with the Write tool (heredocs and sed mangle `\n`, `\0`, `\\`).

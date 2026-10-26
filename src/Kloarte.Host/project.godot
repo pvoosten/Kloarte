@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Kloarte up de plankn"
 run/main_scene="res://main.tscn"
-run/main_scene.dist="res://shows/risquons_tout.tscn"
+run/main_scene.dist="res://boot.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 boot_splash/image="res://splash.png"

@@ -1,6 +1,7 @@
 # Copied from src/Kloarte.Host before every build (Kloarte.Godot.Tests.csproj)
 /project.godot
 /main.tscn
+/boot.tscn
 /icon.svg
 /splash.png
 /icon.svg

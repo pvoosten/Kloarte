@@ -6,7 +6,8 @@
     1. Checks the Godot export templates of the Godot version used (-InstallTemplates downloads them from the
        official Godot release on GitHub, about 1 GB, when they are missing).
     2. Exports a release build into build\Kloarte (Kloarte.exe, Kloarte.console.exe, Kloarte.pck, the .NET
-       assemblies). The exported build starts the show scene (project setting run/main_scene.dist).
+       assemblies). The exported build starts boot.tscn (project setting run/main_scene.dist): the show
+       scene, or the movie render with -- --render-movie (an export template refuses a scene on the command line).
     3. Copies the read-only app files the build reads from next to the exe (AppPaths.File): data\ (catalogue, GDTF,
        colour table, schemas), venue\*.yaml, the built-in gobos (gobos\*.png), shows\*.fixtures.json.
     4. Zips build\Kloarte into dist\Kloarte-<yyyy-MM-dd>.zip.

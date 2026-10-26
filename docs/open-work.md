@@ -1,6 +1,10 @@
 # Open work and lasting findings
 
 - **Open:** occlusion by scenery inside the custom beam volume (Godot finding 2).
+- **Open (26 Oct 2026): movie size ignored.** Every movie is 1152x648 (the project's default window size) whatever the export
+  dialog / preferences ask: Movie Maker ignores the `--resolution WxH` the app passes (`FixturePanel.StartMovies`), both from
+  the project and in the exported build (checked in the AVI header). To find: how Godot 4.7 sets the Movie Maker size
+  (window size override in the render process, `display/window/size/*`, or resizing the window before the first frame).
 - **Show names**: MagicQ's Save of a show from a subfolder writes into the show root with the folder as prefix and raises the
   number (`Kloarte\Kruimels_001` -> `Kloarte_Kruimels_002`), and writes spaces as underscores. So a project's show lives in the
   show root, every Kloarte save is the next number, MagicQ's numbered saves become the project's show; project data is keyed

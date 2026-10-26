@@ -21,3 +21,8 @@
 10. Native tool windows (`Window.ForceNative`): set it while hidden. The `Window` node gets the *parent* viewport's unhandled
     input, nodes inside it get the window's own: key handlers must be child nodes (`ToolWindowKeys`). `GetTexture()` of a native
     window gives its own picture.
+11. **An export template refuses a scene on the command line**: `Kloarte.exe ... res://render/show_render.tscn` logs "Scene
+    path was specified on the command line, but this Godot binary was compiled without support for path overrides. Aborting."
+    (release templates have `disable_path_overrides`), so the movie process quit without an AVI. The exported build's main
+    scene is `boot.tscn` (`HostBoot`, `run/main_scene.dist`): with `-- --render-movie` it adds the render scene (no frame
+    lost), else it changes to the show scene. `--write-movie` / `--fixed-fps` still work in a template.

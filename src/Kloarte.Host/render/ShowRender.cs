@@ -8,7 +8,8 @@ namespace Kloarte.Host;
 
 /// <summary>
 /// Renders a show as a movie (run by the app as a second Godot process with Movie Maker:
-/// <c>--write-movie out.avi --fixed-fps 30 res://render/show_render.tscn -- --show=... --stack=...</c>). Builds the
+/// <c>--write-movie out.avi --fixed-fps 30 res://render/show_render.tscn -- --show=... --stack=...</c>; an exported build
+/// gets no scene but <c>-- --render-movie</c>, see <see cref="HostBoot"/>). Builds the
 /// show from the files the app saved for it (show, mechanics, blocking, venue) and plays the cue stack's timeline
 /// deterministically: frame n shows time n / fps - lead-in, so the movie has the timeline's timing whatever the render
 /// speed. Quits after the last cue (incl. its hold). User arguments (after "--"):

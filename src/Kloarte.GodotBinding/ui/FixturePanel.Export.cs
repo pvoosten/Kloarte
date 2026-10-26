@@ -221,15 +221,18 @@ public partial class FixturePanel
             string avi = actor == null ? options.Target
                 : Path.Combine(Path.GetDirectoryName(options.Target) ?? "", $"{Path.GetFileNameWithoutExtension(options.Target)}_{FileSafe(actor.Name)}.avi");
             string progress = Path.Combine(folder, $"progress_{_movieJobs.Count}.txt");
-            // From the project the second process needs --path; an exported build runs its own .pck.
-            var args = AppPaths.Exported ? new List<string>() : new List<string> { "--path", ProjectSettings.GlobalizePath("res://") };
+            // From the project the second process needs --path and the render scene; an exported build runs its own .pck
+            // and refuses a scene on the command line (Godot 4.7 templates: disable_path_overrides): its boot scene
+            // (host HostBoot) starts the render on --render-movie.
+            var args = AppPaths.Exported ? new List<string>()
+                : new List<string> { "--path", ProjectSettings.GlobalizePath("res://"), "res://render/show_render.tscn" };
             args.AddRange(new[]
             {
                 "--write-movie", avi,
                 "--fixed-fps", MovieFps.ToString(CultureInfo.InvariantCulture),
                 "--resolution", $"{options.Size.X}x{options.Size.Y}",
-                "res://render/show_render.tscn",
                 "--",
+                "--render-movie",
                 "--show=" + shw,
                 "--mechanics=" + Path.Combine(folder, "mechanics.json"),
                 "--blocking=" + Path.Combine(folder, "blocking.json"),
@@ -323,7 +326,8 @@ public partial class FixturePanel
             ConvertToMp4(job.Avi);
         }
         else
-            _status.Text = $"The movie process ended without writing {Path.GetFileName(job.Avi)}";
+            _status.Text = $"The movie process ended without writing {Path.GetFileName(job.Avi)} (its log: " +
+                           $"{ProjectSettings.GlobalizePath("user://logs")})";
         StartNextMovie();
         if (_movieJob != null)
             return;
