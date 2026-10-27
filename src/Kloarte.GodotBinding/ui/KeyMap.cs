@@ -63,6 +63,7 @@ public static class KeyMap
         new("view_cues", "Cue table: cues x heads (tool window)", "Tools", Global, KeyBinding.Of(Key.F9)),
         new("view_palettes", "Palettes (tool window)", "Tools", Global, KeyBinding.Of(Key.F10)),
         new("small_views_toggle", "Hide / show the small views", "Views", Global, KeyBinding.Of(Key.H)),
+        new("timeline_dock_toggle", "Dock the timeline under the 3D / audience / actor view (on / off)", "Views", Global, KeyBinding.Of(Key.F5, shift: true)),
         new("panels_toggle", "Hide / show the side panels", "Views", Global, KeyBinding.Of(Key.B, ctrl: true)),
         new("inspector_toggle", "Collapse / open the inspector (right panel)", "Views", Global, KeyBinding.Of(Key.I, ctrl: true)),
         // Playback

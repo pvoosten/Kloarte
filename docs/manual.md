@@ -220,8 +220,12 @@ a lane per actor, with 3D, the audience view and the actor view; the Actors list
 lane header *+ Actor* adds an actor; click a name to select the actor, double-click to rename, right-click to
 rename, remove or clear its movement in the cue; the inspector shows the selected step and when it waits, walks and
 arrives. **Views**: the main view's toolbar is in the strip under the view bar; click a view's tab to make it the main view; right-click for small / hidden; click a small view
-(card) to swap it with the main view; H hides the small views. Each workspace remembers what you changed in it;
-View > Reset workspace brings back its default.
+(card) to swap it with the main view; H hides the small views. **Docked timeline**: the timeline's *Dock* button, the
+right-click menu of its tab, View > Dock / undock the timeline or Shift+F5 put the timeline under the main view while
+that is the 3D, audience or actor view (under the plan it is a card as usual); drag the bar between them for its height;
+its toolbar joins the main view's in the strip; click in it for its keys (Shift+Space play, Delete step). F5 still
+makes it the main view, F1 / F2 / F8 dock it again; *Undock* makes it a card. Each workspace remembers what you changed in it
+(also the docked timeline); View > Reset workspace brings back its default.
 
 **Tools** (Tools menu; each in a window of its own, the same key closes it): *Cue table* (F9), *Palettes* (F10), *Gobo editor* (F7): 1 = select,
 2 = line, 3 = arc; Ctrl+Z / Ctrl+Y undo the drawing; save, use on the selected lamp. *Key map* (F6): click a key,
@@ -236,6 +240,6 @@ press the new key; reset. Keys the tool doesn't use work as in the main window (
 | Actor | the stage through the eyes of the actor chosen in the toolbar (or selected elsewhere), standing, seated or lying; right mouse drag sideways = **turn the actor** (its facing is recorded in the actor's step of the current cue, like the Facing slider; one undo step per drag; the actor becomes the selected one), up / down = look up / down, wheel = zoom, middle mouse = straight ahead. The bottom line shows its facing and its next entrance / exit is shown at the bottom ("Next: AF cour, cue 12 (in 8.5 s)"), a banner when GO / Play passes it. Side: cour = the audience's right, jardin = left; near the centre line lointain (upstage) or face (downstage) |
 | Timeline | drag on the ruler = scrub; drag step edges and hold handles; double-click = add a step; Shift+Space = play; Stills / Movie open the export dialog |
 
-Default keys: Ctrl+1–3 workspaces, F1–F5 and F8 (actor) views, F6 key map, F7 gobo editor, F9 cue table, F10 palettes, Tab next view, H small views, Ctrl+B side panels, Ctrl+I inspector, Space GO, Backspace Back,
+Default keys: Ctrl+1–3 workspaces, F1–F5 and F8 (actor) views, F6 key map, F7 gobo editor, F9 cue table, F10 palettes, Tab next view, H small views, Shift+F5 dock the timeline, Ctrl+B side panels, Ctrl+I inspector, Space GO, Backspace Back,
 Home reset, P auto, Insert new cue, Ctrl+Delete delete cue, L solo, Esc deselect, Ctrl+O import a MagicQ show, Ctrl+Shift+O open a project folder, Ctrl+S save, Ctrl+Shift+S export a MagicQ show, Ctrl+E export,
 Ctrl+R movie, Ctrl+, preferences. All of them can be changed in the key map.

@@ -13,8 +13,10 @@ namespace Kloarte.GodotBinding;
 /// Blocking, see <see cref="Workspace"/>) pick the main view and the cards; each workspace remembers how the user
 /// changed it (main view, small / hidden, "Small views") until View > Reset workspace. The view bar has the workspaces,
 /// the Present button (Present mode), a tab per view (click = main view; right click: small / hidden) and
-/// "Small views". Click a card to make it the main view (animated). Keys (key map): a workspace each, next view, a key
-/// per view, hide the small views. Workspaces and the inspector are remembered in user://views.json. While the host is
+/// "Small views". Click a card to make it the main view (animated). The timeline can be docked under the main view
+/// while that is a 3D view (3D, audience, actor): a splitter between them sets its height. Keys (key map): a workspace
+/// each, next view, a key per view, hide the small views, dock the timeline. Workspaces (incl. the docked timeline), the
+/// dock height and the inspector are remembered in user://views.json. While the host is
 /// visible the window itself doesn't render 3D (the 3D views do); when it is hidden (e.g. capture tests hide the panel)
 /// the window renders the scene camera again.
 /// </summary>
@@ -28,6 +30,12 @@ public partial class ViewHost : VBoxContainer
 
     /// <summary>Duration of the card / main view animation (s).</summary>
     private const float AnimationTime = 0.25f;
+
+    /// <summary>The docked timeline's share of the main view's height: default, least, most.</summary>
+    private const float DefaultDockShare = 0.3f, MinDockShare = 0.12f, MaxDockShare = 0.75f;
+
+    /// <summary>Height of the splitter between the main view and the docked timeline (px).</summary>
+    private const float SplitterHeight = 6f;
 
     /// <summary>The workspaces' defaults: the main view and the cards, by the views' key map actions.</summary>
     private static readonly Dictionary<Workspace, (string Main, string[] Cards)> Defaults = new()
@@ -66,6 +74,21 @@ public partial class ViewHost : VBoxContainer
     private Tween _tween;
     private bool _loadedSettings;
     private View3D _capturing;
+
+    /// <summary>The current workspace docks the timeline under the main view (while that is a 3D view).</summary>
+    private bool _timelineDocked;
+
+    /// <summary>The docked timeline's share of the main view's height, as the user dragged the splitter.</summary>
+    private float _dockShare = DefaultDockShare;
+
+    /// <summary>The splitter between the main view and the docked timeline (drag = the timeline's height).</summary>
+    private Control _splitter;
+
+    /// <summary>The main view and the docked timeline together (where the splitter is dragged).</summary>
+    private Rect2 _dockArea;
+
+    /// <summary>The row in the tool strip with the main view's and the docked timeline's toolbars.</summary>
+    private HBoxContainer _toolRow;
 
     /// <summary>Raised when the main view changes.</summary>
     public event Action MainChanged;
@@ -114,6 +137,34 @@ public partial class ViewHost : VBoxContainer
             RefreshToolStrip();
         }
     }
+
+    /// <summary>
+    /// The current workspace docks the timeline under the main view while that is a 3D view (3D, audience, actor);
+    /// remembered per workspace. Docking while the timeline is the main view makes a 3D view the main view; undocking
+    /// leaves the timeline a small card.
+    /// </summary>
+    public bool TimelineDocked
+    {
+        get => _timelineDocked;
+        set
+        {
+            if (value == _timelineDocked && !(value && _main is TimelineView))
+                return;
+            _timelineDocked = value;
+            if (value && _main is TimelineView)
+                _main = _views.OfType<View3D>().FirstOrDefault(v => _state[v] == ViewState.Small) ?? _views.OfType<View3D>().FirstOrDefault() ?? _main;
+            if (!value && Find<TimelineView>() is { } timeline && _state[timeline] == ViewState.Hidden)
+                _state[timeline] = ViewState.Small;
+            RefreshBar();
+            Arrange(true);
+            SaveSettings();
+            MainChanged?.Invoke();
+        }
+    }
+
+    /// <summary>The timeline while it is docked under the main view (null: not docked, or the main view isn't 3D).</summary>
+    public TimelineView DockedTimeline =>
+        _timelineDocked && _exclusive == null && Main is View3D ? Find<TimelineView>() : null;
 
     /// <summary>
     /// The inspector (the panel's right side) is open, not collapsed to its strip; remembered with the workspaces.
@@ -173,6 +224,8 @@ public partial class ViewHost : VBoxContainer
         // The main view's toolbar, under the view bar (UI review 29).
         _toolStrip = new PanelContainer { Name = "ToolStrip", Visible = false };
         AddChild(_toolStrip);
+        _toolRow = new HBoxContainer();
+        _toolStrip.AddChild(_toolRow);
         _area = new Control
         {
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
@@ -182,16 +235,25 @@ public partial class ViewHost : VBoxContainer
         };
         _area.Resized += () => Arrange(false);
         AddChild(_area);
+        _splitter = new Control
+        {
+            Name = "TimelineSplitter",
+            Visible = false,
+            MouseDefaultCursorShape = CursorShape.Vsplit,
+            TooltipText = "Drag: the docked timeline's height",
+        };
+        _splitter.Draw += () => _splitter.DrawRect(new Rect2(Vector2.Zero, _splitter.Size), new Color(0.3f, 0.3f, 0.33f));
+        _splitter.GuiInput += SplitterInput;
+        _area.AddChild(_splitter);
         _menu = new PopupMenu();
-        _menu.AddItem("Main view", 0);
-        _menu.AddItem("Small", 1);
-        _menu.AddItem("Hidden", 2);
         _menu.IdPressed += id =>
         {
             if (_menuView == null)
                 return;
             if (id == 0)
                 SetMain(_menuView);
+            else if (id == 3)
+                TimelineDocked = !TimelineDocked;
             else
                 SetState(_menuView, id == 1 ? ViewState.Small : ViewState.Hidden);
         };
@@ -207,7 +269,7 @@ public partial class ViewHost : VBoxContainer
         if (view.Toolbar != null)
         {
             view.Toolbar.Visible = false;
-            _toolStrip.AddChild(view.Toolbar);
+            _toolRow.AddChild(view.Toolbar);
         }
         var overlay = new Button { Flat = true, TooltipText = $"Show {view.Title} as the main view", MouseDefaultCursorShape = CursorShape.PointingHand };
         overlay.Pressed += () => SetMain(view);
@@ -227,17 +289,46 @@ public partial class ViewHost : VBoxContainer
         button.GuiInput += e =>
         {
             if (e is InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true })
-            {
-                _menuView = view;
-                _menu.Position = (Vector2I)GetGlobalMousePosition();
-                _menu.Popup();
-            }
+                ShowViewMenu(view);
         };
         _bar.AddChild(button);
         _buttons[view] = button;
         _main ??= view;
         if (view is View3D v3)
             v3.StageClicked += (o, d, p) => StageClicked?.Invoke(v3, o, d, p);
+        if (view is TimelineView timeline)
+            timeline.DockRequested += dock => TimelineDocked = dock;
+    }
+
+    /// <summary>A view tab's right-click menu: main view, small, hidden; the timeline's also docked under the 3D view.</summary>
+    private void ShowViewMenu(ViewBase view)
+    {
+        _menuView = view;
+        _menu.Clear();
+        _menu.AddItem("Main view", 0);
+        _menu.AddItem("Small", 1);
+        _menu.AddItem("Hidden", 2);
+        if (view is TimelineView)
+        {
+            _menu.AddSeparator();
+            _menu.AddCheckItem("Docked under the 3D / audience / actor view", 3);
+            _menu.SetItemChecked(_menu.GetItemIndex(3), _timelineDocked);
+        }
+        _menu.Position = (Vector2I)GetGlobalMousePosition();
+        _menu.Popup();
+    }
+
+    /// <summary>Dragging the splitter sets the docked timeline's height (its share of the main view's height).</summary>
+    private void SplitterInput(InputEvent e)
+    {
+        if (e is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false })
+            SaveSettings();
+        if (e is not InputEventMouseMotion motion || (motion.ButtonMask & MouseButtonMask.Left) == 0 || _dockArea.Size.Y < 10)
+            return;
+        float y = _splitter.Position.Y + motion.Position.Y - _dockArea.Position.Y;
+        _dockShare = Mathf.Clamp((_dockArea.Size.Y - y) / _dockArea.Size.Y, MinDockShare, MaxDockShare);
+        Arrange(false);
+        _splitter.AcceptEvent();
     }
 
     /// <summary>Raised on a left click in a 3D view: view, ray origin, ray direction, position in the view.</summary>
@@ -348,6 +439,7 @@ public partial class ViewHost : VBoxContainer
         Main = _main?.Title,
         Small = _views.Where(v => v != _main && _state[v] == ViewState.Small).Select(v => v.Title).ToList(),
         SmallHidden = _smallHidden,
+        TimelineDocked = _timelineDocked,
     };
 
     /// <summary>Shows an arrangement (views it doesn't name are hidden).</summary>
@@ -357,6 +449,7 @@ public partial class ViewHost : VBoxContainer
         foreach (var v in _views)
             _state[v] = state.Small.Contains(v.Title) ? ViewState.Small : ViewState.Hidden;
         _smallHidden = state.SmallHidden;
+        _timelineDocked = state.TimelineDocked;
     }
 
     /// <summary>A workspace's default arrangement (by the views' key map actions).</summary>
@@ -379,7 +472,7 @@ public partial class ViewHost : VBoxContainer
         foreach (var (v, b) in _buttons)
         {
             b.SetPressedNoSignal(v == Main);
-            b.Modulate = _state[v] == ViewState.Hidden && v != Main ? new Color(1, 1, 1, 0.5f) : Colors.White;
+            b.Modulate = _state[v] == ViewState.Hidden && v != Main && v != DockedTimeline ? new Color(1, 1, 1, 0.5f) : Colors.White;
         }
         foreach (var (ws, b) in _workspaceButtons)
             b.SetPressedNoSignal(ws == _workspace);
@@ -394,25 +487,32 @@ public partial class ViewHost : VBoxContainer
         _area.AddChild(overlay);
     }
 
-    /// <summary>The tool strip shows the main view's toolbar (hidden when it has none or the bar is hidden).</summary>
+    /// <summary>
+    /// The tool strip shows the main view's toolbar and the docked timeline's (hidden when there is none or the bar is
+    /// hidden).
+    /// </summary>
     private void RefreshToolStrip()
     {
         if (_toolStrip == null)
             return;
+        var docked = DockedTimeline;
         foreach (var view in _views.Where(v => v.Toolbar != null))
-            view.Toolbar.Visible = view == Main;
-        _toolStrip.Visible = ShowBar && Main?.Toolbar != null;
+            view.Toolbar.Visible = view == Main || view == docked;
+        _toolStrip.Visible = ShowBar && (Main?.Toolbar != null || docked?.Toolbar != null);
     }
 
     /// <summary>The strip with the main view's toolbar (under the view bar).</summary>
     private PanelContainer _toolStrip;
 
-    /// <summary>Views shown as cards, in bar order.</summary>
+    /// <summary>Views shown as cards, in bar order (not the docked timeline).</summary>
     private List<ViewBase> Cards =>
         _exclusive != null || _smallHidden ? new List<ViewBase>()
-            : _views.Where(v => v != _main && _state[v] == ViewState.Small).ToList();
+            : _views.Where(v => v != _main && v != DockedTimeline && _state[v] == ViewState.Small).ToList();
 
-    /// <summary>Positions the main view and the cards (a column on the right), animated or immediately.</summary>
+    /// <summary>
+    /// Positions the main view, the docked timeline under it and the cards (a column on the right), animated or
+    /// immediately.
+    /// </summary>
     private void Arrange(bool animate)
     {
         if (_area == null || _views.Count == 0)
@@ -432,6 +532,17 @@ public partial class ViewHost : VBoxContainer
             for (int i = 0; i < cards.Count; i++)
                 targets[cards[i]] = new Rect2(size.X - w, i * (h + 6), w, h);
         }
+        var docked = DockedTimeline;
+        _dockArea = mainRect;
+        if (docked != null)
+        {
+            float dh = Mathf.Round(mainRect.Size.Y * _dockShare);
+            targets[docked] = new Rect2(mainRect.Position.X, mainRect.End.Y - dh, mainRect.Size.X, dh);
+            mainRect.Size = new Vector2(mainRect.Size.X, mainRect.Size.Y - dh - SplitterHeight);
+            _splitter.Position = new Vector2(mainRect.Position.X, mainRect.End.Y);
+            _splitter.Size = new Vector2(mainRect.Size.X, SplitterHeight);
+        }
+        _splitter.Visible = docked != null;
         targets[main] = mainRect;
 
         _tween?.Kill();
@@ -440,8 +551,8 @@ public partial class ViewHost : VBoxContainer
         {
             bool shown = targets.TryGetValue(v, out var target);
             v.Visible = shown;
-            _cardOverlays[v].Visible = shown && v != main;
-            _cardTitles[v].Visible = shown && v != main;
+            _cardOverlays[v].Visible = shown && v != main && v != docked;
+            _cardTitles[v].Visible = shown && v != main && v != docked;
             if (!shown)
                 continue;
             v.Rotation = 0f;
@@ -460,23 +571,31 @@ public partial class ViewHost : VBoxContainer
             overlay.Size = target.Size;
             _cardTitles[v].Position = target.Position + new Vector2(6, 2);
         }
-        // Drawing order: cards first, main view on top of them; overlays and titles above everything.
+        // Drawing order: cards first, main view (and the docked timeline) on top of them; overlays and titles above
+        // everything.
         foreach (var c in cards)
             _area.MoveChild(c, 0);
         _area.MoveChild(main, cards.Count);
+        if (docked != null)
+        {
+            _area.MoveChild(docked, cards.Count + 1);
+            _area.MoveChild(_splitter, cards.Count + 2);
+        }
         foreach (var v in _views)
         {
             _area.MoveChild(_cardOverlays[v], -1);
             _area.MoveChild(_cardTitles[v], -1);
         }
+        RefreshToolStrip();
         UpdateRoles();
     }
 
     private void UpdateRoles()
     {
         var main = Main;
+        var docked = DockedTimeline;
         foreach (var v in _views)
-            v.SetRole(v == main, v != main);
+            v.SetRole(v == main, v != main && v != docked, v == docked);
         if (SceneCamera != null && IsInstanceValid(SceneCamera))
         {
             SceneCamera.InputEnabled = main is View3D { OwnCamera: false } && IsVisibleInTree();
@@ -501,6 +620,10 @@ public partial class ViewHost : VBoxContainer
     {
         if (!IsVisibleInTree())
             return;
+        // A click outside the docked timeline gives its keys back to the main view.
+        if (e is InputEventMouseButton { Pressed: true } click && DockedTimeline is { } docked && docked.HasFocus()
+            && !docked.GetGlobalRect().HasPoint(click.Position))
+            docked.ReleaseFocus();
         if (e is InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } press && Main is View3D v3
             && v3.GetGlobalRect().HasPoint(press.Position))
         {
@@ -552,6 +675,10 @@ public partial class ViewHost : VBoxContainer
             Arrange(true);
             SaveSettings();
         }
+        else if (_exclusive == null && KeyMap.Pressed(e, "timeline_dock_toggle", vp))
+            TimelineDocked = !TimelineDocked;
+        else if (DockedTimeline is { } docked && docked.HasFocus() && docked.HandleKey(e))
+        { }
         else if (Main != null && Main.HandleKey(e))
         { }
         else if (Main is View3D { Source: not null } main3D && e is InputEventKey && main3D.Source.HandleInput(e))
@@ -561,12 +688,15 @@ public partial class ViewHost : VBoxContainer
         vp.SetInputAsHandled();
     }
 
-    /// <summary>One workspace as remembered: the main view, the views shown small, "Small views" off.</summary>
+    /// <summary>
+    /// One workspace as remembered: the main view, the views shown small, "Small views" off, the timeline docked.
+    /// </summary>
     private sealed class WorkspaceState
     {
         public string Main { get; set; }
         public List<string> Small { get; set; } = new();
         public bool SmallHidden { get; set; }
+        public bool TimelineDocked { get; set; }
     }
 
     /// <summary>The file's content (views by title; a view missing from it is hidden).</summary>
@@ -576,6 +706,7 @@ public partial class ViewHost : VBoxContainer
         public Dictionary<string, WorkspaceState> Workspaces { get; set; } = new();
         public bool InspectorOpen { get; set; } = true;
         public float InspectorWidth { get; set; }
+        public float TimelineDockShare { get; set; }
     }
 
     private void SaveSettings()
@@ -590,6 +721,7 @@ public partial class ViewHost : VBoxContainer
             Workspaces = all,
             InspectorOpen = _inspectorOpen,
             InspectorWidth = _inspectorWidth,
+            TimelineDockShare = _dockShare,
         };
         try
         {
@@ -618,9 +750,15 @@ public partial class ViewHost : VBoxContainer
                     _workspace = current;
                 foreach (var (name, state) in s.Workspaces ?? new())
                     if (Enum.TryParse(name, out Workspace ws) && state != null)
-                        _saved[ws] = new WorkspaceState { Main = state.Main, Small = state.Small ?? new(), SmallHidden = state.SmallHidden };
+                        _saved[ws] = new WorkspaceState
+                        {
+                            Main = state.Main, Small = state.Small ?? new(), SmallHidden = state.SmallHidden,
+                            TimelineDocked = state.TimelineDocked,
+                        };
                 _inspectorOpen = s.InspectorOpen;
                 _inspectorWidth = s.InspectorWidth;
+                if (s.TimelineDockShare > 0)
+                    _dockShare = Mathf.Clamp(s.TimelineDockShare, MinDockShare, MaxDockShare);
             }
         }
         catch (Exception e) when (e is JsonException or IOException or NullReferenceException)

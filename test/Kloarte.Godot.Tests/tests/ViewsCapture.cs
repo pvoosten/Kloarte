@@ -14,7 +14,8 @@ namespace Kloarte.Tests;
 /// View host test (rendered): Risquons-Tout with all views.
 /// 1. workspaces Rig / Focus / Blocking: main view, two cards, the left panel's list; screenshots views_*.png and the
 ///    frame rate of each; a workspace remembers a changed main view, Reset workspace, Ctrl+1;
-/// 2. clicking a card makes it the main view; the "next view" key cycles;
+/// 2. clicking a card makes it the main view; the "next view" key cycles; the timeline docked under the 3D / audience
+///    view (views_docked.png), F5 / F1, the splitter, Shift+F5 undocks;
 /// 3. audience view: sits in "Regie", the seat keys move one seat / row; actor view: the camera in an actor's head,
 ///    its next exit shown, and announced (banner + status bar "AF cour") when GO passes it;
 /// 4. key map tool: F6 opens its window, binding GO to Enter by "pressing" it; a conflicting key offers a swap (test key
@@ -93,6 +94,54 @@ public partial class ViewsCapture : Node
         await Frames(3);
     }
 
+    /// <summary>
+    /// The timeline docked under the main view (Focus workspace, 3D view main): under it, as wide, not a card, its
+    /// toolbar in the strip; it stays docked under the audience view, not under the plan; F5 makes it the main view and
+    /// F1 docks it again; dragging the splitter makes it taller; Shift+F5 undocks it (a card again).
+    /// </summary>
+    private async Task DockTest(Control strip)
+    {
+        var timeline = _host.Find<TimelineView>();
+        _host.TimelineDocked = true;
+        await Frames(30);
+        bool Under(ViewBase main) =>
+            timeline.Visible && timeline.IsDocked && !timeline.Compact && Mathf.IsEqualApprox(timeline.Position.X, main.Position.X)
+            && Mathf.IsEqualApprox(timeline.Size.X, main.Size.X) && timeline.Position.Y >= main.Position.Y + main.Size.Y;
+        var main3D = _host.Main;
+        bool under3D = main3D is View3D && Under(main3D);
+        bool bars = strip.Visible && timeline.Toolbar.Visible;
+        Shot("views_docked.png");
+        Check(under3D && bars && _host.DockedTimeline == timeline,
+              $"timeline docked under {main3D.Title}: under it {under3D}, toolbar in the strip {bars}");
+
+        _host.SetMain(_host.Find<AudienceView>());
+        await Frames(30);
+        bool underAudience = Under(_host.Main);
+        _host.SetMain(_host.Find<PlanView>());
+        await Frames(30);
+        bool notUnderPlan = !timeline.IsDocked && _host.DockedTimeline == null;
+        Check(underAudience && notUnderPlan, $"docked under the audience view {underAudience}, not under the plan {notUnderPlan}");
+
+        _host._UnhandledInput(new InputEventKey { PhysicalKeycode = Key.F5, Pressed = true });
+        await Frames(30);
+        bool timelineMain = _host.Main == timeline && timeline.IsMain && !timeline.IsDocked;
+        _host._UnhandledInput(new InputEventKey { PhysicalKeycode = Key.F1, Pressed = true });
+        await Frames(30);
+        Check(timelineMain && Under(_host.Main), $"F5: timeline main view {timelineMain}; F1: docked again under {_host.Main.Title}");
+
+        var splitter = _host.FindChild("TimelineSplitter", true, false) as Control;
+        float before = timeline.Size.Y;
+        splitter?.EmitSignal(Control.SignalName.GuiInput, new InputEventMouseMotion { Position = new Vector2(10, -100), ButtonMask = MouseButtonMask.Left });
+        await Frames(2);
+        Check(splitter is { Visible: true } && timeline.Size.Y > before + 50 && Under(_host.Main),
+              $"splitter dragged up 100 px: timeline {before:0} -> {timeline.Size.Y:0} px high");
+
+        _host._UnhandledInput(new InputEventKey { PhysicalKeycode = Key.F5, ShiftPressed = true, Pressed = true });
+        await Frames(30);
+        Check(!_host.TimelineDocked && !timeline.IsDocked && timeline.Visible && timeline.Compact && !splitter.Visible,
+              $"Shift+F5 undocks: a card again {timeline.Compact}");
+    }
+
     /// <summary>Runs the steps.</summary>
     public override async void _Ready()
     {
@@ -146,11 +195,12 @@ public partial class ViewsCapture : Node
         // The main view's toolbar is in the strip under the view bar, not over the drawing (UI review 29); a view without
         // one hides the strip.
         var strip = _host.GetNode<Control>("ToolStrip");
-        bool planBar = strip.Visible && plan.Toolbar is { Visible: true } && plan.Toolbar.GetParent() == strip
+        bool planBar = strip.Visible && plan.Toolbar is { Visible: true } && strip.IsAncestorOf(plan.Toolbar)
                        && !plan.IsAncestorOf(plan.Toolbar);
         _host.SetMain(_host.Find<View3D>());
         await Frames(2);
         Check(planBar && !strip.Visible, $"tool strip: plan's toolbar in it {planBar}, hidden for the 3D view {!strip.Visible}");
+        await DockTest(strip);
         _host.SetMain(plan);
         var before = _host.Main;
         _host._UnhandledInput(new InputEventKey { PhysicalKeycode = Key.Tab, Pressed = true });

@@ -74,6 +74,7 @@ public partial class FixturePanel
         view.AddSeparator();
         Item(view, "Next view as main view", "view_cycle");
         Item(view, "Hide / show the small views", "small_views_toggle");
+        Item(view, "Dock / undock the timeline", "timeline_dock_toggle");
         Item(view, "Hide / show the side panels", "panels_toggle");
         Item(view, "Collapse / open the inspector", "inspector_toggle");
         view.AddSeparator();

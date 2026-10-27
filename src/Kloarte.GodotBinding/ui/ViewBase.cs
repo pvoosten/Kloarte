@@ -24,6 +24,12 @@ public partial class ViewBase : Control
     public bool IsMain { get; private set; }
 
     /// <summary>
+    /// True while the view is docked under the main view (the timeline under a 3D view): full size and interactive like
+    /// the main view, but not the main view.
+    /// </summary>
+    public bool IsDocked { get; private set; }
+
+    /// <summary>
     /// The view's toolbar, made in its <c>_Ready</c> and not added to the view: the host shows it in the tool strip under
     /// the view bar while the view is the main view (UI review 29: never over the content). Null = none.
     /// </summary>
@@ -32,12 +38,13 @@ public partial class ViewBase : Control
     /// <summary>The show the views show (set by the host when a show is (re)built).</summary>
     public ShowBuilder Builder { get; private set; }
 
-    /// <summary>Called by the host when the view becomes main / small.</summary>
-    public void SetRole(bool main, bool compact)
+    /// <summary>Called by the host when the view becomes main / small / docked.</summary>
+    public void SetRole(bool main, bool compact, bool docked = false)
     {
-        bool changed = main != IsMain || compact != Compact;
+        bool changed = main != IsMain || compact != Compact || docked != IsDocked;
         IsMain = main;
         Compact = compact;
+        IsDocked = docked;
         if (changed)
             OnRoleChanged();
     }

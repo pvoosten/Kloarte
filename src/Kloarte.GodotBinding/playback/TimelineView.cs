@@ -15,7 +15,7 @@ namespace Kloarte.GodotBinding;
 /// right edge = its walking time (MoveTime); drag the end of a cue's hold = the hold; double click in an actor lane =
 /// add a movement step there; click a step = edit it in the inspector. Lane header (TimelineView.Lanes.cs): + Actor, and
 /// on a name select / rename / the actor menu. Wheel = scroll, Ctrl+wheel / +/- = zoom; keys (key map): play / pause,
-/// delete the selected step. Toolbar: key frames as PNG, movie of the show.
+/// delete the selected step. Toolbar: key frames as PNG, movie of the show, dock under the 3D view (<see cref="ViewHost"/>).
 /// </summary>
 public partial class TimelineView : ViewBase
 {
@@ -26,6 +26,12 @@ public partial class TimelineView : ViewBase
 
     /// <summary>Raised when the user asks for the key frame export / movie (the panel opens the dialogs).</summary>
     public event Action ExportKeyFramesRequested, RecordMovieRequested;
+
+    /// <summary>Raised by the toolbar's Dock / Undock button: true = dock under the 3D view (the view host does it).</summary>
+    public event Action<bool> DockRequested;
+
+    /// <summary>The toolbar's Dock / Undock button.</summary>
+    private Button _dock;
 
     private double _scroll = -1;     // time at the left edge of the lanes
     private float _pps = 20f;        // pixels per second
@@ -65,7 +71,10 @@ public partial class TimelineView : ViewBase
         keys.Pressed += () => ExportKeyFramesRequested?.Invoke();
         var movie = new Button { Text = "Movie...", TooltipText = "Export the show as a movie (a cue range, a viewpoint, per actor)" };
         movie.Pressed += () => RecordMovieRequested?.Invoke();
-        foreach (var c in new Control[] { _play, fit, zoomOut, zoomIn, keys, movie })
+        _dock = new Button { Text = "Dock" };
+        KeyMap.Tooltip(_dock, "Dock the timeline under the 3D, audience or actor view / undock it", "timeline_dock_toggle");
+        _dock.Pressed += () => DockRequested?.Invoke(!IsDocked);
+        foreach (var c in new Control[] { _play, fit, zoomOut, zoomIn, keys, movie, new VSeparator(), _dock })
             _toolbar.AddChild(c);
         BuildLaneHeader();   // TimelineView.Lanes.cs
         Selection.Changed += QueueRedraw;
@@ -77,6 +86,8 @@ public partial class TimelineView : ViewBase
     {
         if (_addActor != null)
             _addActor.Visible = !Compact;
+        if (_dock != null)
+            _dock.Text = IsDocked ? "Undock" : "Dock";
         QueueRedraw();
     }
 
@@ -284,7 +295,7 @@ public partial class TimelineView : ViewBase
     /// <summary>Scrub, select, drag edges, add steps, zoom / scroll.</summary>
     public override void _GuiInput(InputEvent e)
     {
-        if (!IsMain || Timeline == null || Player == null || Builder?.Model == null)
+        if (!(IsMain || IsDocked) || Timeline == null || Player == null || Builder?.Model == null)
             return;
         if (LaneHeaderInput(e))   // TimelineView.Lanes.cs
         {

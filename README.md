@@ -28,7 +28,8 @@ GDTF, and actors moving through the cues.
 - **Moving heads** (Robe LEDBeam 150, T1 Profile) from their GDTF: pan/tilt, colour, zoom, focus, iris, frost,
   gobos, framing blades, set per cue in their own units.
 - **Workspaces**: Rig (plan), Focus (3D), Blocking (timeline with actor lanes) and Present, each with its main view
-  and small views; views: 3D, from a seat in the audience, plan, truss heights, timeline, through an actor's eyes. **Tools** in windows of
+  and small views; views: 3D, from a seat in the audience, plan, truss heights, timeline (also docked under the 3D,
+  audience or actor view), through an actor's eyes. **Tools** in windows of
   their own: cue table, palettes, key map, gobo editor.
 - **Plan**: lighting plot with symbols per type, gel colours and codes, head numbers, DMX addresses and a legend;
   add fixtures of the house types; drag lamps onto trusses and floor stands; set head number and DMX address; save as
