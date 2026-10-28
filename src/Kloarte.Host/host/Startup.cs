@@ -29,16 +29,17 @@ public partial class Startup : Node
             session = (ShowSession<DesignShow>)services.Files;
             return services;
         };
-        // The MCP server inside the app (user, 25 Oct 2026): the application's tools on the UI.
-        HostFixturePanel.McpFactory = McpPort() is int port and > 0
-            ? ui =>
-            {
-                var server = new McpServer(port, "kloarte", "Kloarte up de plankn",
-                    ProjectSettings.GetSetting("application/config/version", "1.0").AsString());
-                new RemoteTools(ui).AddTo(server);
-                return server;
-            }
-            : null;
+        // The MCP server inside the app (user, 25 Oct 2026): the application's tools on the UI. The port is read when
+        // the UI starts, so a test can set KLOARTE_MCP_PORT before it adds the show scene.
+        HostFixturePanel.McpFactory = ui =>
+        {
+            if (McpPort() is not (int port and > 0))
+                return null;
+            var server = new McpServer(port, "kloarte", "Kloarte up de plankn",
+                ProjectSettings.GetSetting("application/config/version", "1.0").AsString());
+            new RemoteTools(ui).AddTo(server);
+            return server;
+        };
     }
 
     /// <summary>

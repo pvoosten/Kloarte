@@ -25,7 +25,7 @@ public partial class PlaybackTest : Node
     public override void _Ready()
     {
         KeyMap.EnsureLoaded("res://tests/output/test_keymap.json");   // not the user's bindings
-        _scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        _scene = TestShow.Load("playback");   // a copy of the show: the scene opens none by itself
         AddChild(_scene);
         _scene.GetNode<CanvasLayer>("FixturePanel").Visible = false;
         _builder = _scene.GetNode<ShowBuilder>("Show");

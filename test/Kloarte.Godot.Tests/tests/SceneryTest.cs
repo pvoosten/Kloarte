@@ -2,7 +2,6 @@ using System.IO;
 using System.Linq;
 using Godot;
 using Kloarte.GodotBinding;
-using Kloarte.MagicQ;
 using Kloarte.Model;
 
 namespace Kloarte.Tests;
@@ -18,9 +17,6 @@ namespace Kloarte.Tests;
 /// </summary>
 public partial class SceneryTest : Node
 {
-    /// <summary>The show the test opens (a copy of it).</summary>
-    private const string SourceShow = "C:/Users/pvoos_nnvpp5d/OneDrive/Documents/MagicQ/show/Risquons-Tout/RT2025_031.shw";
-
     /// <summary>The curtain's width (m) and the seconds it takes to open.</summary>
     private const float CurtainWidth = 8f, OpenTime = 2f;
 
@@ -58,17 +54,10 @@ public partial class SceneryTest : Node
         ViewHost.Persist = false;
         GoboLibrary.Folder = "res://tests/output/gobos";
         FixturePanel.PresentFullScreen = false;
-        string showFolder = Path.Combine(Out, "show");
         if (Directory.Exists(Out))
             Directory.Delete(Out, true);
-        Directory.CreateDirectory(showFolder);
-        MagicQPc.ShowFolderOverride = showFolder;
-        string copy = Path.Combine(showFolder, Path.GetFileName(SourceShow));
-        File.Copy(SourceShow, copy);
-        File.Copy(Path.ChangeExtension(SourceShow, ".xhw"), Path.ChangeExtension(copy, ".xhw"));
-        _scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        _scene = TestShow.Load("scenery");
         _builder = _scene.GetNode<ShowBuilder>("Show");
-        _builder.ShowFile = copy.Replace('\\', '/');
         AddChild(_scene);
         _scene.GetNode<CanvasLayer>("FixturePanel").Visible = false;
     }

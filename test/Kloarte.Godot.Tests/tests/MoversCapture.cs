@@ -32,9 +32,8 @@ public partial class MoversCapture : Node
     {
         KeyMap.EnsureLoaded("res://tests/output/test_keymap.json");   // not the user's bindings
         ViewHost.Persist = false;   // don't touch the user's view layout
-        _scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        _scene = TestShow.Load("movers", ShowFile);   // a copy: nothing touches MagicQ's folder
         var show = _scene.GetNode<ShowBuilder>("Show");
-        show.ShowFile = ShowFile;
         show.MechanicsFile = "res://tests/output/movers.mechanics.json";
         AddChild(_scene);
         _panel = _scene.GetNode<FixturePanel>("FixturePanel");

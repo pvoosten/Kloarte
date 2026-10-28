@@ -7,7 +7,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Godot;
 using Kloarte.GodotBinding;
-using Kloarte.MagicQ;
 
 namespace Kloarte.Tests;
 
@@ -16,14 +15,13 @@ namespace Kloarte.Tests;
 /// tests/output/mcp (never the user's files) and calls the server over real HTTP (initialize, tools/list, get_status,
 /// list_cues, add_cue, set_cue_values, go_to_cue, set_look, screenshot of the 3D view and of the window, undo). The
 /// requests are awaited, so the main thread keeps pumping the tool calls. Pictures in tests/output/mcp/*.png.
-/// Prints "MCP OK" or "MCP FAIL: ...".
-/// Run: <c>Godot_console.exe --path test/Kloarte.Godot.Tests --resolution 1600x900 res://tests/mcp_test.tscn -- --mcp-port=8499</c>
+/// Prints "MCP OK" or "MCP FAIL: ...". The app in the test has a server only on an explicit port (Startup): the test
+/// sets KLOARTE_MCP_PORT to a free port before the scene starts (never the app's 8462, where the user's Kloarte may
+/// listen); <c>-- --mcp-port=N</c> names one.
+/// Run: <c>Godot_console.exe --path test/Kloarte.Godot.Tests --resolution 1600x900 res://tests/mcp_test.tscn</c>
 /// </summary>
 public partial class McpTest : Node
 {
-    /// <summary>The show the test opens (a copy of it).</summary>
-    private const string SourceShow = "C:/Users/pvoos_nnvpp5d/OneDrive/Documents/MagicQ/show/Risquons-Tout/RT2025_031.shw";
-
     /// <summary>The output folder (absolute).</summary>
     private static string Out => ProjectSettings.GlobalizePath("res://tests/output/mcp");
 
@@ -49,22 +47,26 @@ public partial class McpTest : Node
         ViewHost.Persist = false;
         GoboLibrary.Folder = "res://tests/output/gobos";
         FixturePanel.PresentFullScreen = false;
-        string showFolder = Path.Combine(Out, "show");
         if (Directory.Exists(Out))
             Directory.Delete(Out, true);
-        Directory.CreateDirectory(showFolder);
-        MagicQPc.ShowFolderOverride = showFolder;   // exports and new shows go here, never to MagicQ's folder
-        string copy = Path.Combine(showFolder, Path.GetFileName(SourceShow));
-        File.Copy(SourceShow, copy);
-        if (File.Exists(Path.ChangeExtension(SourceShow, ".xhw")))
-            File.Copy(Path.ChangeExtension(SourceShow, ".xhw"), Path.ChangeExtension(copy, ".xhw"));
-        var scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
-        scene.GetNode<ShowBuilder>("Show").ShowFile = copy.Replace('\\', '/');
+        // The app reads its server's port when its UI starts (Startup): a free one, unless the command line names one.
+        string port = OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--mcp-port="))?["--mcp-port=".Length..]
+                      ?? FreePort().ToString();
+        System.Environment.SetEnvironmentVariable("KLOARTE_MCP_PORT", port);
+        _url = $"http://localhost:{port}/mcp";
+        var scene = TestShow.Load("mcp");   // exports and new shows go to its folder, never to MagicQ's
         AddChild(scene);
         _scene = scene;
-        string port = OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--mcp-port="))?["--mcp-port=".Length..]
-                      ?? System.Environment.GetEnvironmentVariable("KLOARTE_MCP_PORT") ?? "8462";
-        _url = $"http://localhost:{port}/mcp";
+    }
+
+    /// <summary>A TCP port that is free on this machine now.</summary>
+    private static int FreePort()
+    {
+        var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+        listener.Start();
+        int port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
     }
 
     /// <summary>Starts the client once the app is up.</summary>

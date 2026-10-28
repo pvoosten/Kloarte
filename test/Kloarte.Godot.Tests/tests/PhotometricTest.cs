@@ -127,7 +127,7 @@ public partial class PhotometricTest : Node3D
     {
         foreach (Node child in GetChildren())
             child.QueueFree();
-        _show = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        _show = TestShow.Load("photometric");   // a copy of the show: the scene opens none by itself
         AddChild(_show);
         _show.GetNode<CanvasLayer>("FixturePanel").Visible = false;
         _show.GetNode<WorldEnvironment>("WorldEnvironment").Environment = LinearEnvironment();

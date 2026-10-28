@@ -58,7 +58,7 @@ public partial class PanelCapture : Node
     {
         KeyMap.EnsureLoaded("res://tests/output/test_keymap.json");   // not the user's bindings
         ViewHost.Persist = false;   // don't touch the user's view layout
-        _scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        _scene = TestShow.Load("panel");   // a copy of the show: the scene opens none by itself
         AddChild(_scene);
         _panel = _scene.GetNode("FixturePanel");
     }

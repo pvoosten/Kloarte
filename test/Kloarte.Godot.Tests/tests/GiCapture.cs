@@ -4,7 +4,8 @@ using Kloarte.GodotBinding;
 namespace Kloarte.Tests;
 
 /// <summary>
-/// Compares indirect-light options on the show (none / SDFGI / SDFGI + stray light): screenshot + fps per mode.
+/// Compares indirect-light options on the show (none / SDFGI / SDFGI + stray light): screenshot + fps per mode
+/// (tests/output/gi_*.png); "GI CAPTURE OK" when all are taken.
 /// Run:  Godot_console.exe --path . res://tests/gi_capture.tscn
 /// </summary>
 public partial class GiCapture : Node
@@ -20,7 +21,7 @@ public partial class GiCapture : Node
     public override void _Ready()
     {
         KeyMap.EnsureLoaded("res://tests/output/test_keymap.json");   // not the user's bindings
-        var scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        var scene = TestShow.Load("gi");   // a copy of the show: the scene opens none by itself
         AddChild(scene);
         scene.GetNode<CanvasLayer>("FixturePanel").Visible = false;
         _env = scene.GetNode<WorldEnvironment>("WorldEnvironment").Environment;
@@ -51,6 +52,7 @@ public partial class GiCapture : Node
         _frame = 0;
         if (++_mode >= Modes.Length)
         {
+            GD.Print("GI CAPTURE OK");
             GetTree().Quit();
             return;
         }

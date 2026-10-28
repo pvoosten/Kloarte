@@ -31,7 +31,7 @@ public partial class PlanCapture : Node
     {
         KeyMap.EnsureLoaded("res://tests/output/test_keymap.json");   // not the user's bindings
         ViewHost.Persist = false;   // don't touch the user's view layout
-        _scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        _scene = TestShow.Load("plan");   // a copy of the show: the scene opens none by itself
         AddChild(_scene);
         _panel = _scene.GetNode<FixturePanel>("FixturePanel");
         _builder = _scene.GetNode<ShowBuilder>("Show");
@@ -69,7 +69,7 @@ public partial class PlanCapture : Node
             // A copy in tests/output: tests never open the user's show files for editing (CLAUDE.md "Tests").
             string copy = ProjectSettings.GlobalizePath("res://tests/output/plan_empty/" + EmptyShow);
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(copy)!);
-            System.IO.File.Copy(System.IO.Path.Combine(MagicQPc.ShowFolder, EmptyShow), copy, true);
+            System.IO.File.Copy(System.IO.Path.Combine(TestShow.MagicQShows, EmptyShow), copy, true);
             _builder.OpenShow(copy);
         }
         if (_frame == 100)

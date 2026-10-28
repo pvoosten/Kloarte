@@ -149,7 +149,7 @@ public partial class ViewsCapture : Node
         GoboLibrary.Folder = "res://tests/output/gobos";   // not the user's project gobos
         KeyMap.EnsureLoaded("res://tests/output/views_keymap.json");
         KeyMap.ResetAll();
-        _scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
+        _scene = TestShow.Load("views");   // a copy of the show: the scene opens none by itself
         AddChild(_scene);
         _panel = _scene.GetNode<FixturePanel>("FixturePanel");
         _builder = _scene.GetNode<ShowBuilder>("Show");

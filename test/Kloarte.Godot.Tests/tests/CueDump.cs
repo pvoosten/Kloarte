@@ -8,7 +8,8 @@ namespace Kloarte.Tests;
 /// <summary>
 /// Diagnostic: prints per step of a cue stack the cue's flags and timing fields and the non-zero intensity channels
 /// after it (tracking, palettes resolved), as the app's model sees them.
-/// Run:  Godot_console.exe --headless --path . res://tests/cue_dump.tscn -- --show=&lt;path&gt; --stack=&lt;name&gt;
+/// Without --show it dumps a copy of the Risquons-Tout show (<see cref="TestShow"/>), without --stack the stack "show".
+/// Run:  Godot_console.exe --headless --path . res://tests/cue_dump.tscn [-- --show=&lt;path&gt; --stack=&lt;name&gt;]
 /// </summary>
 public partial class CueDump : Node
 {
@@ -16,7 +17,7 @@ public partial class CueDump : Node
     public override void _Ready()
     {
         var args = OS.GetCmdlineUserArgs().Where(a => a.Contains('=')).ToDictionary(a => a[2..a.IndexOf('=')], a => a[(a.IndexOf('=') + 1)..]);
-        var show = MagicQShow.Load(args["show"]);
+        var show = MagicQShow.Load(args.TryGetValue("show", out string file) ? file : TestShow.Copy("cue_dump"));
         var stack = show.CueStacks.First(s => s.Name == args.GetValueOrDefault("stack", "show"));
         var cues = show.Cues.ToDictionary(c => c.Id);
         var intensities = MagicQCheck.IntensityAddresses(show);

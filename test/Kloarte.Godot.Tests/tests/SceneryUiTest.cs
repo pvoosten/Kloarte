@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using Kloarte.GodotBinding;
-using Kloarte.MagicQ;
 using Kloarte.Model;
 using SysVec2 = System.Numerics.Vector2;
 
@@ -22,9 +21,6 @@ namespace Kloarte.Tests;
 /// </summary>
 public partial class SceneryUiTest : Node
 {
-    /// <summary>The show the test opens (a copy of it, read only).</summary>
-    private const string SourceShow = "C:/Users/pvoos_nnvpp5d/OneDrive/Documents/MagicQ/show/Risquons-Tout/RT2025_031.shw";
-
     /// <summary>The show scene.</summary>
     private Node _scene;
 
@@ -48,17 +44,9 @@ public partial class SceneryUiTest : Node
         GoboLibrary.Folder = "res://tests/output/gobos";
         // A copy of the show in a folder of the test's own: nothing is written to MagicQ's folder.
         string output = ProjectSettings.GlobalizePath("res://tests/output/scenery");
-        string showFolder = Path.Combine(output, "show");
         if (Directory.Exists(output))
             Directory.Delete(output, true);
-        Directory.CreateDirectory(showFolder);
-        MagicQPc.ShowFolderOverride = showFolder;
-        string copy = Path.Combine(showFolder, Path.GetFileName(SourceShow));
-        File.Copy(SourceShow, copy);
-        if (File.Exists(Path.ChangeExtension(SourceShow, ".xhw")))
-            File.Copy(Path.ChangeExtension(SourceShow, ".xhw"), Path.ChangeExtension(copy, ".xhw"));
-        _scene = GD.Load<PackedScene>("res://shows/risquons_tout.tscn").Instantiate();
-        _scene.GetNode<ShowBuilder>("Show").ShowFile = copy.Replace(Path.DirectorySeparatorChar, '/');
+        _scene = TestShow.Load("scenery");
         AddChild(_scene);
         _panel = _scene.GetNode<FixturePanel>("FixturePanel");
         _builder = _scene.GetNode<ShowBuilder>("Show");

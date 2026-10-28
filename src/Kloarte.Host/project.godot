@@ -41,6 +41,7 @@ project/solution_directory="../.."
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+rendering_device/d3d12/max_sampler_descriptors=2048
 environment/volumetric_fog/volume_size=128
 environment/volumetric_fog/volume_depth=128
 

@@ -6,7 +6,8 @@ namespace Kloarte.Tests;
 
 /// <summary>
 /// Automated check for the light-projector questions in CLAUDE.md.
-/// Instances main.tscn, steps the PoC profile through a few looks and saves screenshots to tests/output/.
+/// Instances main.tscn, steps the PoC profile through a few looks and saves screenshots to tests/output/ (without the
+/// panel); "PROJECTOR CAPTURE OK" when all are taken.
 /// Run:  Godot_console.exe --path . res://tests/projector_capture.tscn
 /// </summary>
 public partial class ProjectorCapture : Node
@@ -30,6 +31,7 @@ public partial class ProjectorCapture : Node
 
         var main = GD.Load<PackedScene>("res://main.tscn").Instantiate();
         AddChild(main);
+        main.GetNode<CanvasLayer>("FixturePanel").Visible = false;   // the start screen covered the stage; the window renders the camera
         _fixture = main.GetNode<ProfileFixture>("Fixtures/FOH_DS104");
         _camera = main.GetNode<FlyCamera>("Camera");
         var gobo = GD.Load<Texture2D>("res://gobos/window.png");
@@ -58,6 +60,7 @@ public partial class ProjectorCapture : Node
         {
             if (_step >= _steps.Length)
             {
+                GD.Print("PROJECTOR CAPTURE OK");
                 GetTree().Quit();
                 return;
             }
