@@ -74,7 +74,14 @@ internal static class LookEditor
         void Set(string key, LookValue value) => CueEditing.Edit(builder, undo(Label(key)), d =>
         {
             foreach (int h in heads.Where(h => d.LayoutOf(h)?[key] != null))
+            {
+                // Leaving a colour wheel preset for "Raw DMX": the RGB(W) values keep its colour.
+                var kept = DesignEdits.KeepColour(d.LayoutOf(h), key, value,
+                    k => DesignEdits.Resolved(d, h, k, DesignEdits.Tracked(d, cueIndex, h, k).Value));
                 DesignEdits.Set(cue.Heads, h, key, value);
+                foreach (var (k, v) in kept)
+                    DesignEdits.Set(cue.Heads, h, k, v);
+            }
         });
 
         // The whole head from a palette, or tracking again.
@@ -132,7 +139,14 @@ internal static class LookEditor
             ? new Shown(v, v, Own, $"in palette {palette.Name}", true)
             : new Shown(null, null, Unset, "not in the palette", false);
         void Set(string key, LookValue value) =>
-            CueEditing.Edit(builder, $"{Label(key)} of head {head} in palette {palette.Name}", _ => DesignEdits.Set(palette.Heads, head, key, value));
+            CueEditing.Edit(builder, $"{Label(key)} of head {head} in palette {palette.Name}", _ =>
+            {
+                // Leaving a colour wheel preset for "Raw DMX": the RGB(W) values keep its colour.
+                var kept = DesignEdits.KeepColour(layout, key, value, k => palette.Of(head)?.GetValueOrDefault(k));
+                DesignEdits.Set(palette.Heads, head, key, value);
+                foreach (var (k, v) in kept)
+                    DesignEdits.Set(palette.Heads, head, k, v);
+            });
         Channels(box, builder, design, layout, head, Value, Set, key => Set(key, null), rebuild, null, references: false);
         return box;
     }

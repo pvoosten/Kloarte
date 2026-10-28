@@ -71,4 +71,66 @@ public partial class ModelTests
         var r = GdtfDecoder.Decode(beam, bmode, red, 1);
         Check(r.R > 0.4f && r.G < 0.05f && r.B < 0.05f, $"red only ({r.R:0.00},{r.G:0.00},{r.B:0.00})");
     }
+
+    /// <summary>
+    /// The LEDBeam's colour wheel (a virtual one) from a preset to "Raw DMX": the RGBW values that come with it keep the
+    /// preset's colour; another preset or a head without a preset gets none.
+    /// </summary>
+    [Fact]
+    public void KeepColourTest()
+    {
+        var beam = GdtfFixture.Load(GdtfFixture.Find(TestEnvironment.File(GdtfFixture.DefaultFolder), "Robe_Lighting@Robin_LEDBeam_150"));
+        foreach (var mode in beam.Modes.Where(m => m.Has("ColorMacro1") && m.Has("ColorAdd_W")))
+        {
+            var layout = new HeadLayout(null, mode.ChannelCount, beam, mode);
+            var wheel = layout["ColorMacro1"];
+            LookValue Colour(IReadOnlyDictionary<string, LookValue> values, string key) => values.GetValueOrDefault(key);
+            (float R, float G, float B) Shown(IReadOnlyDictionary<string, LookValue> values)
+            {
+                var dmx = new Dictionary<int, int>();
+                foreach (var (key, value) in values)
+                    layout[key].Write(dmx, 1, layout[key].ToDmx(value).Value);
+                var s = GdtfDecoder.Decode(beam, mode, dmx, 1);
+                return (s.R, s.G, s.B);
+            }
+            foreach (string preset in new[] { "Filter 26 (Bright Red)", "Filter 132 (Medium Blue)", "Filter 103 (Straw)" })
+            {
+                var values = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of(preset) };
+                var before = Shown(values);
+                var kept = DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Raw DMX"), k => Colour(values, k));
+                Assert.Equal(new[] { "ColorAdd_B", "ColorAdd_G", "ColorAdd_R", "ColorAdd_W" }, kept.Keys.OrderBy(k => k));
+                values["ColorMacro1"] = LookValue.Of("Raw DMX");
+                foreach (var (key, value) in kept)
+                    values[key] = value;
+                var after = Shown(values);
+                // The same hue; as bright as the emitters can make it.
+                float scale = Math.Max(before.R, Math.Max(before.G, before.B)) / Math.Max(after.R, Math.Max(after.G, after.B));
+                Check(Math.Abs(before.R - after.R * scale) < 0.01f && Math.Abs(before.G - after.G * scale) < 0.01f
+                      && Math.Abs(before.B - after.B * scale) < 0.01f && scale is >= 0.999f and < 2.5f,
+                      $"{mode.Name} {preset}: ({before.R:0.00},{before.G:0.00},{before.B:0.00}) -> ({after.R:0.00},{after.G:0.00},{after.B:0.00})");
+            }
+            // Pale presets (white does at least half of each colour) are within reach: exactly the same.
+            int pale = 0;
+            foreach (string preset in wheel.SetNames.Where(n => n.StartsWith("Filter")))
+            {
+                var values = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of(preset) };
+                var before = Shown(values);
+                if (Math.Min(before.R, Math.Min(before.G, before.B)) < 0.5f)
+                    continue;
+                pale++;
+                foreach (var (key, value) in DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Raw DMX"), k => Colour(values, k)))
+                    values[key] = value;
+                values["ColorMacro1"] = LookValue.Of("Raw DMX");
+                var after = Shown(values);
+                Check(Math.Abs(before.R - after.R) < 0.01f && Math.Abs(before.G - after.G) < 0.01f && Math.Abs(before.B - after.B) < 0.01f,
+                      $"{mode.Name} {preset} kept exactly: ({before.R:0.000},{before.G:0.000},{before.B:0.000}) -> ({after.R:0.000},{after.G:0.000},{after.B:0.000})");
+            }
+            Check(pale > 0, $"{mode.Name}: pale presets checked");
+
+            var red = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of("Filter 26 (Bright Red)") };
+            Assert.Empty(DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Filter 132 (Medium Blue)"), k => Colour(red, k)));
+            Assert.Empty(DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Raw DMX"), _ => null));
+            Assert.Empty(DesignEdits.KeepColour(layout, "ColorMacro1", null, k => Colour(red, k)));
+        }
+    }
 }

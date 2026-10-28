@@ -16,15 +16,7 @@ public static class GdtfDecoder
     public static MovingHeadState Decode(GdtfFixture fixture, GdtfMode mode, IReadOnlyDictionary<int, int> dmx, int start)
     {
         var s = new MovingHeadState();
-        float Phys(string attribute, float fallback)
-        {
-            var ch = mode.Channel(attribute);
-            if (ch == null)
-                return fallback;
-            int v = ch.Read(dmx, start);
-            var f = ch.FunctionAt(v);
-            return f != null && f.Attribute.StartsWith(attribute[..Math.Min(attribute.Length, 4)]) ? f.Physical(v) : fallback;
-        }
+        float Phys(string attribute, float fallback) => Physical(mode, dmx, start, attribute, fallback);
         s.Pan = Phys("Pan", 0);
         s.Tilt = Phys("Tilt", 0);
         s.Zoom = mode.Has("Zoom") ? Phys("Zoom", 0) : 0;
@@ -46,28 +38,7 @@ public static class GdtfDecoder
         }
 
         // Colour.
-        float r = 1, g = 1, b = 1;
-        if (mode.Has("ColorSub_C") || mode.Has("ColorSub_M") || mode.Has("ColorSub_Y"))
-        {
-            r = 1 - Math.Clamp(Phys("ColorSub_C", 0), 0, 1);
-            g = 1 - Math.Clamp(Phys("ColorSub_M", 0), 0, 1);
-            b = 1 - Math.Clamp(Phys("ColorSub_Y", 0), 0, 1);
-        }
-        else if (mode.Has("ColorAdd_R"))
-        {
-            float R = Phys("ColorAdd_R", 0), G = Phys("ColorAdd_G", 0), B = Phys("ColorAdd_B", 0);
-            float W = Phys("ColorAdd_W", 0), A = Phys("ColorAdd_RY", 0), L = Phys("ColorAdd_GY", 0);
-            r = R + W + A + 0.5f * L;
-            g = G + W + 0.6f * A + L;
-            b = B + W;
-            // Full white (all emitters full) = 1.
-            float fullR = 1 + (mode.Has("ColorAdd_W") ? 1 : 0) + (mode.Has("ColorAdd_RY") ? 1 : 0) + (mode.Has("ColorAdd_GY") ? 0.5f : 0);
-            float fullG = 1 + (mode.Has("ColorAdd_W") ? 1 : 0) + (mode.Has("ColorAdd_RY") ? 0.6f : 0) + (mode.Has("ColorAdd_GY") ? 1 : 0);
-            float fullB = 1 + (mode.Has("ColorAdd_W") ? 1 : 0);
-            r /= fullR;
-            g /= fullG;
-            b /= fullB;
-        }
+        var (r, g, b) = Mix(mode, dmx, start);
         if (mode.Has("CTO"))
         {
             float kelvin = Phys("CTO", 8000);
@@ -115,6 +86,66 @@ public static class GdtfDecoder
                             && !(f?.Name == "Open/Closed" && f.Physical(v) < 0.5f);
         }
         return s;
+    }
+
+    /// <summary>The physical value of an attribute in these DMX bytes; `fallback` when the mode has no such attribute.</summary>
+    private static float Physical(GdtfMode mode, IReadOnlyDictionary<int, int> dmx, int start, string attribute, float fallback)
+    {
+        var ch = mode.Channel(attribute);
+        if (ch == null)
+            return fallback;
+        int v = ch.Read(dmx, start);
+        var f = ch.FunctionAt(v);
+        return f != null && f.Attribute.StartsWith(attribute[..Math.Min(attribute.Length, 4)]) ? f.Physical(v) : fallback;
+    }
+
+    /// <summary>True when the mode mixes colour with CMY (then its RGB emitters, if any, are not used).</summary>
+    private static bool Subtracts(GdtfMode mode) => mode.Has("ColorSub_C") || mode.Has("ColorSub_M") || mode.Has("ColorSub_Y");
+
+    /// <summary>What all emitters full add up to per colour (R, G, B), so that full white = 1.</summary>
+    private static (float R, float G, float B) Full(GdtfMode mode) => (
+        1 + (mode.Has("ColorAdd_W") ? 1 : 0) + (mode.Has("ColorAdd_RY") ? 1 : 0) + (mode.Has("ColorAdd_GY") ? 0.5f : 0),
+        1 + (mode.Has("ColorAdd_W") ? 1 : 0) + (mode.Has("ColorAdd_RY") ? 0.6f : 0) + (mode.Has("ColorAdd_GY") ? 1 : 0),
+        1 + (mode.Has("ColorAdd_W") ? 1 : 0));
+
+    /// <summary>
+    /// The colour of a head's colour mixing alone (CMY subtracts, RGB(W, amber, lime) adds; full white = 1), before CTO
+    /// and wheels.
+    /// </summary>
+    public static (float R, float G, float B) Mix(GdtfMode mode, IReadOnlyDictionary<int, int> dmx, int start)
+    {
+        float Phys(string attribute, float fallback) => Physical(mode, dmx, start, attribute, fallback);
+        if (Subtracts(mode))
+            return (1 - Math.Clamp(Phys("ColorSub_C", 0), 0, 1), 1 - Math.Clamp(Phys("ColorSub_M", 0), 0, 1),
+                1 - Math.Clamp(Phys("ColorSub_Y", 0), 0, 1));
+        if (!mode.Has("ColorAdd_R"))
+            return (1, 1, 1);
+        float R = Phys("ColorAdd_R", 0), G = Phys("ColorAdd_G", 0), B = Phys("ColorAdd_B", 0);
+        float W = Phys("ColorAdd_W", 0), A = Phys("ColorAdd_RY", 0), L = Phys("ColorAdd_GY", 0);
+        var full = Full(mode);
+        return ((R + W + A + 0.5f * L) / full.R, (G + W + 0.6f * A + L) / full.G, (B + W) / full.B);
+    }
+
+    /// <summary>
+    /// Writes the emitters of an additive mix that make colour (r, g, b) (as <see cref="Mix"/> gives it): white as far as
+    /// all three need it, the rest by red, green and blue; amber and lime off. A colour they can't reach gets the same hue,
+    /// as bright as they can make it. False when the mode doesn't mix RGB.
+    /// </summary>
+    public static bool SetMix(GdtfMode mode, IDictionary<int, int> dmx, int start, float r, float g, float b)
+    {
+        if (Subtracts(mode) || !mode.Has("ColorAdd_R"))
+            return false;
+        var full = Full(mode);
+        float er = Math.Max(0, r) * full.R, eg = Math.Max(0, g) * full.G, eb = Math.Max(0, b) * full.B;
+        float w = mode.Has("ColorAdd_W") ? Math.Min(1, Math.Min(er, Math.Min(eg, eb))) : 0;
+        float over = Math.Max(1, Math.Max(er - w, Math.Max(eg - w, eb - w)));
+        Set(mode, dmx, start, "ColorAdd_R", (er - w) / over);
+        Set(mode, dmx, start, "ColorAdd_G", (eg - w) / over);
+        Set(mode, dmx, start, "ColorAdd_B", (eb - w) / over);
+        Set(mode, dmx, start, "ColorAdd_W", w / over);
+        Set(mode, dmx, start, "ColorAdd_RY", 0);
+        Set(mode, dmx, start, "ColorAdd_GY", 0);
+        return true;
     }
 
     /// <summary>Writes an attribute's physical value (e.g. Pan = 45°) as DMX bytes; false if the mode has no such attribute.</summary>

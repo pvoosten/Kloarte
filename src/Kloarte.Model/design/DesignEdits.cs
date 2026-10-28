@@ -65,6 +65,46 @@ public static class DesignEdits
         return (null, -1);
     }
 
+    /// <summary>
+    /// The colour mixing values (RGB(W) emitters) that keep a head's colour when colour wheel `key` gets `value`: when the
+    /// wheel leaves a slot that filters (a preset of a virtual colour wheel) for a value without one ("Raw DMX"), the
+    /// emitters mix the colour the slot gave (as far as they reach: the same hue, at most as bright). Empty when there is
+    /// nothing to keep. `current`: the head's (resolved) value of a key now; null = not set (the GDTF default).
+    /// </summary>
+    public static Dictionary<string, LookValue> KeepColour(HeadLayout layout, string key, LookValue value, System.Func<string, LookValue> current)
+    {
+        var kept = new Dictionary<string, LookValue>();
+        var channel = layout?[key];
+        if (layout?.Fixture == null || layout.Mode == null || channel?.Gdtf == null || !key.StartsWith("Color")
+            || channel.ToDmx(value) is not { } next)
+            return kept;
+        var function = channel.Gdtf.FunctionAt(next);
+        if (function == null || string.IsNullOrEmpty(function.Wheel) || function.SetAt(next)?.Slot > 1)
+            return kept;
+        var emitters = new[] { "ColorAdd_R", "ColorAdd_G", "ColorAdd_B", "ColorAdd_W", "ColorAdd_RY", "ColorAdd_GY" }
+            .Where(k => layout[k] != null).ToList();
+        if (emitters.Count == 0)
+            return kept;
+        var dmx = new Dictionary<int, int>();
+        foreach (var c in layout.Channels)
+            if (current(c.Key) is { } v && c.ToDmx(v) is { } d)
+                c.Write(dmx, 1, d);
+        var before = GdtfDecoder.Decode(layout.Fixture, layout.Mode, dmx, 1);
+        channel.Write(dmx, 1, next);
+        var after = GdtfDecoder.Decode(layout.Fixture, layout.Mode, dmx, 1);
+        if (System.Math.Abs(before.R - after.R) + System.Math.Abs(before.G - after.G) + System.Math.Abs(before.B - after.B) < 1e-3f)
+            return kept;
+        // CTO and the other wheels stay: the mix changes by what the slot did.
+        var (r, g, b) = GdtfDecoder.Mix(layout.Mode, dmx, 1);
+        static float Kept(float mix, float was, float now) => now > 1e-4f ? mix * was / now : 0;
+        if (!GdtfDecoder.SetMix(layout.Mode, dmx, 1, Kept(r, before.R, after.R), Kept(g, before.G, after.G), Kept(b, before.B, after.B)))
+            return kept;
+        foreach (string k in emitters)
+            if (layout[k].Read(dmx, 1) is { } d)
+                kept[k] = layout[k].FromDmx(d);
+        return kept;
+    }
+
     /// <summary>The value a palette reference stands for (the palette's value for that head and key), or the value itself.</summary>
     public static LookValue Resolved(DesignShow show, int head, string key, LookValue value) =>
         value is { IsPalette: true } ? show.Palette(value.Palette)?.Of(head)?.GetValueOrDefault(key) : value;

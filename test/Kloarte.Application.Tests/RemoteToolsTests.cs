@@ -200,6 +200,48 @@ public sealed partial class RemoteToolsTests : TestBase
         Assert.Null(_app.CueId);
     }
 
+    /// <summary>
+    /// An LEDBeam's colour wheel from a preset (tracked from cue 1) to "Raw DMX" in cue 2: the RGBW values that keep the
+    /// preset's colour come with it; RGBW values given in the same call win; a palette does the same with its own values.
+    /// </summary>
+    [Fact]
+    public async Task RawDmxKeepsTheColourWheelPreset()
+    {
+        var beamType = DesignTypes.Catalogue.First(t => t.Gdtf?.Contains("LEDBeam") == true);
+        int beam = ((DesignItem)_session.Editor.ImportLamp(beamType.Name, "Beam", "LEDBeam")).Head.Value;
+        Design.Changed();
+        Assert.NotNull(Design.LayoutOf(beam)?["ColorMacro1"]);
+        Assert.False((await Call("set_cue_values", new JsonObject
+        {
+            ["cue"] = 1, ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Filter 26 (Bright Red)" }),
+        })).Error);
+        var raw = await Call("set_cue_values", new JsonObject { ["cue"] = 2, ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Raw DMX" }) });
+        Assert.False(raw.Error, raw.Text);
+        var layout = Design.LayoutOf(beam);
+        double Of(DesignCue cue, string key) => layout[key].NumberOf(cue.Of(beam)[key]).Value;
+        var cue2 = Design.CueOrder[1];
+        Assert.True(Of(cue2, "ColorAdd_R") > 0.9 && Of(cue2, "ColorAdd_G") < 0.15 && Of(cue2, "ColorAdd_B") < 0.15 && Of(cue2, "ColorAdd_W") < 0.15,
+            string.Join(", ", cue2.Of(beam).Select(v => $"{v.Key} {v.Value}")));
+
+        Assert.False((await Call("set_cue_values", new JsonObject
+        {
+            ["cue"] = 3, ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Raw DMX", ["ColorAdd_G"] = 0.5 }),
+        })).Error);
+        Assert.Null(Design.CueOrder[2].Of(beam).GetValueOrDefault("ColorAdd_R"));   // the wheel was already Raw DMX in cue 2
+        Assert.Equal(0.5, Of(Design.CueOrder[2], "ColorAdd_G"), 3);
+
+        Assert.False((await Call("set_palette_values", new JsonObject
+        {
+            ["name"] = "Red", ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Filter 26 (Bright Red)" }),
+        })).Error);
+        Assert.False((await Call("set_palette_values", new JsonObject
+        {
+            ["name"] = "Red", ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Raw DMX", ["ColorAdd_W"] = 0 }),
+        })).Error);
+        var red = Design.Palette("Red").Of(beam);
+        Assert.True(layout["ColorAdd_R"].NumberOf(red["ColorAdd_R"]) > 0.9 && layout["ColorAdd_W"].NumberOf(red["ColorAdd_W"]) == 0);
+    }
+
     /// <summary>Palettes: made by set_palette_values, used by a cue, refused for deletion while used.</summary>
     [Fact]
     public async Task PalettesAreUsedByCues()

@@ -125,9 +125,10 @@ public sealed partial class RemoteTools
     private object SetCueValues(ToolArgs args)
     {
         var show = Show;
-        var cue = show.CueOrder[CueIndex(show, args)];
+        int index = CueIndex(show, args);
+        var cue = show.CueOrder[index];
         var values = ValuesOf(show, args, palettes: true);
-        _app.EditShow($"Values in cue {cue.Cue}", _ => Apply(cue.Heads, values));
+        _app.EditShow($"Values in cue {cue.Cue}", _ => Apply(show, cue.Heads, values, index - 1));
         return Done($"Set {Summary(values)} in cue {cue.Cue}");
     }
 
@@ -152,7 +153,7 @@ public sealed partial class RemoteTools
         cue.Delay = args.Number("delay") ?? source?.Delay;
         if (args.Bool("blackout"))
             cue.Heads = DesignEdits.Blackout(show);
-        Apply(cue.Heads, values);
+        Apply(show, cue.Heads, values, show.CueOrder.FindLastIndex(c => c.Number < number));
         _app.EditShow($"Add cue {cue.Cue}", d => d.CueOrder.Add(cue));
         _app.GoToCue(cue.Id);
         return Done($"Added cue {cue.Cue}{(cue.Text != null ? " " + cue.Text : "")}" +

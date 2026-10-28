@@ -86,7 +86,7 @@ public sealed partial class RemoteTools
             var palette = existing;
             if (palette == null)
                 d.Palettes.Add(palette = new DesignPalette { Name = name });
-            Apply(palette.Heads, values);
+            Apply(d, palette.Heads, values, null);
         });
         return Done($"{(existing == null ? "New palette" : "Palette")} {existing?.Name ?? name}: {Summary(values)}");
     }

@@ -135,11 +135,28 @@ public sealed partial class RemoteTools
         return string.Join("; ", parts);
     }
 
-    /// <summary>Puts checked values into a set of looks.</summary>
-    private static void Apply(Dictionary<string, Dictionary<string, LookValue>> looks, IEnumerable<HeadValue> values)
+    /// <summary>
+    /// Puts checked values into a set of looks. A colour wheel that leaves a preset for "Raw DMX" also gets the RGB(W)
+    /// values that keep its colour (<see cref="DesignEdits.KeepColour"/>), unless the values set those themselves.
+    /// `tracksFrom`: the cue whose values the looks track (its index; -1 = none), or null for a palette (its own values only).
+    /// </summary>
+    private static void Apply(DesignShow show, Dictionary<string, Dictionary<string, LookValue>> looks, IReadOnlyCollection<HeadValue> values,
+        int? tracksFrom)
     {
+        var given = values.Select(v => (v.Head, v.Key)).ToHashSet();
+        LookValue Current(int head, string key)
+        {
+            var own = looks.GetValueOrDefault(DesignShow.Key(head))?.GetValueOrDefault(key)
+                      ?? (tracksFrom is { } index ? DesignEdits.Tracked(show, index, head, key).Value : null);
+            return DesignEdits.Resolved(show, head, key, own);
+        }
         foreach (var value in values)
+        {
+            var kept = DesignEdits.KeepColour(show.LayoutOf(value.Head), value.Key, value.Value, k => Current(value.Head, k));
             DesignEdits.Set(looks, value.Head, value.Key, value.Value);
+            foreach (var (key, look) in kept.Where(k => !given.Contains((value.Head, k.Key))))
+                DesignEdits.Set(looks, value.Head, key, look);
+        }
     }
 
     /// <summary>A short text of what values were set ("3 values of heads 101, 102").</summary>
