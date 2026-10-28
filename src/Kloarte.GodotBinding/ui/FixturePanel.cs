@@ -178,6 +178,7 @@ public partial class FixturePanel : CanvasLayer
         window.AddChild(_transport);
         window.MoveChild(_transport, 1);   // under the menu bar
         _tabs.AddChild(BuildActorsTab());
+        _tabs.AddChild(BuildSceneryTab());   // FixturePanel.Scenery.cs
         _tabs.TabChanged += OnTabChanged;
         leftBox.AddChild(_tabs);
 
@@ -380,6 +381,7 @@ public partial class FixturePanel : CanvasLayer
         ApplyLook();   // the project's stray light and haze (FixturePanel.Look.cs)
         RefreshPlayback();
         RefreshActors();
+        RefreshScenery();
         ConnectViews();
     }
 
@@ -549,6 +551,12 @@ public partial class FixturePanel : CanvasLayer
     /// <summary>The shared selection changed (here or in another view): list, marker, lit set and settings follow.</summary>
     private void OnSelectionChanged()
     {
+        _selectedPiece = Selection.Piece;
+        if (_selectedPiece != null)
+        {
+            ShowPiece(_selectedPiece);   // FixturePanel.Scenery.cs
+            return;
+        }
         if (Selection.Actor != null)
         {
             ShowActor(Selection.Actor, Selection.ActorStep);

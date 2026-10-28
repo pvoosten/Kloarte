@@ -17,7 +17,7 @@ namespace Kloarte.Tests;
 /// The MCP tools of the app (<see cref="RemoteTools"/>) on a native project without the UI: they read the show, edit it
 /// through the app (one undo step each), check what they are given before anything changes, and answer with JSON.
 /// </summary>
-public sealed class RemoteToolsTests : TestBase
+public sealed partial class RemoteToolsTests : TestBase
 {
     /// <summary>The session of the test's project.</summary>
     private readonly ShowSession<DesignShow> _session;

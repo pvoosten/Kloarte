@@ -20,7 +20,7 @@ namespace Kloarte.Tests;
 ///   the explore show folder; <c>copyto:from|res://...</c> copies any file (keeps its time);</item>
 /// <item><c>press:text</c> the first visible button whose text starts with `text`; <c>tab:name</c> a tab of the left
 ///   panel; <c>menu:File|Open project|name</c> a menu item; <c>showmenu:File</c> opens a menu; <c>key:Ctrl+S</c> a key press; <c>dialog:text</c> types into the visible dialog and
-///   confirms it; <c>close</c> = the window close button; <c>magicqsave:shw</c> = MagicQ saved that show (the watcher); <c>select:text</c> = a list row (<c>selectadd</c> = Ctrl + click); <c>rclick:text</c> = right click on a list row; <c>ctx:item</c> = an item of the open context menu; <c>field:Label|text</c> / <c>submit:Label</c> = type / Enter in a labelled field; <c>prompt:Save|Don't save|Cancel</c> answers a prompt; <c>file:path</c> answers the open file dialog (Godot's own here, never native); <c>toolshot:Window|name</c> a tool window's screenshot; <c>cell:row|column</c> a cell of the cue table (<c>#1801</c> = the column of head 1801); <c>dump</c> prints the visible texts of the left panel; <c>files</c> lists the explore folders;</item>
+///   confirms it; <c>close</c> = the window close button; <c>magicqsave:shw</c> = MagicQ saved that show (the watcher); <c>select:text</c> = a list row (<c>selectadd</c> = Ctrl + click); <c>rclick:text</c> = right click on a list row; <c>ctx:item</c> = an item of the open context menu; <c>field:Label|text</c> / <c>submit:Label</c> = type / Enter in a labelled field; <c>spin:Label|value</c> = a labelled spin box; <c>prompt:Save|Don't save|Cancel</c> answers a prompt; <c>file:path</c> answers the open file dialog (Godot's own here, never native); <c>toolshot:Window|name</c> a tool window's screenshot; <c>cell:row|column</c> a cell of the cue table (<c>#1801</c> = the column of head 1801); <c>dump</c> prints the visible texts of the left panel; <c>files</c> lists the explore folders;</item>
 /// <item><c>quit</c>.</item>
 /// </list>
 /// </summary>
@@ -274,6 +274,15 @@ public partial class Explore : Node
                 }
                 else
                     edit.EmitSignal(LineEdit.SignalName.TextSubmitted, edit.Text);
+                _wait = 10;
+                break;
+            case "spin":
+                // spin:<label>|<value> sets the spin box next to that label (an inspector row)
+                string[] spinArgs = arg.Split('|');
+                var spin = All<SpinBox>().FirstOrDefault(s => s.IsVisibleInTree() && s.GetParent() is HBoxContainer spinRow
+                               && spinRow.GetChildren().OfType<Label>().Any(l => l.Text == spinArgs[0]))
+                           ?? throw new InvalidOperationException($"no spin box '{spinArgs[0]}'");
+                spin.Value = double.Parse(spinArgs[1], System.Globalization.CultureInfo.InvariantCulture);
                 _wait = 10;
                 break;
             case "magicqsave":

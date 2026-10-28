@@ -5,7 +5,8 @@ using Kloarte.Model;
 namespace Kloarte.GodotBinding;
 
 /// <summary>
-/// ShowBuilder: venue (from the venue JSON: forestage, cyc, auditorium with seats) and scenery (MagicVis objects).
+/// ShowBuilder: venue (from the venue JSON: forestage, cyc, auditorium with seats) and the MagicVis objects (boxes,
+/// borders, proscenium: also on <see cref="RenderLayers.Occluders"/>, like the cyc).
 /// </summary>
 public partial class ShowBuilder
 {
@@ -68,7 +69,7 @@ public partial class ShowBuilder
         {
             var mat = Mat(new Color(cyc.Albedo, cyc.Albedo, cyc.Albedo * 0.97f), 0.95f);
             AddBox(parent, "Cyc", Transform3D.Identity.Translated(new Vector3(0, cyc.Height / 2f, back)),
-                new Vector3(cyc.Width, cyc.Height, 0.02f), mat);
+                new Vector3(cyc.Width, cyc.Height, 0.02f), mat).Layers |= RenderLayers.Occluders;
         }
         float hall = Frame.OwnPodium ? -Frame.FloorY : Frame.HallY;
         AddBox(parent, "BackWall", Transform3D.Identity.Translated(new Vector3(0, 4f, back - 0.6f)),
@@ -133,13 +134,13 @@ public partial class ShowBuilder
                     new Vector3(s[0], 0.05f, 0.05f), _truss).SetMeta("vis", item.Id);
                 break;
             case RigObjectKind.Proscenium:   // Size = (width, height, depth), centred
-                AddBox(parent, name, new Transform3D(basis, pos), new Vector3(s[0], s[1], s[2]), _molton);
+                AddBox(parent, name, new Transform3D(basis, pos), new Vector3(s[0], s[1], s[2]), _molton).Layers |= RenderLayers.Occluders;
                 break;
             case RigObjectKind.Box:      // box / flat: Size = (depth, width, height), bottom-centre at the position
             case RigObjectKind.Border:   // border (fries): same layout
                 AddBox(parent, name, new Transform3D(basis, pos + basis * new Vector3(0, s[2] / 2f, 0)),
                     new Vector3(Mathf.Max(s[1], 0.01f), Mathf.Max(s[2], 0.01f), Mathf.Max(s[0], 0.01f)),
-                    item.ObjectKind == RigObjectKind.Border || name.StartsWith("Manteau") ? _molton : _setPiece);
+                    item.ObjectKind == RigObjectKind.Border || name.StartsWith("Manteau") ? _molton : _setPiece).Layers |= RenderLayers.Occluders;
                 break;
             case RigObjectKind.Person:   // becomes an actor (see BuildActors), not static scenery
                 break;

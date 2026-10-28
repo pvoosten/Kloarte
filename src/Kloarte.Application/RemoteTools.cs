@@ -15,7 +15,7 @@ namespace Kloarte.Application;
 
 /// <summary>
 /// The running Kloarte as MCP tools (user, 25 Oct 2026: an MCP server inside the app): read the open show (rig, cues,
-/// palettes, lamps, problems), edit it (cue values, cues, palettes, mechanics, smoke; one undo step each, the stage shows
+/// palettes, lamps, problems), edit it (cue values, cues, palettes, mechanics, smoke, scenery; one undo step each, the stage shows
 /// the result), play it (go to a cue, haze) and look at it (pictures of the views), save and export it. Works through the
 /// UI's own paths (<see cref="IRemoteControl"/>); the host gives it an MCP server (<see cref="IMcpServer"/>).
 /// </summary>
@@ -48,7 +48,10 @@ public sealed partial class RemoteTools
         "for an exact DMX value, \"@Name\" for a palette). Conventional lamps get barndoors, shutters, iris, gobo and " +
         "focus from their mechanics (get_lamp / set_lamp_mechanics), not from cues. Two kinds of aiming: moving heads " +
         "with pan / tilt per cue (aim_moving_heads), conventional lamps mechanically, the same in every cue " +
-        "(focus_lamps); list_actors gives where the actors are at a cue. Every edit is one undo step in " +
+        "(focus_lamps); list_actors gives where the actors are at a cue. Set pieces (scenery: blocks, pyramids, " +
+        "tables, curtains; Kloarte's own, not in MagicQ) are on stage before the first cue (list_scenery, add_scenery, " +
+        "update_scenery, remove_scenery); per cue a piece goes out / comes in and a split curtain opens " +
+        "(set_cue_scenery). Every edit is one undo step in " +
         "Kloarte and is not saved until save_project; export_magicq writes the next numbered MagicQ show and never " +
         "overwrites. Use screenshot to look at the result.";
 
@@ -62,7 +65,7 @@ public sealed partial class RemoteTools
 
     /// <summary>Every tool, in the order a client lists them.</summary>
     private IEnumerable<RemoteTool> All() =>
-        ShowTools().Concat(RigTools()).Concat(CueTools()).Concat(PaletteTools()).Concat(StageTools()).Concat(AimTools()).Concat(LampTools()).Concat(GelTools());
+        ShowTools().Concat(RigTools()).Concat(CueTools()).Concat(PaletteTools()).Concat(StageTools()).Concat(AimTools()).Concat(SceneryTools()).Concat(LampTools()).Concat(GelTools());
 
     /// <summary>A tool that answers with JSON (a text answer goes as it is).</summary>
     private static RemoteTool Tool(string name, string title, string description, JsonObject schema, bool readOnly,

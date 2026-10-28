@@ -101,12 +101,13 @@ public sealed partial class ShowSession<TShow>
         return changes;
     }
 
-    /// <summary>The file is one of the watched project files (a lamp file, the actors or the steps).</summary>
+    /// <summary>The file is one of the watched project files (a lamp file, the actors, the scenery or the steps).</summary>
     private bool IsProjectFile(ProjectFolder folder, string path) =>
         Path.GetExtension(path).Equals(".yaml", StringComparison.OrdinalIgnoreCase)
         && (IsProjectShowFile(folder, path) || string.Equals(Path.GetDirectoryName(path), folder.MechanicsDir, StringComparison.OrdinalIgnoreCase)
             || string.Equals(path, folder.PathOf(ShowModel<TShow>.ActorsPath), StringComparison.OrdinalIgnoreCase)
             || string.Equals(path, folder.PathOf(ShowModel<TShow>.StepsPath), StringComparison.OrdinalIgnoreCase)
+            || string.Equals(path, folder.PathOf(ShowModel<TShow>.SceneryPath), StringComparison.OrdinalIgnoreCase)
             || string.Equals(path, folder.PathOf(VenueFile), StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
@@ -145,6 +146,7 @@ public sealed partial class ShowSession<TShow>
         ProjectFileKind.Lamp when change.RigItem is { } id => Model.TextOfLamp(id, Catalog),
         ProjectFileKind.Actors => Model.TextOfActors(),
         ProjectFileKind.Steps => Model.TextOfSteps(),
+        ProjectFileKind.Scenery => Model.TextOfScenery(),
         ProjectFileKind.Show => ProjectShowText(change.Path),
         _ => null,
     };
@@ -163,6 +165,8 @@ public sealed partial class ShowSession<TShow>
             return LampChange(folder, path, takeFile);
         if (string.Equals(path, folder.PathOf(ShowModel<TShow>.ActorsPath), StringComparison.OrdinalIgnoreCase))
             return BlockingChange(folder, path, ProjectFileKind.Actors, takeFile);
+        if (string.Equals(path, folder.PathOf(ShowModel<TShow>.SceneryPath), StringComparison.OrdinalIgnoreCase))
+            return BlockingChange(folder, path, ProjectFileKind.Scenery, takeFile);
         if (string.Equals(path, folder.PathOf(VenueFile), StringComparison.OrdinalIgnoreCase))
             return VenueChange(folder, path);
         return BlockingChange(folder, path, ProjectFileKind.Steps, takeFile);
@@ -220,44 +224,33 @@ public sealed partial class ShowSession<TShow>
         return Change(path, ProjectFileKind.Lamp, id, true, false, read.Problems);
     }
 
-    /// <summary>The change of the actors or the steps file (see <see cref="ChangeFor"/>).</summary>
-    private ProjectChange BlockingChange(ProjectFolder folder, string path, ProjectFileKind kind, bool takeFile)
+    /// <summary>The change of the actors, the scenery or the steps file (see <see cref="ChangeFor"/>).</summary>
+    private ProjectChange BlockingChange(ProjectFolder folder, string path, ProjectFileKind kind, bool takeFile) => kind switch
+    {
+        ProjectFileKind.Actors => BlockingChange<ActorsFile>(folder, path, kind, takeFile, Model.TextOfActors(), Model.ApplyActors),
+        ProjectFileKind.Scenery => BlockingChange<SceneryFile>(folder, path, kind, takeFile, Model.TextOfScenery(), Model.ApplyScenery),
+        _ => BlockingChange<StepsFile>(folder, path, kind, takeFile, Model.TextOfSteps(), Model.ApplySteps),
+    };
+
+    /// <summary>The change of one blocking file: read as `T`, applied by `apply` (one undo step); `generated` = Kloarte's text of it.</summary>
+    private ProjectChange BlockingChange<T>(ProjectFolder folder, string path, ProjectFileKind kind, bool takeFile, string generated,
+        Action<T, List<FileProblem>> apply) where T : class
     {
         string text = File.ReadAllText(path);
         var problems = new List<FileProblem>();
-        string generated = kind == ProjectFileKind.Actors ? Model.TextOfActors() : Model.TextOfSteps();
-        if (kind == ProjectFileKind.Actors)
+        var read = folder.Read<T>(path);
+        if (read.HasError)
+            return Change(path, kind, null, false, false, read.Problems);
+        problems.AddRange(read.Problems);
+        if (FileText.Hash(text) == FileText.Hash(generated))
         {
-            var read = folder.Read<ActorsFile>(path);
-            if (read.HasError)
-                return Change(path, kind, null, false, false, read.Problems);
-            problems.AddRange(read.Problems);
-            if (FileText.Hash(text) == FileText.Hash(generated))
-            {
-                folder.Remember(path, text);
-                return null;
-            }
-            if (!takeFile && !folder.IsKnown(path, generated))
-                return Change(path, kind, null, false, true, problems);
-            Checkpoint();
-            Model.ApplyActors(read.Value, problems);
+            folder.Remember(path, text);
+            return null;
         }
-        else
-        {
-            var read = folder.Read<StepsFile>(path);
-            if (read.HasError)
-                return Change(path, kind, null, false, false, read.Problems);
-            problems.AddRange(read.Problems);
-            if (FileText.Hash(text) == FileText.Hash(generated))
-            {
-                folder.Remember(path, text);
-                return null;
-            }
-            if (!takeFile && !folder.IsKnown(path, generated))
-                return Change(path, kind, null, false, true, problems);
-            Checkpoint();
-            Model.ApplySteps(read.Value, problems);
-        }
+        if (!takeFile && !folder.IsKnown(path, generated))
+            return Change(path, kind, null, false, true, problems);
+        Checkpoint();
+        apply(read.Value, problems);
         folder.Remember(path, text);
         NameNextEdit($"Edited outside Kloarte: {Path.GetFileName(path)}");
         Checkpoint();

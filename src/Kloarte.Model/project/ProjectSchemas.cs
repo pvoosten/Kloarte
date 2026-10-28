@@ -17,6 +17,7 @@ public static class ProjectSchemas
         (LampSchema, typeof(LampFile), "Kloarte lamp (mechanics)"),
         (ActorsSchema, typeof(ActorsFile), "Kloarte actors (blocking)"),
         (StepsSchema, typeof(StepsFile), "Kloarte steps (blocking)"),
+        (ScenerySchema, typeof(SceneryFile), "Kloarte scenery (set pieces)"),
         (ProjectSchema, typeof(ProjectDocumentFile), "Kloarte project"),
         (VenueSchema, typeof(Venue), "Kloarte venue"),
         (RigSchema, typeof(DesignRig), "Kloarte rig and patch"),
@@ -32,6 +33,9 @@ public static class ProjectSchemas
 
     /// <summary>The schema file of the steps file.</summary>
     public const string StepsSchema = "steps.schema.json";
+
+    /// <summary>The schema file of the scenery file.</summary>
+    public const string ScenerySchema = "scenery.schema.json";
 
     /// <summary>The schema file of the project document.</summary>
     public const string ProjectSchema = "project.schema.json";

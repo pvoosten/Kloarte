@@ -241,7 +241,7 @@ public sealed class YamlFilesTests : TestBase
         Assert.Empty(p1.Concat(p2));
 
         var problems = new System.Collections.Generic.List<FileProblem>();
-        var back = BlockingFiles.FromFiles(actorsFile, stepsFile, cues, "steps.yaml", problems);
+        var back = BlockingFiles.FromFiles(actorsFile, stepsFile, null, cues, "steps.yaml", "scenery.yaml", problems);
         Assert.Empty(problems);
         Assert.Equal("Anna", back.Find("a1").Name);
         Assert.Equal("ff8800", back.Find("a1").ShirtColor);

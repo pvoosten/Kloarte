@@ -17,4 +17,7 @@ public enum ProjectFileKind
 
     /// <summary>The project's venue (<c>venue.yaml</c>): not model data; the scene is rebuilt from it.</summary>
     Venue,
+
+    /// <summary>The set pieces (<c>blocking/scenery.yaml</c>).</summary>
+    Scenery,
 }

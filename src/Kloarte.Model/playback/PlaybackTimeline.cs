@@ -18,7 +18,9 @@ namespace Kloarte.Model;
 /// cue's Out fade.
 /// Smoke: a cue that sets smoke (<see cref="Blocking.Smoke"/>) starts a ramp at its GO from the haze the room has at
 /// that moment (a ramp that hasn't finished goes on from where it got to) to its amount, taking its time; later cues
-/// without smoke leave it (<see cref="HazeAt"/>). No Godot dependencies.
+/// without smoke leave it (<see cref="HazeAt"/>).
+/// Scenery: a set piece goes out or comes in at the GO of a cue that says so; a split curtain opens or closes from
+/// where it is at that GO to the cue's openness in its time (<see cref="SceneryAt"/>). No Godot dependencies.
 /// </summary>
 public sealed class PlaybackTimeline
 {
@@ -34,6 +36,14 @@ public sealed class PlaybackTimeline
     private readonly Dictionary<string, List<ActorFrame>> _afterCue = new();   // actor state after each cue
     private readonly Dictionary<string, ActorFrame> _initial = new();
     private readonly List<SmokeRamp> _smoke = new();
+    /// <summary>Each set piece's state before the first GO (on stage, its own openness), by piece id.</summary>
+    private readonly Dictionary<string, SceneryFrame> _sceneryInitial = new();
+
+    /// <summary>The cues' changes of the set pieces, in timeline order.</summary>
+    private readonly List<SceneryRamp> _scenery = new();
+
+    /// <summary>One cue's change of a set piece: from its GO; the curtain from `From` to `To` % in `Time` seconds.</summary>
+    private readonly record struct SceneryRamp(int Segment, double Start, string Piece, bool Visible, float From, float To, float Time);
 
     /// <summary>One cue's haze ramp: from its GO, from the haze then to the cue's amount, in `Time` seconds.</summary>
     private readonly record struct SmokeRamp(int Segment, double Start, float From, float To, float Time, double Percent);
@@ -46,6 +56,9 @@ public sealed class PlaybackTimeline
 
     /// <summary>The actors (ids) on the timeline.</summary>
     public IEnumerable<string> Actors => _initial.Keys;
+
+    /// <summary>The set pieces (ids) on the timeline.</summary>
+    public IEnumerable<string> Scenery => _sceneryInitial.Keys;
 
     /// <summary>End of the last cue (incl. its hold).</summary>
     public double Length => _segments.Count == 0 ? 0 : _segments[^1].End;
@@ -71,6 +84,8 @@ public sealed class PlaybackTimeline
             _initial[actor.Id] = Frame(actor.Initial, new ActorFrame(true, ActorPose.Standing, Vector3.Zero, 0f));
             _afterCue[actor.Id] = new List<ActorFrame>();
         }
+        foreach (var piece in blocking.Scenery)
+            _sceneryInitial[piece.Id] = new SceneryFrame(true, piece.Open);
         double t = 0;
         var steps = stack?.Steps ?? new List<ICueStep>();
         for (int i = 0; i < steps.Count; i++)
@@ -102,6 +117,18 @@ public sealed class PlaybackTimeline
             }
             if (blocking.Smoke.TryGetValue(step.CueId, out var smoke) && smoke != null)
                 _smoke.Add(new SmokeRamp(i, t, HazeAt(t), ProjectLook.DensityOf(smoke.Amount), smoke.Seconds, smoke.Amount));
+            double sceneryEnd = 0;
+            if (blocking.SceneryCues.TryGetValue(step.CueId, out var scenery))
+                foreach (var (pieceId, change) in scenery)
+                {
+                    if (change == null || change.IsEmpty || !_sceneryInitial.ContainsKey(pieceId))
+                        continue;
+                    var now = SceneryAt(pieceId, t);
+                    _scenery.Add(new SceneryRamp(i, t, pieceId, change.Visible ?? now.Visible, now.Open,
+                        Math.Clamp(change.Open ?? now.Open, 0f, 100f), change.Open != null ? change.Seconds : 0f));
+                    if (change.Open != null)
+                        sceneryEnd = Math.Max(sceneryEnd, change.Seconds);
+                }
             var segment = new TimelineSegment
             {
                 Index = i,
@@ -112,6 +139,7 @@ public sealed class PlaybackTimeline
                 FadeIn = fadeIn,
                 FadeOut = fadeOut,
                 ActorsEnd = actorsEnd,
+                SceneryEnd = sceneryEnd,
                 Hold = blocking.Holds.TryGetValue(step.CueId, out float hold) ? hold : defaultHold,
             };
             _segments.Add(segment);
@@ -230,6 +258,41 @@ public sealed class PlaybackTimeline
     /// <summary>The smoke % of a cue's amount reached by the end of its ramp, or null when the cue sets none.</summary>
     public double? SmokeOf(int segment) => _smoke.Where(r => r.Segment == segment).Select(r => (double?)r.Percent).FirstOrDefault();
 
+    /// <summary>
+    /// A set piece's state at time t (before the first GO: on stage, its own openness): the change of the last cue that
+    /// changed it, the curtain eased from where it was at that GO to the cue's openness.
+    /// </summary>
+    public SceneryFrame SceneryAt(string pieceId, double t)
+    {
+        if (!_sceneryInitial.TryGetValue(pieceId, out var initial))
+            return default;
+        SceneryRamp? current = null;
+        foreach (var ramp in _scenery)
+        {
+            if (ramp.Start > t)
+                break;
+            if (ramp.Piece == pieceId)
+                current = ramp;
+        }
+        if (current is not { } r)
+            return initial;
+        if (r.Time <= 0f || t >= r.Start + r.Time)
+            return new SceneryFrame(r.Visible, r.To);
+        float k = (float)((t - r.Start) / r.Time);
+        return new SceneryFrame(r.Visible, r.From + (r.To - r.From) * (k * k * (3 - 2 * k)));
+    }
+
+    /// <summary>A set piece's state once the cues up to cue segment `segment` have finished (-1 = before the first cue).</summary>
+    public SceneryFrame SceneryAfter(string pieceId, int segment)
+    {
+        if (!_sceneryInitial.TryGetValue(pieceId, out var frame))
+            return default;
+        foreach (var ramp in _scenery.TakeWhile(r => r.Segment <= segment))
+            if (ramp.Piece == pieceId)
+                frame = new SceneryFrame(ramp.Visible, ramp.To);
+        return frame;
+    }
+
     /// <summary>An actor's state at time t.</summary>
     public ActorFrame ActorAt(string actorId, double t)
     {
@@ -291,6 +354,9 @@ public sealed class PlaybackTimeline
         foreach (var ramp in _smoke)
             if (ramp.Time > 0.05f && ramp.Start + ramp.Time <= Length)
                 keys.Add((ramp.Start + ramp.Time, $"cue {_segments[ramp.Segment].CueNumber} smoke {ramp.Percent:0} % reached"));
+        foreach (var ramp in _scenery)
+            if (ramp.Time > 0.05f && ramp.Start + ramp.Time <= Length)
+                keys.Add((ramp.Start + ramp.Time, $"cue {_segments[ramp.Segment].CueNumber} {ramp.Piece} {ramp.To:0} % open"));
         foreach (var s in _steps)
         {
             if (s.End - s.Start > 0.05)

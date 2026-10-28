@@ -16,6 +16,9 @@ namespace Kloarte.GodotBinding;
 /// Smoke: while a cue of the stack sets smoke (<see cref="Kloarte.Model.CueSmoke"/>) the haze of the room follows the
 /// timeline (<see cref="HazeControl"/>): GO, Play and scrubbing ease it as it builds; Back / Jump / Reset show the
 /// settled amount of the cue; the project's haze (the Look) is the start and what comes back when no cue sets smoke.
+/// Scenery: set pieces go in / out and split curtains open as the timeline says (<see cref="PlaybackTimeline.SceneryAt"/>;
+/// the settled state after Back / Jump / Reset); <see cref="ShowBuilder.OccludersChanged"/> is raised only when an
+/// opaque piece actually changed.
 /// </summary>
 public partial class CuePlayer : Node
 {
@@ -23,7 +26,28 @@ public partial class CuePlayer : Node
     public const float WalkSpeed = PlaybackTimeline.WalkSpeed;
 
     /// <summary>The show to play.</summary>
-    public ShowBuilder Builder { get; set; }
+    public ShowBuilder Builder
+    {
+        get => _builder;
+        set
+        {
+            if (_builder != null)
+                _builder.SceneryRebuilt -= OnSceneryRebuilt;
+            _builder = value;
+            if (_builder != null)
+                _builder.SceneryRebuilt += OnSceneryRebuilt;
+        }
+    }
+
+    /// <summary>Backing field of <see cref="Builder"/>.</summary>
+    private ShowBuilder _builder;
+
+    /// <summary>Before the player is freed: lets go of the builder's event (the builder may live on).</summary>
+    public override void _Notification(int what)
+    {
+        if (what == NotificationPredelete && _builder != null && IsInstanceValid(_builder))
+            _builder.SceneryRebuilt -= OnSceneryRebuilt;
+    }
 
     /// <summary>The cue stack.</summary>
     public ICueStack Stack { get; private set; }
@@ -269,6 +293,39 @@ public partial class CuePlayer : Node
         }
     }
 
+    /// <summary>Set pieces in / out and curtains open as the timeline says at the playhead.</summary>
+    private void ApplyScenery()
+    {
+        if (Builder?.Model == null || Timeline is not { } timeline)
+            return;
+        var known = timeline.Scenery.ToHashSet();
+        bool changed = false;
+        foreach (var (id, piece) in Builder.SetPieces)
+        {
+            if (!IsInstanceValid(piece) || !known.Contains(id))
+                continue;
+            var frame = _settled ? timeline.SceneryAfter(id, Step) : timeline.SceneryAt(id, Time);
+            if (piece.Apply(frame) && piece.Occludes)
+                changed = true;
+        }
+        if (changed)
+            Builder.NotifyOccludersChanged();
+    }
+
+    /// <summary>
+    /// The scenery was rebuilt from the model (an edit): the timeline is laid out again and the new nodes take the
+    /// playhead's state (before a stack is chosen they stay as built: in, curtains at their own openness).
+    /// </summary>
+    private void OnSceneryRebuilt()
+    {
+        if (!IsInstanceValid(this))
+            return;
+        _timeline = null;
+        _entrances = null;
+        if (Stack != null)
+            ApplyScenery();
+    }
+
     /// <summary>Puts the timeline's state at the playhead on stage.</summary>
     private void Apply()
     {
@@ -282,6 +339,7 @@ public partial class CuePlayer : Node
         foreach (var (id, actor) in Builder.Actors)
             if (IsInstanceValid(actor))
                 actor.Apply(Timeline.ActorAt(id, Time));
+        ApplyScenery();
         ApplyHaze();
     }
 }

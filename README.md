@@ -39,15 +39,17 @@ GDTF, and actors moving through the cues.
   an interactive timeline of cues and actor steps (scrub, drag waits, walking times and holds). Entrances and exits
   are marked with their side ("OP cour", "AF jardin") and announced on the status bar while the cues run. **Smoke per
   cue**: each cue can set the amount of haze in the room and how long the hazer takes to get there.
+- **Scenery**: set pieces of your own (blocks, pyramids, tables, curtains that open) with colour and material, placed
+  and turned in the plan or the 3D view; per cue a piece goes out or comes in and a split curtain opens or closes.
 - **Exports**: stills (a PNG of every key moment), a movie, or a contact sheet (PDF, a picture per cue); from the 3D
   camera, a seat or a named viewpoint (Regie), a cue range, with cue captions; also one per actor (only their name on
   their shirt) to send to the cast.
 - **Live Art-Net** input from MagicQ; **Open in MagicQ PC** exports the show, starts MagicQ PC with it and checks every
   look it outputs against the app's cues (MagicQ user dimmer curves included).
 - **Claude / MCP**: an MCP server inside the app (`http://localhost:8462/mcp`) lets Claude Code read the open show, set
-  cue and palette values, change lamp mechanics, play cues and take screenshots of the views; every edit is one undo
-  step, nothing is saved until you (or `save_project`) save. Connecting and the tools: [manual](docs/manual.md),
-  *Claude / MCP*.
+  cue and palette values, change lamp mechanics, place set pieces and change them per cue, play cues and take
+  screenshots of the views; every edit is one undo step, nothing is saved until you (or `save_project`) save.
+  Connecting and the tools: [manual](docs/manual.md), *Claude / MCP*.
 - **Key map**: every function can get its own keys; changes are saved.
 
 ## Requirements
@@ -82,7 +84,8 @@ copies to `.schemas\`):
   Pan: -12.5, Gobo1: Stars}`; `"@Front"` = from the palette Front; `dmx 37` = an exact DMX value);
 - `mechanics\`: one file per lamp (type, zoom, shutters, iris, gobo, barndoors, focus: the hand focus of the whole
   show; the lamp is the `rigItem` id inside the file);
-- `blocking\actors.yaml`, `blocking\steps.yaml` (actors, their movement per cue, holds, smoke per cue);
+- `blocking\actors.yaml`, `blocking\steps.yaml` (actors, their movement per cue, holds, smoke and scenery per
+  cue), `blocking\scenery.yaml` (the set pieces);
 - `venue.yaml`, the project's own venue.
 
 Kloarte writes a file only when its content changed; comments you add are kept until Kloarte changes that file. A

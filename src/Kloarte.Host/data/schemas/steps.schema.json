@@ -88,6 +88,13 @@
           "maximum": 3600,
           "description": "Seconds the haze takes to build or thin to this cue's smoke amount, like a hazer; missing = 20 s (s)"
         },
+        "scenery": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/SceneryChangeEntry"
+          },
+          "description": "Per set piece id (blocking/scenery.yaml): out / in at this cue's GO, how far a curtain opens"
+        },
         "actors": {
           "type": "object",
           "additionalProperties": {
@@ -97,6 +104,28 @@
             }
           },
           "description": "Per actor id: the movement steps in this cue, one after the other"
+        }
+      }
+    },
+    "SceneryChangeEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visible": {
+          "type": "boolean",
+          "description": "true = the piece comes in at this cue's GO, false = it goes out (no fade); missing = as it is"
+        },
+        "open": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "How far a split curtain opens in this cue (0 = closed, 100 = open); missing = as it is (%)"
+        },
+        "time": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 600,
+          "description": "Seconds the curtain takes to open or close; missing = 5 s (s)"
         }
       }
     }

@@ -89,10 +89,15 @@ public static class KeyMap
         // Plan
         new("plan_fit", "Fit the plan in the view", "Plan", "plan", KeyBinding.Of(Key.F)),
         new("plan_free", "Place freely, no snapping (hold)", "Plan", "plan", KeyBinding.Of(Key.Alt)),
-        new("plan_delete", "Delete the selected stand (else the selected lamps)", "Plan", "plan", KeyBinding.Of(Key.Delete)),
+        new("plan_delete", "Delete the selected stand (else the selected lamps or set piece)", "Plan", "plan", KeyBinding.Of(Key.Delete)),
         // Fixtures
         new("fixture_solo", "Solo the selected fixture", "Fixtures", Global, KeyBinding.Of(Key.L)),
         new("deselect", "Deselect", "Fixtures", Global, KeyBinding.Of(Key.Escape)),
+        // Scenery (set pieces, Scenery tab)
+        new("scenery_add", "Add a set piece (a block; its shape in the inspector)", "Scenery", Global, KeyBinding.Of(Key.N, ctrl: true, shift: true)),
+        new("scenery_duplicate", "Duplicate the selected set piece", "Scenery", Global, KeyBinding.Of(Key.D, ctrl: true)),
+        new("scenery_delete", "Delete the selected set piece", "Scenery", Global, KeyBinding.Of(Key.Delete, shift: true)),
+        new("plan_rotate", "Turn a set piece while dragging it in the plan (hold)", "Plan", "plan", KeyBinding.Of(Key.Shift)),
         // Gobo editor
         new("gobo_select", "Tool: select / move", "Gobo editor", "gobo", KeyBinding.Of(Key.Key1)),
         new("gobo_line", "Tool: line", "Gobo editor", "gobo", KeyBinding.Of(Key.Key2)),

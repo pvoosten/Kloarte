@@ -48,6 +48,7 @@ public partial class ShowBuilder
         ApplyMovingHeads(DmxAfter(stack, upTo));
         foreach (var (id, actor) in _actors)
             actor.Apply(ActorStateAt(id, stack, upTo));
+        ApplySceneryAfter(stack, upTo);
         return lit;
     }
 

@@ -31,6 +31,9 @@ public sealed class PlanData
     /// <summary>Scenery footprints.</summary>
     public List<PlanShape> Shapes { get; } = new();
 
+    /// <summary>The project's own set pieces (blocking/scenery.yaml).</summary>
+    public List<PlanPiece> Pieces { get; } = new();
+
     /// <summary>Trusses, pipes and stands.</summary>
     public List<PlanSupport> Supports { get; } = new();
 

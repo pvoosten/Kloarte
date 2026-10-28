@@ -7,7 +7,8 @@ using System.Numerics;
 namespace Kloarte.Model;
 
 /// <summary>
-/// Draws the plan (top view) of a show: stage and forestage, cyc, scenery footprints, seats, trusses with name and
+/// Draws the plan (top view) of a show: stage and forestage, cyc, scenery footprints, the project's set pieces
+/// (<see cref="PlanPieces"/>), seats, trusses with name and
 /// height, floor stands, lamps as symbols filled with their gel colour and labelled with head number, gel code and
 /// DMX address, focus lines for the selected lamps, and a legend of the lamp types and gels. The same code draws the
 /// plan view on screen and the PDF. No Godot dependencies.
@@ -32,6 +33,7 @@ public static class PlanDrawing
         };
         pts.AddRange(d.Supports.SelectMany(s => new[] { s.Start, s.End }));
         pts.AddRange(d.Lamps.Select(l => l.Position));
+        pts.AddRange(d.Pieces.SelectMany(p => SceneryGeometry.Footprint(p.Piece)));
         if (seats)
             pts.AddRange(d.Seats.Select(s => s.Position));
         // Extra room on the left for the truss names and heights.
@@ -58,6 +60,8 @@ public static class PlanDrawing
 
         foreach (var s in d.Shapes)
             c.Polygon(s.Points, s.Masking ? Masking : SetPiece, Rgb.Grey(0.2f), 1f);
+        foreach (var p in d.Pieces)
+            PlanPieces.Draw(c, p, style);
 
         if (style.Seats)
             foreach (var (p, reserved) in d.Seats)

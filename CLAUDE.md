@@ -72,7 +72,7 @@ test is a design problem to fix, not a test to relax (ask the user before changi
 - **Project files are YAML, editable in VS Code** (`Kloarte.Yaml`; model defines the files and `IFileCodec`): per project
   `<name>.kloarte.yaml`, `venue.yaml` (the user's, never rewritten after the first save), `mechanics/<lamp>.yaml` (one per lamp,
   keyed by the rig item id inside the file; only values differing from `FixtureMechanics.DefaultFor`), `blocking/actors.yaml`
-  + `steps.yaml` (holds, smoke per cue), the native show's `rig.yaml`, `palettes.yaml`, `cues.yaml`. Stay JSON: `fixture_catalog.json`, `shows/*.fixtures.json`, gobo drawings,
+  + `scenery.yaml` (set pieces) + `steps.yaml` (holds, smoke and scenery per cue), the native show's `rig.yaml`, `palettes.yaml`, `cues.yaml`. Stay JSON: `fixture_catalog.json`, `shows/*.fixtures.json`, gobo drawings,
   `user://keymap.json` / `views.json`. Old JSON still loads; the first save writes YAML and keeps the JSON.
   Rules: a file is written only when its content changed (hand comments survive); every file has a JSON-Schema modeline
   (schemas generated from the file attributes, committed copies in `src/Kloarte.Host/data/schemas/`, a test checks them;
@@ -92,6 +92,10 @@ test is a design problem to fix, not a test to relax (ask the user before changi
 - **Exports never overwrite**: an export is the project's next numbered MagicQ show (`ShowVersions.NextFile`); a test
   that exports deletes its target first.
 - **Smoke per cue** is Kloarte's own data in `blocking/steps.yaml` (`smoke` %, `smokeTime` s), not a MagicQ hazer fixture.
+- **Scenery (decided 27 Oct 2026)**: set pieces (block, pyramid, table, curtain; colour + material preset) are Kloarte's own
+  data in `blocking/scenery.yaml`, in the `Blocking` model (undo / save like actors), not exported to MagicQ; per cue in
+  `steps.yaml` (in / out at the GO, a split curtain opens over its time; tracks). Opaque pieces are on
+  `RenderLayers.Occluders` (cut haze beams); gauze is translucent. Detail: docs/architecture.md *Scenery*.
 - **Show names**: exported MagicQ shows go to MagicQ's show root, each the next number (`Kruimels_002.shw`), never an
   overwrite; a MagicQ save of the project comes back by re-import. Project data is keyed by project.
 - Actor ids are slugs of the name (`ActorIds.For`); renaming keeps the id.
@@ -106,7 +110,9 @@ test is a design problem to fix, not a test to relax (ask the user before changi
 
 ## Godot findings (4.7.2) (detail: docs/godot-findings.md)
 - `light_projector` refuses a `ViewportTexture`; `ImageTexture.Update()` doesn't refresh it: make a new texture per change.
-- Godot's volumetric fog ignores projectors, hence the custom beam volume. OPEN: no occlusion by scenery inside the beam.
+- Godot's volumetric fog ignores projectors, hence the custom beam volume. Scenery (`RenderLayers.Occluders`) cuts it through a
+  depth map per lamp (`BeamOcclusion`, finding 12, on); geometry on that layer that changes must go through
+  `ShowBuilder.NotifyOccludersChanged` (invalidates the lamps' maps).
 - **A spot with a projector and `ShadowEnabled = false` gives no light**: use `ShadowEnabled = true` + `ShadowCasterMask = 0`.
 - Shadow atlas: set it with `ShowBuilder.ConfigureShadowAtlas` on every viewport that renders the stage (default places run out
   at the 88th lamp = dark lamps).
@@ -125,16 +131,17 @@ Solution `Kloarte.sln`; `src/` runs the app, `test/` tests it. `README.md` is us
 - `src/Kloarte.Model/` — `Abstractions/` (`IShowDocument`, `IRigItem`, `ICue`, `IAppPaths`, ...), `project/` (project folder,
   watcher, `ShowVersions`), `files/` (YAML file types, `CueFiles`), `show/` (`ShowModel<TShow>`, mechanics, blocking),
   `design/` (the native show: `DesignShow`, `LookValue`, `HeadLayout`, `DesignStore`, `DesignShowEditor`, `DesignDiff`),
+  `scenery/` (`SceneryPiece`, `SceneryChange`, `SceneryMaterials`, `SceneryGeometry`),
   `fixtures/`, `gdtf/`, `gobos/`, `rig/`, `venue/`, `plan/` (plan drawing, own PDF writer), `playback/` (`PlaybackTimeline`).
 - `src/Kloarte.MagicQ/` — `.shw` format (`ShwDocument`, `MagicQShow` partial per view, `PatchEditor`), `MagicQStore`,
   `MagicQShowEditor`, `MagicQPc`, `design/` (`MagicQImport`, `MagicQExport`, `MagicQExchange`), Art-Net (`dmx/`).
 - `src/Kloarte.GodotBinding/` — `binding/` (`IShowServices`, `IStage`, `ILiveInput`, `IRemoteControl`), `show/ShowBuilder`
   (partial), `fixtures/ProfileFixture` + `MovingHead`, `camera/`, `environment/`, `gobos/`, `plan/`, `playback/`,
-  `scenery/`, `ui/` (`FixturePanel` partial incl. `FixturePanel.Remote`, `ViewHost`, views, `KeyMap`, `StatusBar`, ...).
+  `scenery/` (actors, `SetPiece` set pieces), `ui/` (`FixturePanel` partial incl. `FixturePanel.Remote`, `ViewHost`, views, `KeyMap`, `StatusBar`, ...).
 - `src/Kloarte.Mcp/` — the MCP binding: `McpServer`, `IMcpServer`, `IMcpTool`, `IMcpReply`, `McpReply`.
 - `src/Kloarte.Application/` — `EditHistory<TShow>`, `ProjectLibrary`, `ShowSession<TShow>`, `RigEditor`, `ShowPlayback`,
   `ConsoleLink`, `LiveInput`, `ShowServices<TShow>`, `RemoteTools` (partial per area: Show, Rig, Cues, Palettes, Stage, Aim, Lamps,
-  Values; `RemoteTool`, `ToolArgs`, `ToolSchema`).
+  Values, Scenery; `RemoteTool`, `ToolArgs`, `ToolSchema`).
 - `src/Kloarte.Yaml/` — the codec. `src/Kloarte.Host/` — Godot project, `host/Startup.cs` composition root, `host/Host*.cs`
   scripts scenes attach, scenes, shaders, `data/` (`.gdignore`), `Projects/` (git-ignored, one folder per project).
 - `test/` — `Kloarte.Architecture.Tests`, `Model.Tests`, `MagicQ.Tests`, `Mcp.Tests` (`McpServerTests`: the protocol over

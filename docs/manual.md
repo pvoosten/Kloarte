@@ -61,6 +61,20 @@ Reset and a jump to a cue show the settled amount. It is Kloarte's own data (sav
 `blocking/steps.yaml`, undoable): MagicQ cannot store it, so the real hazer is still programmed in MagicQ, and these
 amounts are for the picture.
 
+**Scenery** (set pieces; *Scenery* tab of the left panel, Scenery menu): blocks, pyramids, tables and curtains of the
+project's own (Kloarte's data in `blocking/scenery.yaml`, not exported to MagicQ). *+ Piece* adds one of the chosen
+shape (Ctrl+Shift+N adds a block), *Duplicate* (Ctrl+D) copies the selected piece with what the cues do with it,
+*Remove* (Shift+Delete, or Delete in the plan) takes it out of the project. Click a piece in the list, the plan or the
+3D view to select it; the inspector edits its name, shape, place (x, y = height of its bottom, z) and rotation
+(counter-clockwise seen from above), the sizes of its shape (a table's length, depth, height, top and legs; a curtain's
+width, height, fullness, *Split* in two halves and how far it is open at the start), colour and material (painted,
+wood, molton, metal, gauze). In the plan drag a piece to move it (5 cm steps; Alt = freely), drag it with Shift held to
+turn it (15° steps); in the 3D view drag it over the floor, a right drag that starts on the selected piece turns it.
+Per cue (inspector, *Cue N*, for the selected piece): *In this cue* Unchanged / In / Out (at the cue's GO, no fade) and
+for a split curtain *Open* % and *Opens in* s; what the cue doesn't say tracks from the cues before (the line under it
+says from which cue), *Clear this cue's change* takes it out. The plan draws a piece that is out at the current cue as
+a dashed outline, and the plan PDF has the pieces. Every edit is one undo step (a whole drag too).
+
 **Values in cues** (decided 14 Oct 2026: Kloarte has no programmer; a value set by hand goes into the current cue,
 undoable). Cues *track*: a cue holds only what it changes, every other value stays as the cues before left it. A value
 is shown **white** when the cue sets it, **blue** when it comes from a palette (`@name`: edit the palette and every cue
@@ -163,7 +177,7 @@ palettes need a native show (a project of before: save it once).
 | `list_lamps` | the lamps: rig item id, head, model, position on stage, which mechanics they have |
 | `get_lamp` | a lamp's mechanics (field angle, iris, barndoors, shutters, gobo, focus point) |
 | `set_lamp_mechanics` | changes a lamp's mechanics (merged in; the beam is rebuilt) |
-| `list_cues` | every cue: number, text, times, heads set, smoke, the current one |
+| `list_cues` | every cue: number, text, times, heads set, smoke, scenery changes, the current one |
 | `get_cue` | what a cue sets; with `tracked` the full state after it |
 | `set_cue_values` | values in a cue, per head, or one set for heads / groups |
 | `add_cue` | a new cue (copy of another, blackout, times, values) |
@@ -182,6 +196,11 @@ palettes need a native show (a project of before: save it once).
 | `list_actors` | the actors at the end of a cue: on stage, pose, position, facing, height, the face point aimed at |
 | `aim_moving_heads` | **moving-head aiming**: pan / tilt in a cue (later cues track it) at an actor's face, the middle of several actors or a stage point; per head or one target for many |
 | `focus_lamps` | **mechanical aiming**: a conventional lamp's focus point in its mechanics, the same in **every** cue (as focused by hand), at an actor (where they are at a cue) or a point |
+| `list_scenery` | the set pieces: id, name, shape, position, rotation, sizes, colour, material, and at a cue whether each is on stage and how far a split curtain is open |
+| `add_scenery` | a set piece (block, pyramid, table, curtain) with the fields of `scenery.yaml`; what isn't given is the shape's default; answers its id |
+| `update_scenery` | moves, turns, resizes, recolours or renames a set piece (the id stays) |
+| `remove_scenery` | removes set pieces and what the cues change of them |
+| `set_cue_scenery` | per cue and piece: `visible` false / true (out / in at the GO), `open` % and `time` s for a split curtain; null or `"clear"` removes the cue's change (`list_cues` shows them) |
 | `list_fixture_types` | the fixture types of the house catalogue that can be hung (id, name, kind, watts, zoom) |
 | `list_supports` | the trusses, pipes and stands: name, start and end on stage, length, the lamps on them |
 | `add_lamps` | hangs lamps of a type on a support (by name, e.g. "LT 5") at x positions or spread over it, each on a head of its own (the next free head and address, or from a given one on); they start dark |
@@ -238,8 +257,9 @@ press the new key; reset. Keys the tool doesn't use work as in the main window (
 | Plan | wheel = zoom, middle mouse = pan, F = fit; drag lamps (Alt = no snapping), box select, add fixtures (choose the type, click near a truss or stand; Esc stops; also in a show without any lamps yet), Remove lamp / Delete, add stands, patch box, Save PDF (A3 / A4, the plan as large as fits, scale bar and a compact legend) |
 | Truss heights | drag a truss up or down, or type the height |
 | Actor | the stage through the eyes of the actor chosen in the toolbar (or selected elsewhere), standing, seated or lying; right mouse drag sideways = **turn the actor** (its facing is recorded in the actor's step of the current cue, like the Facing slider; one undo step per drag; the actor becomes the selected one), up / down = look up / down, wheel = zoom, middle mouse = straight ahead. The bottom line shows its facing and its next entrance / exit is shown at the bottom ("Next: AF cour, cue 12 (in 8.5 s)"), a banner when GO / Play passes it. Side: cour = the audience's right, jardin = left; near the centre line lointain (upstage) or face (downstage) |
+| Plan, set pieces | click = select, drag = move (5 cm steps, Alt = freely), Shift + drag = turn (15° steps), Delete = remove |
 | Timeline | drag on the ruler = scrub; drag step edges and hold handles; double-click = add a step; Shift+Space = play; Stills / Movie open the export dialog |
 
 Default keys: Ctrl+1–3 workspaces, F1–F5 and F8 (actor) views, F6 key map, F7 gobo editor, F9 cue table, F10 palettes, Tab next view, H small views, Shift+F5 dock the timeline, Ctrl+B side panels, Ctrl+I inspector, Space GO, Backspace Back,
-Home reset, P auto, Insert new cue, Ctrl+Delete delete cue, L solo, Esc deselect, Ctrl+O import a MagicQ show, Ctrl+Shift+O open a project folder, Ctrl+S save, Ctrl+Shift+S export a MagicQ show, Ctrl+E export,
+Home reset, P auto, Insert new cue, Ctrl+Delete delete cue, Ctrl+Shift+N add a set piece, Ctrl+D duplicate it, Shift+Delete delete it, L solo, Esc deselect, Ctrl+O import a MagicQ show, Ctrl+Shift+O open a project folder, Ctrl+S save, Ctrl+Shift+S export a MagicQ show, Ctrl+E export,
 Ctrl+R movie, Ctrl+, preferences. All of them can be changed in the key map.

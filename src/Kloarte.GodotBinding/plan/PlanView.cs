@@ -12,7 +12,8 @@ namespace Kloarte.GodotBinding;
 /// Mouse: wheel = zoom, middle drag = pan, click = select (Ctrl: add), drag on empty = box select, drag a lamp = move it
 /// (snaps onto the nearest truss / stand; hold the "place freely" key, default Alt, to place it freely). The patch box
 /// sets the selected lamp's head number and DMX address (written into the MagicQ patch). Floor stands of the house
-/// types can be added and removed. "Save PDF" prints the plan (A3 / A4, fixed scale, legend, title block).
+/// types can be added and removed. Set pieces (PlanView.Scenery.cs): click selects, drag moves (5 cm steps; the
+/// "place freely" key: freely), drag with the "turn" key held (default Shift) turns it (15° steps). "Save PDF" prints the plan (A3 / A4, fixed scale, legend, title block).
 /// </summary>
 public partial class PlanView : ViewBase
 {
@@ -197,7 +198,7 @@ public partial class PlanView : ViewBase
 
     private void OnSelection()
     {
-        if (Selection.Fixtures.Count > 0 && Builder != null)
+        if ((Selection.Fixtures.Count > 0 || Selection.Piece != null) && Builder != null)
             Builder.SelectedSupport = 0;   // one thing selected at a time: Delete acts on the lamps
         Refresh();
         var f = Selection.Fixture;
@@ -359,8 +360,11 @@ public partial class PlanView : ViewBase
                     AcceptEvent();
                     break;
                 }
-                var lamp = LampAt(down.Position);
-                if (lamp != null)
+                // The selected set piece wins over the lamps above it (else it couldn't be dragged under a truss).
+                var lamp = PieceAt(down.Position) is { Selected: true } ? null : LampAt(down.Position);
+                if (lamp == null && PieceAt(down.Position) is { Selected: true } selectedPiece)
+                    GrabPiece(selectedPiece, down.Position);   // PlanView.Scenery.cs
+                else if (lamp != null)
                 {
                     _dragLamp = Builder.FixtureOf(lamp.VisId);
                     if (down.CtrlPressed)
@@ -374,6 +378,8 @@ public partial class PlanView : ViewBase
                     Builder.SelectedSupport = stand.Id;
                     Refresh();
                 }
+                else if (PieceAt(down.Position) is { } piece)
+                    GrabPiece(piece, down.Position);   // PlanView.Scenery.cs
                 else
                 {
                     _boxing = true;
@@ -382,7 +388,9 @@ public partial class PlanView : ViewBase
                 AcceptEvent();
                 break;
             case InputEventMouseMotion move when (move.ButtonMask & MouseButtonMask.Left) != 0:
-                if (_boxing)
+                if (_dragPiece != null)
+                    DragPiece(move.Position);
+                else if (_boxing)
                     _boxEnd = move.Position;
                 else if (_dragLamp != null && (_dragging || move.Position.DistanceTo(_pressAt) > 4f))
                 {
@@ -420,6 +428,7 @@ public partial class PlanView : ViewBase
                 }
                 _dragging = _boxing = false;
                 _dragLamp = null;
+                _dragPiece = null;
                 _dragSnap = null;
                 Refresh();
                 AcceptEvent();
@@ -564,7 +573,9 @@ public partial class PlanView : ViewBase
             StopPlacing();
         else if (KeyMap.Pressed(e, "plan_delete", vp))
         {
-            if (Builder?.Rig?.Find(Builder.SelectedSupport) is { IsStand: true })
+            if (Selection.Piece != null)
+                RemoveSelectedPiece();
+            else if (Builder?.Rig?.Find(Builder.SelectedSupport) is { IsStand: true })
                 RemoveSelectedStand();
             else
                 RemoveSelectedLamps();

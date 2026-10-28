@@ -5,7 +5,7 @@ namespace Kloarte.GodotBinding;
 
 /// <summary>
 /// FixturePanel: the view host between the side panels and the views in it. Clicks in a 3D view place the selected
-/// actor (Actors tab) or select the lamp nearest to the mouse.
+/// actor (Actors tab) or select the lamp nearest to the mouse, else the set piece under it (and drag it).
 /// </summary>
 public partial class FixturePanel
 {
@@ -19,7 +19,9 @@ public partial class FixturePanel
     private void BuildViews()
     {
         // The host is already in the tree (its _Ready has run).
-        _host.AddView(new View3D("3D") { BeforeCamera = WheelIntensity });
+        var main3D = new View3D("3D");
+        main3D.BeforeCamera = e => SceneryMouse(main3D, e) || WheelIntensity(e);   // set pieces first (FixturePanel.Scenery.cs)
+        _host.AddView(main3D);
         _host.AddView(new AudienceView());
         AddMoreViews();
         _host.FinishBar();
@@ -120,8 +122,13 @@ public partial class FixturePanel
             PlaceActorAt(origin, dir);
             return;
         }
-        if (LampNear(view, at) is { } best && !ToggleInSelection(best))
-            Select(best);
+        if (LampNear(view, at) is { } best)
+        {
+            if (!ToggleInSelection(best))
+                Select(best);
+            return;
+        }
+        PickPiece(origin, dir);   // a set piece (FixturePanel.Scenery.cs) when no lamp claims the click
     }
 
     /// <summary>The lamp nearest to a point of a 3D view on screen, within 24 px; null when none.</summary>

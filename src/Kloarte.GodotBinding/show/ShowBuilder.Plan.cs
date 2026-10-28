@@ -8,7 +8,7 @@ using Kloarte.Model;
 namespace Kloarte.GodotBinding;
 
 /// <summary>
-/// ShowBuilder: the plan (top view) and the rig and patch changes made from it - moving lamps (snapping to trusses and
+/// ShowBuilder: the plan (top view, with the project's set pieces as they are at the playhead) and the rig and patch changes made from it - moving lamps (snapping to trusses and
 /// stands), flying trusses / setting stand heights (lamps stay attached and keep their focus point), adding floor
 /// stands, and patching (DMX address, head number). Everything ends up in the MagicQ show (saved with Save).
 /// </summary>
@@ -44,6 +44,11 @@ public partial class ShowBuilder
                 Points = Footprint(o),
                 Masking = o.ObjectKind is RigObjectKind.Proscenium or RigObjectKind.Border || o.Name.StartsWith("Manteau"),
             });
+        foreach (var piece in Model.Blocking.Scenery)
+        {
+            var frame = SceneryEditing.FrameOf(piece);
+            data.Pieces.Add(new PlanPiece { Piece = piece, Visible = frame.Visible, Open = frame.Open, Selected = Selection.Piece == piece.Id });
+        }
         foreach (var s in Rig.Supports)
             data.Supports.Add(new PlanSupport
             {

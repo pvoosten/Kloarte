@@ -314,7 +314,12 @@ public partial class FixturePanel
         SyncSmoke();
         // Only a new cue changes what the actor panel shows; edits in it (which invalidate the timeline and so come
         // here too) must not rebuild it under the user's hands.
-        if (_selectedActor != null && _player.Step != _actorParamsStep)
+        if (_selectedPiece != null)
+        {
+            if (_player.Step != _pieceParamsStep)
+                BuildPieceParams();   // the new cue's in / out (FixturePanel.Scenery.cs)
+        }
+        else if (_selectedActor != null && _player.Step != _actorParamsStep)
             BuildActorParams();
         // A lamp's settings show the cue's level and "Record into cue N": a new cue (or the end of its fade) builds
         // them again (explored 12 Oct 2026: after GO they still named the cue before).
@@ -342,6 +347,7 @@ public partial class FixturePanel
         CheckMagicQ(delta);
         CheckProjectArg();
         RefreshChips();
+        PollScenery();   // FixturePanel.Scenery.cs
         if (_playStatus == null || _player?.Stack == null)
             return;
         var steps = _player.Stack.Steps;
@@ -393,6 +399,8 @@ public partial class FixturePanel
         else if (KeyMap.Pressed(e, "edit_redo", vp))
             UndoEdit(redo: true);
         else if (ToolKey(e, vp))   // FixturePanel.Workspaces.cs
+        { }
+        else if (SceneryKey(e, vp))   // FixturePanel.Scenery.cs
         { }
         else if (KeyMap.Pressed(e, "command_palette", vp))
             ShowPalette();

@@ -9,7 +9,7 @@ namespace Kloarte.Application;
 
 /// <summary>
 /// RemoteTools: the cue list: list and read cues (what a cue sets, and the tracked state after it), set values, add,
-/// change and delete cues, smoke per cue. Each edit is one undo step; the stage shows the current cue again.
+/// change and delete cues, smoke per cue (the scenery per cue: RemoteTools.Scenery). Each edit is one undo step; the stage shows the current cue again.
 /// </summary>
 public sealed partial class RemoteTools
 {
@@ -17,8 +17,8 @@ public sealed partial class RemoteTools
     private IEnumerable<RemoteTool> CueTools()
     {
         yield return Tool("list_cues", "Cue list",
-            "Every cue in order: number, id, text, fade in / out and delay (s), how many heads it sets, smoke, and which " +
-            "one is current.",
+            "Every cue in order: number, id, text, fade in / out and delay (s), how many heads it sets, smoke, what it " +
+            "changes of the set pieces (piece id -> \"out\" / \"in\" / \"open 100 % in 5 s\"), and which one is current.",
             Object(), readOnly: true, _ => Cues());
 
         yield return Tool("get_cue", "Cue values",
@@ -83,6 +83,7 @@ public sealed partial class RemoteTools
             cue = c.Cue, id = c.Id, text = c.Text, fadeIn = c.FadeIn, fadeOut = c.FadeOut, delay = c.Delay,
             heads = c.Heads.Count,
             smoke = c.Id is { } id && smoke.TryGetValue(id, out var s) ? s.Amount : (double?)null,
+            scenery = SceneryOfCue(c.Id),
             current = i == current ? true : (bool?)null,
         }).ToList();
     }

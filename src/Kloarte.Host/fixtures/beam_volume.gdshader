@@ -4,7 +4,10 @@
 //
 // Drawn on a box around the frustum: back faces, no depth test, additive. The ray is clipped
 // analytically to the frustum and to the opaque scene depth, then sampled `steps` times.
-// Not handled yet: occlusion by scenery inside the beam (borders, legs), extinction.
+// Scenery inside the beam (borders, legs, set pieces: the Occluders layer) cuts it: `occlusion` is the lamp's
+// occlusion map (occlusion_depth.gdshader), seen from the lens like the mask: depth along the beam axis / range.
+// A sample farther from the lens than the occluder in its direction is skipped.
+// Not handled yet: extinction.
 shader_type spatial;
 render_mode unshaded, blend_add, cull_front, depth_test_disabled, depth_draw_never, shadows_disabled, fog_disabled;
 
@@ -19,6 +22,10 @@ uniform vec3 light_color = vec3(1.0);   // colour * energy
 uniform float anisotropy = 0.6;
 uniform float gain = 1.0;
 uniform int steps = 48;
+uniform sampler2D occlusion : filter_nearest, repeat_disable;
+uniform bool occlusion_enabled = false;
+uniform float occlusion_range = 20.0;
+uniform float occlusion_near = 0.0;   // nothing occludes nearer the lens (depth along the axis): no lookup there
 
 // Restrict [t0, t1] to the half-space dot(n, o + t d) <= c.
 void clip(vec3 n, float c, vec3 o, vec3 d, inout float t0, inout float t1) {
@@ -67,7 +74,11 @@ void fragment() {
 	for (int i = 0; i < steps; i++) {
 		vec3 p = o + d * (t0 + (float(i) + jitter) * dt);
 		vec2 q = p.xy / (-p.z * tan_half);
-		float m = textureLod(mask, vec2(q.x, -q.y) * 0.5 + 0.5, 0.0).r;
+		vec2 uv = vec2(q.x, -q.y) * 0.5 + 0.5;
+		if (occlusion_enabled && -p.z > occlusion_near && -p.z > textureLod(occlusion, uv, 0.0).r * occlusion_range) {
+			continue;   // behind scenery: no mask or phase work
+		}
+		float m = textureLod(mask, uv, 0.0).r;
 		float r2 = max(dot(p, p), 0.01);
 		sum += m * henyey_greenstein(dot(p, -d) * inversesqrt(r2), anisotropy) / r2;
 	}

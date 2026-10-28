@@ -1,6 +1,9 @@
 # Open work and lasting findings
 
-- **Open:** occlusion by scenery inside the custom beam volume (Godot finding 2).
+- **Beam occlusion by scenery is on** (Godot finding 12): +5.5 % on the Kruimels rig, +13 % in a worst-case bench (74 lamps,
+  49 beams cut). If a larger rig gets too slow: one texture fetch per step (mask and depth in one texture, a 2D combine
+  pass on change), fewer steps for cut beams, or a preference / per-lamp switch (`BeamOcclusion.Enabled`). Known: a lamp
+  shows an uncut beam for a few frames until its map's turn; scenery closer than 5 cm to a lens doesn't cut.
 - **Open (26 Oct 2026): movie size ignored.** Every movie is 1152x648 (the project's default window size) whatever the export
   dialog / preferences ask: Movie Maker ignores the `--resolution WxH` the app passes (`FixturePanel.StartMovies`), both from
   the project and in the exported build (checked in the AVI header). To find: how Godot 4.7 sets the Movie Maker size

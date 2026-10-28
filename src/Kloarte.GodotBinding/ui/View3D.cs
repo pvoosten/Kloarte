@@ -127,10 +127,13 @@ public partial class View3D : ViewBase
     }
 
     /// <summary>Camera control for an input event (also while the mouse is captured, via the host); true when used.</summary>
-    public bool CameraInput(InputEvent e) => OnCameraInput(e);
+    public bool CameraInput(InputEvent e) => BeforeCamera?.Invoke(e) == true || OnCameraInput(e);
 
     /// <summary>Camera control for an input event; true when used.</summary>
     protected virtual bool OnCameraInput(InputEvent e) => Source != null && Source.HandleInput(e);
+
+    /// <summary>World ray under a position in the view (view coordinates), e.g. for dragging on the stage.</summary>
+    internal (Vector3 Origin, Vector3 Dir) RayAt(Vector2 viewPos) => Ray(viewPos);
 
     /// <summary>World ray under a position in the view (view coordinates).</summary>
     private (Vector3 Origin, Vector3 Dir) Ray(Vector2 viewPos)

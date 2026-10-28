@@ -8,13 +8,16 @@ namespace Kloarte.Model;
 
 /// <summary>
 /// The project's YAML files as the model: one lamp file per lamp (<see cref="LampFile"/>, keyed by its rig item id),
-/// <c>blocking/actors.yaml</c> and <c>blocking/steps.yaml</c>. Loading applies what parses and reports the rest; saving
+/// <c>blocking/actors.yaml</c>, <c>blocking/scenery.yaml</c> and <c>blocking/steps.yaml</c>. Loading applies what parses and reports the rest; saving
 /// writes what changed (<see cref="ProjectFolder"/> refuses what changed outside Kloarte or doesn't parse).
 /// </summary>
 public sealed partial class ShowModel<TShow>
 {
     /// <summary>The actors file, relative to the project folder.</summary>
     public const string ActorsPath = "blocking/actors.yaml";
+
+    /// <summary>The scenery file (the set pieces), relative to the project folder.</summary>
+    public const string SceneryPath = "blocking/scenery.yaml";
 
     /// <summary>The steps file, relative to the project folder.</summary>
     public const string StepsPath = "blocking/steps.yaml";
@@ -75,7 +78,9 @@ public sealed partial class ShowModel<TShow>
         }
         var actors = ReadBlockingFile<ActorsFile>(folder, ActorsPath, problems);
         var steps = ReadBlockingFile<StepsFile>(folder, StepsPath, problems);
-        model.Blocking = BlockingFiles.FromFiles(actors, steps, CueIndex.Of(show), folder.PathOf(StepsPath), problems);
+        var scenery = ReadBlockingFile<SceneryFile>(folder, SceneryPath, problems);
+        model.Blocking = BlockingFiles.FromFiles(actors, steps, scenery, CueIndex.Of(show), folder.PathOf(StepsPath),
+            folder.PathOf(SceneryPath), problems);
         return model;
     }
 
@@ -110,13 +115,20 @@ public sealed partial class ShowModel<TShow>
             _brokenLamps.Remove(rigItem);
     }
 
-    /// <summary>Applies the actors file that was read (an external change); the steps stay as they are.</summary>
+    /// <summary>Applies the actors file that was read (an external change); the rest of the blocking stays as it is.</summary>
     public void ApplyActors(ActorsFile actors, List<FileProblem> problems) =>
-        Blocking = BlockingFiles.FromFiles(actors, BlockingFiles.StepsOf(Blocking, CueIndex.Of(Show)), CueIndex.Of(Show), "", problems);
+        Blocking = BlockingFiles.FromFiles(actors, BlockingFiles.StepsOf(Blocking, CueIndex.Of(Show)),
+            BlockingFiles.SceneryOf(Blocking), CueIndex.Of(Show), "", "", problems);
 
-    /// <summary>Applies the steps file that was read (an external change); the actors stay as they are.</summary>
+    /// <summary>Applies the steps file that was read (an external change); the rest of the blocking stays as it is.</summary>
     public void ApplySteps(StepsFile steps, List<FileProblem> problems) =>
-        Blocking = BlockingFiles.FromFiles(BlockingFiles.ActorsOf(Blocking), steps, CueIndex.Of(Show), "", problems);
+        Blocking = BlockingFiles.FromFiles(BlockingFiles.ActorsOf(Blocking), steps, BlockingFiles.SceneryOf(Blocking),
+            CueIndex.Of(Show), "", "", problems);
+
+    /// <summary>Applies the scenery file that was read (an external change); the rest of the blocking stays as it is.</summary>
+    public void ApplyScenery(SceneryFile scenery, List<FileProblem> problems) =>
+        Blocking = BlockingFiles.FromFiles(BlockingFiles.ActorsOf(Blocking), BlockingFiles.StepsOf(Blocking, CueIndex.Of(Show)),
+            scenery, CueIndex.Of(Show), "", "", problems);
 
     /// <summary>The lamp with this rig item id (a fixture of the show), or null.</summary>
     private IRigItem LampOf(int rigItem) => Show.RigItems.FirstOrDefault(v => v.Id == rigItem && v.IsFixture);
@@ -153,6 +165,11 @@ public sealed partial class ShowModel<TShow>
         ProjectSchemas.ModelineFor(ProjectSchemas.ActorsSchema, "blocking"),
         new[] { FileText.HeaderLine("the actors on stage (their movement is in steps.yaml)") });
 
+    /// <summary>The text the scenery file would have now.</summary>
+    public string TextOfScenery() => FileCodec.Current.Write(BlockingFiles.SceneryOf(Blocking),
+        ProjectSchemas.ModelineFor(ProjectSchemas.ScenerySchema, "blocking"),
+        new[] { FileText.HeaderLine("the set pieces on stage (the cues in steps.yaml take them out / in, open curtains)") });
+
     /// <summary>The text the steps file would have now.</summary>
     public string TextOfSteps() => FileCodec.Current.Write(BlockingFiles.StepsOf(Blocking, CueIndex.Of(Show)),
         ProjectSchemas.ModelineFor(ProjectSchemas.StepsSchema, "blocking"),
@@ -182,6 +199,8 @@ public sealed partial class ShowModel<TShow>
         {
             writes.Add(folder.Write(folder.PathOf(ActorsPath), TextOfActors()));
             writes.Add(folder.Write(folder.PathOf(StepsPath), TextOfSteps()));
+            if (Blocking.Scenery.Count > 0 || File.Exists(folder.PathOf(SceneryPath)))
+                writes.Add(folder.Write(folder.PathOf(SceneryPath), TextOfScenery()));
         }
         return writes;
     }

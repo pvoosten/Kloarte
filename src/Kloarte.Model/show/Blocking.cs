@@ -10,15 +10,71 @@ namespace Kloarte.Model;
 /// other (e.g. walk to the table, wait, walk to the chair and sit down). Cues are keyed by their MagicQ cue id
 /// (S record), so renumbering in MagicQ keeps the blocking. Positions are stage coordinates (origin = downstage
 /// centre on the stage floor). Holds: the time from the end of a cue to the next GO (the timeline's timing). Smoke: the
-/// haze amount a cue sets (it tracks into the later cues; <see cref="CueSmoke"/>). No Godot dependencies.
+/// haze amount a cue sets (it tracks into the later cues; <see cref="CueSmoke"/>). Scenery: the set pieces and what each cue
+/// changes of them (out / in, a curtain opening; tracks too). No Godot dependencies.
 /// </summary>
 public sealed class Blocking
 {
     /// <summary>Seconds a hazer takes to reach a cue's smoke amount when the cue doesn't say.</summary>
     public const float DefaultSmokeTime = 20f;
 
+    /// <summary>Seconds a split curtain takes to open or close when the cue doesn't say.</summary>
+    public const float DefaultOpenTime = 5f;
+
     /// <summary>The actors.</summary>
     public List<ActorDef> Actors { get; set; } = new();
+
+    /// <summary>The set pieces (<c>blocking/scenery.yaml</c>); before the first cue every piece is on stage.</summary>
+    public List<SceneryPiece> Scenery { get; set; } = new();
+
+    /// <summary>cue id -&gt; piece id -&gt; what that cue changes of the piece (out / in, a curtain opening); tracks.</summary>
+    public Dictionary<int, Dictionary<string, SceneryChange>> SceneryCues { get; set; } = new();
+
+    /// <summary>The set piece with this id, or null.</summary>
+    public SceneryPiece FindPiece(string pieceId) => Scenery.FirstOrDefault(p => p.Id == pieceId);
+
+    /// <summary>What a cue changes of a piece, or null (created empty when `create`).</summary>
+    public SceneryChange SceneryChangeOf(int cueId, string pieceId, bool create = false)
+    {
+        if (!SceneryCues.TryGetValue(cueId, out var pieces))
+        {
+            if (!create)
+                return null;
+            SceneryCues[cueId] = pieces = new Dictionary<string, SceneryChange>();
+        }
+        if (!pieces.TryGetValue(pieceId, out var change) && create)
+            pieces[pieceId] = change = new SceneryChange();
+        return change;
+    }
+
+    /// <summary>Removes what a cue changes of a piece (and the cue's entry when nothing is left).</summary>
+    public void ClearSceneryChange(int cueId, string pieceId)
+    {
+        if (!SceneryCues.TryGetValue(cueId, out var pieces))
+            return;
+        pieces.Remove(pieceId);
+        if (pieces.Count == 0)
+            SceneryCues.Remove(cueId);
+    }
+
+    /// <summary>A piece's state after the given cues (in order) have run completely.</summary>
+    public SceneryFrame SceneryAfter(string pieceId, IEnumerable<int> cueIds)
+    {
+        var piece = FindPiece(pieceId);
+        var frame = new SceneryFrame(true, piece?.Open ?? 0f);
+        foreach (int cue in cueIds)
+            if (SceneryChangeOf(cue, pieceId) is { } change)
+                frame = new SceneryFrame(change.Visible ?? frame.Visible, change.Open ?? frame.Open);
+        return frame;
+    }
+
+    /// <summary>Removes a set piece and what the cues change of it.</summary>
+    public void RemovePiece(string pieceId)
+    {
+        Scenery.RemoveAll(p => p.Id == pieceId);
+        foreach (int cue in SceneryCues.Keys.ToList())
+            ClearSceneryChange(cue, pieceId);
+    }
 
     /// <summary>cue id -&gt; the smoke that cue sets (from its GO on; later cues without an entry keep it).</summary>
     public Dictionary<int, CueSmoke> Smoke { get; set; } = new();

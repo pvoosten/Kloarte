@@ -32,11 +32,14 @@ public sealed class TimelineSegment
     /// <summary>When the last actor step of this cue has finished, after the GO.</summary>
     public double ActorsEnd { get; init; }
 
+    /// <summary>When the last curtain this cue opens or closes has finished moving, after the GO.</summary>
+    public double SceneryEnd { get; init; }
+
     /// <summary>Wait after everything has finished until the next GO.</summary>
     public double Hold { get; init; }
 
-    /// <summary>Time everything of this cue has finished (fades and actors).</summary>
-    public double ActiveEnd => Start + Math.Max(Math.Max(FadeIn, FadeOut), ActorsEnd);
+    /// <summary>Time everything of this cue has finished (fades, actors and curtains).</summary>
+    public double ActiveEnd => Start + Math.Max(Math.Max(FadeIn, FadeOut), Math.Max(ActorsEnd, SceneryEnd));
 
     /// <summary>Time of the next GO.</summary>
     public double End => ActiveEnd + Hold;

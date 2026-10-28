@@ -35,16 +35,17 @@ public partial class FixturePanel
     /// <summary>What the view shows that a rebuild of the scene keeps: the selected lamps, the actor, the cue and step.</summary>
     /// <param name="Lamps">Rig item ids of the selected lamps.</param>
     /// <param name="Actor">The selected actor, or null.</param>
+    /// <param name="Piece">The selected set piece, or null.</param>
     /// <param name="Stack">The cue stack's number, or null.</param>
     /// <param name="Step">The playback step.</param>
     /// <param name="Cue">The cue number, or null.</param>
-    private readonly record struct ViewKeep(HashSet<int> Lamps, string Actor, int? Stack, int Step, float? Cue);
+    private readonly record struct ViewKeep(HashSet<int> Lamps, string Actor, string Piece, int? Stack, int Step, float? Cue);
 
     /// <summary>Takes the view (and clears the selection, which the rebuild frees) before the scene is rebuilt.</summary>
     private ViewKeep TakeView(ShowBuilder builder)
     {
         var lamps = Selection.Fixtures.Where(IsInstanceValid).Select(f => builder.VisOf(f)?.Id ?? -1).ToHashSet();
-        var view = new ViewKeep(lamps, _selectedActor, _player.Stack?.Number, _player.Step, CurrentCueNumber());
+        var view = new ViewKeep(lamps, _selectedActor, _selectedPiece, _player.Stack?.Number, _player.Step, CurrentCueNumber());
         Deselect();
         return view;
     }
@@ -64,6 +65,8 @@ public partial class FixturePanel
         }
         else if (view.Actor != null && builder.Model.Blocking.Find(view.Actor) != null)
             SelectActor(view.Actor);
+        else if (view.Piece != null && builder.Model.Blocking.FindPiece(view.Piece) != null)
+            Selection.SelectPiece(view.Piece);
         RefreshUnsaved();
         UpdateProjectBox();
         GD.Print($"Scene rebuilt ({Time.GetTicksMsec() - started} ms)");

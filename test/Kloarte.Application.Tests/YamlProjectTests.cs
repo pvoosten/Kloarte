@@ -469,6 +469,64 @@ public sealed class YamlProjectTests : TestBase
         Assert.Equal("Anna", model.Blocking.Find("a1").Name);
     }
 
+    /// <summary>
+    /// The set pieces are saved in blocking/scenery.yaml (only once there are any) and their changes per cue in
+    /// steps.yaml; the reopened project has them, nothing unsaved.
+    /// </summary>
+    [Fact]
+    public void SceneryIsSavedWithTheBlocking()
+    {
+        var (session, model, _, _) = OpenShow();
+        session.SaveProject();
+        string file = Path.Combine(session.ProjectFolder, "blocking", "scenery.yaml");
+        Assert.False(File.Exists(file));
+        var table = SceneryPiece.New("table", "Table", SceneryShape.Table);
+        table.Color = "336699";
+        model.Blocking.Scenery.Add(table);
+        int cue = model.Show.Cues.First().Id;
+        model.Blocking.SceneryChangeOf(cue, "table", true).Visible = false;
+        Assert.Contains("blocking", session.UnsavedChanges());
+        session.SaveProject();
+        Assert.Contains("shape: table", File.ReadAllText(file));
+        Assert.Contains("table: {visible: false}", File.ReadAllText(Path.Combine(session.ProjectFolder, "blocking", "steps.yaml")));
+
+        var again = Session(new FakeWatcher());
+        again.OpenProject(session.ProjectName);
+        var loaded = again.Load();
+        Assert.Equal("336699", loaded.Blocking.FindPiece("table").Color);
+        Assert.False(loaded.Blocking.SceneryChangeOf(cue, "table").Visible);
+        Assert.Empty(again.UnsavedChanges());
+    }
+
+    /// <summary>A scenery edit outside Kloarte is one undo step; a broken scenery file is not applied.</summary>
+    [Fact]
+    public void ASceneryEditOutsideIsOneUndoableStep()
+    {
+        var (session, model, _, watcher) = OpenShow();
+        model.Blocking.Scenery.Add(SceneryPiece.New("box", "Box", SceneryShape.Block));
+        session.SaveProject();
+
+        string file = Path.Combine(session.ProjectFolder, "blocking", "scenery.yaml");
+        string text = File.ReadAllText(file);
+        string indent = text.Split('\n').First(l => l.Contains("name: Box"))[..^"name: Box".Length].TrimEnd('\r');
+        File.WriteAllText(file, text.Replace("name: Box", $"name: Big box\n{indent.Replace('-', ' ')}width: 3"));
+        watcher.Settled.Add(file);
+        var change = Assert.Single(session.PollProjectChanges());
+
+        Assert.True(change.Applied);
+        Assert.Equal(ProjectFileKind.Scenery, change.Kind);
+        Assert.Equal(("Big box", 3f), (model.Blocking.FindPiece("box").Name, model.Blocking.FindPiece("box").Width));
+        Assert.Equal("Edited outside Kloarte: scenery.yaml", session.UndoName);
+        session.Undo();
+        Assert.Equal(("Box", 1f), (model.Blocking.FindPiece("box").Name, model.Blocking.FindPiece("box").Width));
+
+        File.WriteAllText(file, "pieces:\n  - id: box\n    width: [oops\n");
+        watcher.Settled.Add(file);
+        var broken = Assert.Single(session.PollProjectChanges());
+        Assert.False(broken.Applied);
+        Assert.Equal("Box", model.Blocking.FindPiece("box").Name);
+    }
+
     /// <summary>A saved project with its own venue: an old project's venue.json, migrated to venue.yaml by a save.</summary>
     private (ShowSession<MagicQShow> Session, FakeWatcher Watcher, string Venue) ProjectWithVenue()
     {

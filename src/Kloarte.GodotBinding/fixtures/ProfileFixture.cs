@@ -19,6 +19,8 @@ namespace Kloarte.GodotBinding;
 ///
 /// Beam in haze: Godot's volumetric fog ignores light_projector, so the light's fog contribution is off and
 /// beam_volume.gdshader raymarches the same mask instead (CustomBeam = false shows Godot's fog for comparison).
+/// Scenery on <see cref="RenderLayers.Occluders"/> cuts that beam: see ProfileFixture.Occlusion.cs and
+/// <see cref="BeamOcclusion"/>.
 ///
 /// The node's position is the lens; it is aimed at FocusPoint (world space), like focusing a lamp.
 /// Generated children are not saved in the scene.
@@ -252,6 +254,7 @@ public partial class ProfileFixture : Node3D
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
         };
         AddChild(_beam);
+        CreateOcclusion();
 
         // Lamp housing behind the lens; does not cast shadows (the light sits at its front).
         AddChild(new MeshInstance3D
@@ -279,7 +282,9 @@ public partial class ProfileFixture : Node3D
         {
             _beamTransform = _light.GlobalTransform;
             _beamMaterial.SetShaderParameter("world_to_light", new Projection(_beamTransform.AffineInverse()));
+            _occlusionDirty = true;
         }
+        ProcessOcclusion();
     }
 
     /// <summary>Turns the lamp to its focus point now (normally done on the next frame after a change).</summary>
@@ -378,6 +383,7 @@ public partial class ProfileFixture : Node3D
         var b = _beamMaterial;
         b.SetShaderParameter("tan_half", tanHalf);
         b.SetShaderParameter("beam_length", length);
+        BeamShapeChanged(tanHalf, length);
         ApplyLight();
     }
 

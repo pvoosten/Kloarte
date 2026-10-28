@@ -5,7 +5,7 @@ namespace Kloarte.GodotBinding;
 /// <summary>
 /// FixturePanel: workspaces and tools (UI review 28 / 31, decided with the user). A workspace (view bar, key map
 /// <c>workspace_rig</c> / <c>_focus</c> / <c>_blocking</c>, View menu) shows its list in the left panel: Fixtures for Rig
-/// and Focus, Actors for Blocking. The Present button is Present mode. The key map and the gobo editor are tools in
+/// and Focus, Actors (or Scenery, when it is shown) for Blocking. The Present button is Present mode. The key map and the gobo editor are tools in
 /// windows of their own (<see cref="ToolWindow"/>), opened and closed with their keys or the Tools menu.
 /// </summary>
 public partial class FixturePanel
@@ -61,7 +61,7 @@ public partial class FixturePanel
     /// <summary>The left panel shows the workspace's list.</summary>
     private void ShowWorkspaceList(Workspace workspace)
     {
-        int tab = workspace == Workspace.Blocking ? ActorsTab : 0;
+        int tab = workspace != Workspace.Blocking ? 0 : _tabs.CurrentTab == SceneryTab ? SceneryTab : ActorsTab;
         if (_tabs.CurrentTab != tab)
             _tabs.CurrentTab = tab;
     }

@@ -90,6 +90,7 @@ public partial class FixturePanel
         Item(playback, "Delete the current cue", "cue_delete");
         playback.AddSeparator();
         Item(playback, "Open in MagicQ PC", null, OpenInMagicQ);
+        SceneryMenu(Menu(bar, "Scenery"));   // FixturePanel.Scenery.cs
 
         var tools = Menu(bar, "Tools");
         Item(tools, "Cue table", "view_cues");

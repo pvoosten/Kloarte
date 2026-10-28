@@ -18,8 +18,8 @@ namespace Kloarte.GodotBinding;
 /// With AutoVenue it comes from the show: the proscenium object (z), else a box named "podium"/"stage" (front edge and
 /// top), else StageFrontZ. Generated nodes are not saved.
 ///
-/// Partial class: ShowBuilder.Venue.cs (venue, scenery), ShowBuilder.Rigging.cs (rig, patch), ShowBuilder.Playback.cs
-/// (cues, actors).
+/// Partial class: ShowBuilder.Venue.cs (venue, MagicVis objects), ShowBuilder.Scenery.cs (set pieces),
+/// ShowBuilder.Rigging.cs (rig, patch), ShowBuilder.Playback.cs (cues, actors).
 /// </summary>
 [Tool]
 public partial class ShowBuilder : Node3D, IStage
@@ -253,6 +253,7 @@ public partial class ShowBuilder : Node3D, IStage
         _fixtureOf.Clear();
         _intensityAddress.Clear();
         _actors.Clear();
+        _setPieces.Clear();
         if (Services == null)
             return;   // in the editor: the host's services don't exist there
         if (!Files.CanLoad)
@@ -291,6 +292,7 @@ public partial class ShowBuilder : Node3D, IStage
             }
         }
 
+        BuildScenery(scenery);
         BuildActors(show);
         AssignGroups();
 
@@ -304,6 +306,7 @@ public partial class ShowBuilder : Node3D, IStage
             Files.ResyncHistory();
         else
             Files.AcceptAsSaved();
+        NotifyOccludersChanged();
     }
 
     /// <summary>Saves the whole project (<see cref="IShowFiles.SaveProject"/>) with the lamps' current set-up.</summary>

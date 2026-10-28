@@ -29,6 +29,10 @@ public sealed class CueEntry
     [FileField("Seconds the haze takes to build or thin to this cue's smoke amount, like a hazer; missing = 20 s", Unit = "s", Min = 0, Max = 3600)]
     public double? SmokeTime { get; set; }
 
+    /// <summary>Set piece id -> what this cue changes of it.</summary>
+    [FileField("Per set piece id (blocking/scenery.yaml): out / in at this cue's GO, how far a curtain opens")]
+    public Dictionary<string, SceneryChangeEntry> Scenery { get; set; }
+
     /// <summary>Actor id -> movement steps in this cue, in order.</summary>
     [FileField("Per actor id: the movement steps in this cue, one after the other")]
     public Dictionary<string, List<ActorStateEntry>> Actors { get; set; }

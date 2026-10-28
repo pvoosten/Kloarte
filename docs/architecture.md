@@ -123,6 +123,27 @@ Moved out of CLAUDE.md; the per-project file listing was dropped (code and XML d
     MagicQ PC (that check can only be done by the user): to do before the next performance. Not exported (warnings):
     dimmer curves, cue delays; the S record's millisecond copies of the times are not changed with them.
 
+## Scenery (user, decided and built 27 Oct 2026)
+Set pieces on stage: block, pyramid, table, curtain, each with one colour and a material preset. User manual:
+`docs/manual.md`, *Scenery*.
+- **Kloarte's own data**, not exported to MagicQ: `blocking/scenery.yaml` (`SceneryFile`; per piece shape, position =
+  centre of the bottom, rotation about the vertical, sizes, colour `#rrggbb`, material painted / wood / molton / metal /
+  gauze; only what differs from the shape's default is written). Imported MagicVis boxes / borders stay in `rig.yaml`.
+- **Per cue, tracking like the smoke**: `steps.yaml` `scenery: {<piece>: {visible, open, time}}`: a piece goes out / comes
+  in at the GO (no fade), a split curtain opens / closes over `time` (default 5 s) from where it is. Before the first cue
+  every piece is in. A GO's active part lasts until its curtains have finished (`TimelineSegment.SceneryEnd`).
+- **Model**: `Blocking.Scenery` + `Blocking.SceneryCues` (in the blocking, so undo, unsaved check and save work as for
+  actors; deviation from the prompt, which had its own snapshot), `PlaybackTimeline.SceneryAt` / `SceneryAfter`,
+  `SceneryGeometry` (footprints, ray picking: the plan, the PDF and the 3D pick use the model, not the nodes).
+- **Scene**: `SetPiece` per piece under "Scenery" (`ShowBuilder.Scenery`: `RebuildScenery`, `RebuildPiece`), opaque pieces
+  on `RenderLayers.Occluders` (with the MagicVis boxes / borders / proscenium and the cyc), gauze translucent without
+  shadow; `CuePlayer` applies in / out and openness; every change of geometry on that layer goes through
+  `ShowBuilder.NotifyOccludersChanged` (invalidates the lamps' occlusion maps, raises `OccludersChanged`).
+- **Editing**: Scenery tab + inspector (`FixturePanel.Scenery`, shared `SceneryEditing`), plan (drag, Shift = turn), 3D
+  (pick, drag, right-drag turns), key map `scenery_add` / `scenery_duplicate` / `scenery_delete`; MCP `list_scenery`,
+  `add_scenery`, `update_scenery`, `remove_scenery`, `set_cue_scenery`. An edit rebuilds only its piece; a drag is one
+  undo step.
+
 ## MCP server (user, decided and built 25 Oct 2026)
 Claude (Claude Code, or any MCP client) works on the show open in the running app: reads it, edits it, plays it and
 looks at the result. User manual: `docs/manual.md`, *Claude / MCP*.

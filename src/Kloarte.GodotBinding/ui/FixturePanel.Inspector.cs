@@ -155,6 +155,7 @@ public partial class FixturePanel
         string text = lamps.Count > 1 ? $"{lamps.Count} lamps"
             : _selected != null && IsInstanceValid(_selected) ? LampTitle(_selected)
             : _selectedActor != null ? CurrentBuilder?.Model?.Blocking.Find(_selectedActor)?.Name ?? "Actor"
+            : _selectedPiece != null ? CurrentBuilder?.Model?.Blocking.FindPiece(_selectedPiece)?.Name ?? "Set piece"
             : "Nothing selected";
         if (_stripLabel.Text != text)
             _stripLabel.Text = text;
@@ -170,7 +171,7 @@ public partial class FixturePanel
         _params.AddChild(new Label { Text = "Nothing selected" });
         _params.AddChild(new Label
         {
-            Text = "Click a lamp in a view or in the Fixtures list, or an actor in the Actors list.",
+            Text = "Click a lamp in a view or in the Fixtures list, an actor in the Actors list, or a set piece.",
             Modulate = new Color(0.7f, 0.7f, 0.7f),
             AutowrapMode = TextServer.AutowrapMode.WordSmart,
             CustomMinimumSize = new Vector2(180, 0),

@@ -413,15 +413,18 @@ public sealed partial class ShowSession<TShow> : IShowFiles where TShow : class,
     /// <summary>The last check of a YAML project's unsaved parts, with the inputs it was made from (see <see cref="YamlUnsavedParts"/>).</summary>
     private (long Show, long Mechanics, long Blocking, int Folder, List<string> Parts)? _yamlChecked;
 
-    /// <summary>True when the actors or the steps differ from their files (as last read or written).</summary>
+    /// <summary>True when the actors, the scenery or the steps differ from their files (as last read or written).</summary>
     private bool BlockingUnsaved()
     {
         var folder = FolderOf();
         if (!File.Exists(folder.PathOf(ShowModel<TShow>.ActorsPath)) && !File.Exists(folder.PathOf(ShowModel<TShow>.StepsPath))
+            && !File.Exists(folder.PathOf(ShowModel<TShow>.SceneryPath))
             && Model.BlockingJson() == System.Text.Json.JsonSerializer.Serialize(new Blocking(), ShowModel<TShow>.Json))
             return false;   // no blocking yet, none in the files: nothing to save
         return !folder.IsKnown(folder.PathOf(ShowModel<TShow>.ActorsPath), Model.TextOfActors())
-               || !folder.IsKnown(folder.PathOf(ShowModel<TShow>.StepsPath), Model.TextOfSteps());
+               || !folder.IsKnown(folder.PathOf(ShowModel<TShow>.StepsPath), Model.TextOfSteps())
+               || (Model.Blocking.Scenery.Count > 0 || File.Exists(folder.PathOf(ShowModel<TShow>.SceneryPath)))
+                  && !folder.IsKnown(folder.PathOf(ShowModel<TShow>.SceneryPath), Model.TextOfScenery());
     }
 
     /// <summary>
