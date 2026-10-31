@@ -85,8 +85,10 @@ change only their intensity per cue: shutters, barndoors, iris, gobo and focus a
 whole show). Moving heads change everything per cue, in their own units (from their GDTF): intensity %, pan / tilt °,
 cyan / magenta / yellow or the emitters, CTO in K, colour wheel, zoom °, focus, iris, frost, gobo and animation wheel
 (slots by name), rotations, prism, blades; the rest under *Other channels*. A colour wheel that goes from a preset
-to *Raw DMX* (the LEDBeam's virtual colour wheel) sets the red / green / blue / white values too, so the colour stays
-the preset's (the same hue; a saturated preset as bright as the emitters can make it); then move them from there.
+to *Raw DMX* (the LEDBeam's virtual colour wheel) keeps the colour you see. When the cue sets *Colour Mix Control* to
+virtual priority, it sets the red / green / blue / white values too, so the colour stays the preset's (the same hue; a
+saturated preset as bright as the emitters can make it); then move them from there. When the cue does not set it, MagicQ's
+home value (colour mix has priority) applies: the preset shows white, and Raw DMX stays white (nothing is added).
 Claude's tools do the same, unless they set the red / green / blue / white values themselves.
 
 | How | What changes |

@@ -68,8 +68,10 @@ public static class DesignEdits
     /// <summary>
     /// The colour mixing values (RGB(W) emitters) that keep a head's colour when colour wheel `key` gets `value`: when the
     /// wheel leaves a slot that filters (a preset of a virtual colour wheel) for a value without one ("Raw DMX"), the
-    /// emitters mix the colour the slot gave (as far as they reach: the same hue, at most as bright). Empty when there is
-    /// nothing to keep. `current`: the head's (resolved) value of a key now; null = not set (the GDTF default).
+    /// emitters mix the colour the slot gave (as far as they reach: the same hue, at most as bright). Only when the cue sets
+    /// Colour Mix Control to virtual priority: otherwise MagicQ's home value (mix has priority) hides the slot, the tint seen
+    /// is the emitters' (white unless set) and nothing changes. Empty when there is nothing to keep.
+    /// `current`: the head's (resolved) value of a key now; null = not set (the GDTF default).
     /// </summary>
     public static Dictionary<string, LookValue> KeepColour(HeadLayout layout, string key, LookValue value, System.Func<string, LookValue> current)
     {
@@ -89,9 +91,8 @@ public static class DesignEdits
         foreach (var c in layout.Channels)
             if (current(c.Key) is { } v && c.ToDmx(v) is { } d)
                 c.Write(dmx, 1, d);
-        // Colour Mix control not set by the cue: the slot is the colour that was picked, also where its home value hides it.
-        if (layout.Mode.Channel("ColorMixMode") is { } mix && !dmx.ContainsKey(mix.Offsets[0]))
-            mix.Write(dmx, 1, 0);
+        // Colour Mix control not set by the cue: MagicQ's home value applies (colour mix has priority, the slot is not seen),
+        // so the tint seen now is that of the emitters and stays. Set to virtual priority: the slot's colour is kept.
         var before = GdtfDecoder.Decode(layout.Fixture, layout.Mode, dmx, 1);
         channel.Write(dmx, 1, next);
         var after = GdtfDecoder.Decode(layout.Fixture, layout.Mode, dmx, 1);

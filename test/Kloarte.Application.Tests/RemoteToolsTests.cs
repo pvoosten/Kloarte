@@ -202,7 +202,7 @@ public sealed partial class RemoteToolsTests : TestBase
 
     /// <summary>
     /// An LEDBeam's colour wheel from a preset (tracked from cue 1) to "Raw DMX" in cue 2: the RGBW values that keep the
-    /// preset's colour come with it; RGBW values given in the same call win; a palette does the same with its own values.
+    /// preset's colour come with it (Colour Mix Control at virtual priority); RGBW values given in the same call win; a palette does the same with its own values.
     /// </summary>
     [Fact]
     public async Task RawDmxKeepsTheColourWheelPreset()
@@ -213,7 +213,7 @@ public sealed partial class RemoteToolsTests : TestBase
         Assert.NotNull(Design.LayoutOf(beam)?["ColorMacro1"]);
         Assert.False((await Call("set_cue_values", new JsonObject
         {
-            ["cue"] = 1, ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Filter 26 (Bright Red)" }),
+            ["cue"] = 1, ["values"] = Values(beam, new JsonObject { ["ColorMixMode"] = 0, ["ColorMacro1"] = "Filter 26 (Bright Red)" }),
         })).Error);
         var raw = await Call("set_cue_values", new JsonObject { ["cue"] = 2, ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Raw DMX" }) });
         Assert.False(raw.Error, raw.Text);
@@ -232,7 +232,7 @@ public sealed partial class RemoteToolsTests : TestBase
 
         Assert.False((await Call("set_palette_values", new JsonObject
         {
-            ["name"] = "Red", ["values"] = Values(beam, new JsonObject { ["ColorMacro1"] = "Filter 26 (Bright Red)" }),
+            ["name"] = "Red", ["values"] = Values(beam, new JsonObject { ["ColorMixMode"] = 0, ["ColorMacro1"] = "Filter 26 (Bright Red)" }),
         })).Error);
         Assert.False((await Call("set_palette_values", new JsonObject
         {

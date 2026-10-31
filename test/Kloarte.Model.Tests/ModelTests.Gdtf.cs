@@ -74,7 +74,7 @@ public partial class ModelTests
 
     /// <summary>
     /// The LEDBeam's colour wheel (a virtual one) from a preset to "Raw DMX": the RGBW values that come with it keep the
-    /// preset's colour; another preset or a head without a preset gets none.
+    /// preset's colour when the cue sets virtual priority (not set: the home value shows white and nothing is added); another preset or a head without a preset gets none.
     /// </summary>
     [Fact]
     public void KeepColourTest()
@@ -96,7 +96,7 @@ public partial class ModelTests
             }
             foreach (string preset in new[] { "Filter 26 (Bright Red)", "Filter 132 (Medium Blue)", "Filter 103 (Straw)" })
             {
-                var values = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of(preset) };
+                var values = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of(preset), ["ColorMixMode"] = LookValue.OfDmx(0) };
                 var before = Shown(values);
                 var kept = DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Raw DMX"), k => Colour(values, k));
                 Assert.Equal(new[] { "ColorAdd_B", "ColorAdd_G", "ColorAdd_R", "ColorAdd_W" }, kept.Keys.OrderBy(k => k));
@@ -114,7 +114,7 @@ public partial class ModelTests
             int pale = 0;
             foreach (string preset in wheel.SetNames.Where(n => n.StartsWith("Filter")))
             {
-                var values = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of(preset) };
+                var values = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of(preset), ["ColorMixMode"] = LookValue.OfDmx(0) };
                 var before = Shown(values);
                 if (Math.Min(before.R, Math.Min(before.G, before.B)) < 0.5f)
                     continue;
@@ -131,6 +131,8 @@ public partial class ModelTests
             var red = new Dictionary<string, LookValue> { ["ColorMacro1"] = LookValue.Of("Filter 26 (Bright Red)") };
             Assert.Empty(DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Filter 132 (Medium Blue)"), k => Colour(red, k)));
             Assert.Empty(DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Raw DMX"), _ => null));
+            // Colour Mix Control not set: MagicQ's home value (mix has priority) shows white; Raw DMX keeps that, nothing added.
+            Assert.Empty(DesignEdits.KeepColour(layout, "ColorMacro1", LookValue.Of("Raw DMX"), k => Colour(red, k)));
             Assert.Empty(DesignEdits.KeepColour(layout, "ColorMacro1", null, k => Colour(red, k)));
         }
     }

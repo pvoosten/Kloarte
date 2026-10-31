@@ -20,8 +20,8 @@ public partial class ColourKeepTest : Node
     private FixturePanel _panel;
     private ShowBuilder _builder;
     private PlanView _plan;
-    /// <summary>Colour mix control set first (null = left unset: MagicQ home = mix has priority).</summary>
-    private string MixName = System.Environment.GetEnvironmentVariable("CK_MIX");
+    /// <summary>Colour Mix Control picked first in the scenarios with a virtual wheel.</summary>
+    private const string Virtual = "Virtual colors (Virtual";
     private int _failures;
     private static readonly string[] Emitters = { "ColorAdd_R", "ColorAdd_G", "ColorAdd_B", "ColorAdd_W" };
 
@@ -65,16 +65,25 @@ public partial class ColourKeepTest : Node
         CueEditing.Jump(cueIndex);
         await Frames(20);
 
+        // 0. Colour Mix Control not set: MagicQ's home value (mix has priority) shows white; Raw DMX keeps it white
+        Selection.Select(beams[1]);
+        await Frames(20);
+        await UnsetScenario(beams[1], "Filter 132");
+
         // 1. one head
-        Selection.Select(beams[0]);
+        Selection.Select(Live(beams[0]));
         await Frames(20);
         Check(CueEditing.Cue == cueIndex, $"current cue {CueEditing.Cue}");
         await Scenario("one head", new[] { beams[0] }, "Filter 103", "colour_keep_one");
 
         // 2. two heads (the second not touched yet)
+        // (the group view has no Colour Mix Control row: the second head gets it on its own first)
+        Selection.Select(Live(beams[1]));
+        await Frames(20);
+        await Pick(LookEditor.Label("ColorMixMode"), Virtual);
         Selection.Select(beams.Select(Live).ToList());
         await Frames(20);
-        await Scenario("two heads", beams, "Filter 26", "colour_keep_two");
+        await Scenario("two heads", beams, "Filter 26", "colour_keep_two", pickMix: false);
 
         // 3. palette
         await PaletteScenario(beams[0]);
@@ -83,17 +92,13 @@ public partial class ColourKeepTest : Node
     }
 
     /// <summary>Preset then Raw DMX on the selected heads in the lamp settings.</summary>
-    private async Task Scenario(string title, IReadOnlyList<ProfileFixture> heads, string preset, string shotName)
+    private async Task Scenario(string title, IReadOnlyList<ProfileFixture> heads, string preset, string shotName, bool pickMix = true)
     {
         var design = CueEditing.Design(_builder);
         var cue = design.CueOrder[CueEditing.Cue];
         var first = heads[0];
-        if (MixName != null)
-        {
-            var mixPicker = RowOf("ColorMixMode").GetChildren().OfType<OptionButton>().First();
-            GD.Print($"  ColorMixMode items: {string.Join(" | ", Enumerable.Range(0, mixPicker.ItemCount).Select(mixPicker.GetItemText))}");
-            await Pick("ColorMixMode", MixName);
-        }
+        if (pickMix)
+            await Pick(LookEditor.Label("ColorMixMode"), Virtual);
         await Pick("Colour wheel", preset);
         await Frames(15);
         var withPreset = Tint(first);
@@ -138,13 +143,40 @@ public partial class ColourKeepTest : Node
         await Frames(20);
     }
 
+    /// <summary>
+    /// Preset then Raw DMX with Colour Mix Control left unset: white before and after (the home value hides the slot), no
+    /// RGBW values added, one undo restores.
+    /// </summary>
+    private async Task UnsetScenario(ProfileFixture beam, string preset)
+    {
+        var cue = () => ((DesignShow)_builder.Document).CueOrder[CueEditing.Cue].Of(beam.HeadNumber);
+        Check(cue()?.ContainsKey("ColorMixMode") != true, "unset: Colour Mix Control not set by the cue");
+        await Pick("Colour wheel", preset);
+        await Frames(15);
+        var withPreset = Tint(beam);
+        Shot("colour_keep_unset_1_preset");
+        await Pick("Colour wheel", "Raw DMX");
+        await Frames(15);
+        var raw = Tint(beam);
+        Shot("colour_keep_unset_2_raw");
+        GD.Print($"  unset: tint preset {withPreset}, raw {raw}");
+        Check(Hue(withPreset, raw) < 0.02f && System.Math.Abs(Brightness(withPreset) - Brightness(raw)) < 0.02f, $"unset: tint before == after (dist {Hue(withPreset, raw):0.000})");
+        Check(Hue(raw, (1, 1, 1)) < 0.05f, $"unset: the tint is white ({raw})");
+        Check(cue()?.ContainsKey("ColorMacro1") == true && cue()["ColorMacro1"].ToString() == "Raw DMX" || cue()?["ColorMacro1"].ToString().StartsWith("Raw") == true, "unset: wheel is Raw DMX");
+        await MenuUndo();
+        await Frames(15);
+        Check(Value(beam, "ColorMacro1")?.StartsWith(preset) == true, $"unset: one undo restores the preset ({Value(beam, "ColorMacro1")})");
+        var back = Tint(beam);
+        Check(Hue(withPreset, back) < 0.02f && System.Math.Abs(Brightness(withPreset) - Brightness(back)) < 0.02f, $"unset: after undo the tint is the same ({back})");
+    }
+
     /// <summary>The palette window: "From the cue" of a head with a preset, then Raw DMX in the palette.</summary>
     private async Task PaletteScenario(ProfileFixture beam)
     {
         beam = Live(beam);
         Selection.Select(beam);
         await Frames(20);
-        await Pick("ColorMixMode", "Virtual colors (Virtual");
+        await Pick(LookEditor.Label("ColorMixMode"), "Virtual colors (Virtual");
         await Pick("Colour wheel", "Filter 103");
         var tool = _panel.PaletteTool;
         tool.Toggle();
