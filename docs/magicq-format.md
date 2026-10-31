@@ -12,6 +12,14 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
 - `P` = personality: name, manufacturer, mode; channel list from field 16, 3 fields per channel: name, flags,
   attribute; attribute 0 = dimmer. `IntensityChannel` (LEDBeam 150 Mode 1: 20; T1 Mode 1: 47; generic: 0) equals the
   GDTF dimmer offset. T1 channel names "Cyan/Red" -> GDTF "Mode 1 - CMY" by default.
+  Tilt direction: MagicQ's head file has a Tilt Invert (visualiser only; where it is in the `P` record is unknown).
+  The LEDBeam 150 and the T1 tilt the other way round in MagicQ than their GDTF says (Kruimels_012, 31 Oct 2026):
+  `GdtfFixture.TiltReversed` reads their Tilt range swapped, for import, export and Art-Net.
+  Home values: the `P` record's list after the channels holds (offset, value) pairs. LEDBeam "Col Macro" (Colour Mix
+  control) is 255 = colour mix has priority, GDTF default 45, so a cue with only VCol is whitish in MagicQ:
+  `GdtfFixture.MagicQHome`, `GdtfDecoder.MixControl`. T1 "Colour Mix" is 45 (addition), GDTF default 0: with only VCol
+  set the wheel adds to full RGBAL, green in MagicVis (Kruimels "Daglicht 19 20"). Whether MagicVis uses VCol at all is
+  unknown: for a colour that must be right, set the emitters and leave the wheel on No function.
 - `L` = patch, one record **per DMX channel**: f1 address (hex, 1-based absolute), f2 head name, f4 personality,
   f5 channel in head, f10 head number, f11 gel id (allcols.csv: 1000+n Lee, 2000+n Rosco), f21 shape id, f22 beam
   angle (whole degrees, 0 = default; wins over mechanics). Short L records lack f21/f22. f9 = dimmer curve:

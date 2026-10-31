@@ -69,6 +69,16 @@ public static class GdtfDecoder
             else if (f.Attribute.StartsWith("Color") && slot > 1)
             {
                 var (sr, sg, sb) = slots[slot].Rgb;
+                string control = f.Attribute == "ColorMacro1" ? MixControl(mode, dmx, start) : "";
+                if (control.Contains("Colour mix has priority", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (control.StartsWith("Addition", StringComparison.OrdinalIgnoreCase) && !Subtracts(mode))
+                {
+                    r = Math.Min(1, r + sr);
+                    g = Math.Min(1, g + sg);
+                    b = Math.Min(1, b + sb);
+                    continue;
+                }
                 r *= sr;
                 g *= sg;
                 b *= sb;
@@ -97,6 +107,16 @@ public static class GdtfDecoder
         int v = ch.Read(dmx, start);
         var f = ch.FunctionAt(v);
         return f != null && f.Attribute.StartsWith(attribute[..Math.Min(attribute.Length, 4)]) ? f.Physical(v) : fallback;
+    }
+
+    /// <summary>What the head's Colour Mix control is set to (how the virtual colour wheel and the emitters combine), or "".</summary>
+    private static string MixControl(GdtfMode mode, IReadOnlyDictionary<int, int> dmx, int start)
+    {
+        var ch = mode.Channel("ColorMixMode");
+        if (ch == null)
+            return "";
+        int v = ch.Read(dmx, start);
+        return ch.FunctionAt(v)?.SetAt(v)?.Name ?? "";
     }
 
     /// <summary>True when the mode mixes colour with CMY (then its RGB emitters, if any, are not used).</summary>

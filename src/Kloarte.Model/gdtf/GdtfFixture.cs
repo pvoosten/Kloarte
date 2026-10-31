@@ -18,6 +18,22 @@ public sealed class GdtfFixture
     /// <summary>Folder of the house GDTF files (an app path).</summary>
     public const string DefaultFolder = "res://data/gdtf";
 
+    /// <summary>
+    /// Fixture types (GDTF Name) that tilt the other way round in MagicQ than their GDTF says: read with the Tilt
+    /// function's physical range swapped, so an angle means the same in Kloarte and on the console, in both directions.
+    /// </summary>
+    private static readonly HashSet<string> TiltReversed = new() { "Robin LEDBeam 150 FW RGBW", "Robin T1 Profile" };
+
+    /// <summary>
+    /// Channels (GDTF Name, attribute) whose value in MagicQ when no cue sets them isn't their GDTF default: the
+    /// personality's home value is what the console outputs, so it is the default here.
+    /// </summary>
+    private static readonly Dictionary<(string Fixture, string Attribute), int> MagicQHome = new()
+    {
+        [("Robin LEDBeam 150 FW RGBW", "ColorMixMode")] = 255,   // colour mix has priority
+        [("Robin T1 Profile", "ColorMixMode")] = 45,             // addition
+    };
+
     /// <summary>Fixture type name.</summary>
     public string Name { get; private set; } = "";
 
@@ -98,21 +114,28 @@ public sealed class GdtfFixture
                     continue;   // virtual channel
                 var logical = ch.Element("LogicalChannel");
                 var functions = ch.Descendants("ChannelFunction").ToList();
+                string main = (string)logical?.Attribute("Attribute") ?? "";
                 var channel = new GdtfChannel
                 {
-                    Attribute = (string)logical?.Attribute("Attribute") ?? "",
+                    Attribute = main,
                     Offsets = offsets,
-                    Default = functions.Count > 0 ? Dmx((string)functions[0].Attribute("Default"), offsets.Length) : 0,
+                    Default = MagicQHome.TryGetValue((fixture.Name, main), out int home) ? home
+                        : functions.Count > 0 ? Dmx((string)functions[0].Attribute("Default"), offsets.Length) : 0,
                 };
                 foreach (var f in functions)
                 {
+                    string attribute = (string)f.Attribute("Attribute") ?? "";
+                    float physicalFrom = F((string)f.Attribute("PhysicalFrom") ?? "0");
+                    float physicalTo = F((string)f.Attribute("PhysicalTo") ?? "1");
+                    if (attribute == "Tilt" && TiltReversed.Contains(fixture.Name))
+                        (physicalFrom, physicalTo) = (physicalTo, physicalFrom);
                     var fn = new GdtfFunction
                     {
-                        Attribute = (string)f.Attribute("Attribute") ?? "",
+                        Attribute = attribute,
                         Name = (string)f.Attribute("Name") ?? "",
                         DmxFrom = Dmx((string)f.Attribute("DMXFrom"), offsets.Length),
-                        PhysicalFrom = F((string)f.Attribute("PhysicalFrom") ?? "0"),
-                        PhysicalTo = F((string)f.Attribute("PhysicalTo") ?? "1"),
+                        PhysicalFrom = physicalFrom,
+                        PhysicalTo = physicalTo,
                         Wheel = (string)f.Attribute("Wheel") ?? "",
                     };
                     foreach (var set in f.Elements("ChannelSet"))

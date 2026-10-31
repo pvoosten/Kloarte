@@ -90,6 +90,7 @@ public partial class ModelTests
                 var dmx = new Dictionary<int, int>();
                 foreach (var (key, value) in values)
                     layout[key].Write(dmx, 1, layout[key].ToDmx(value).Value);
+                mode.Channel("ColorMixMode").Write(dmx, 1, 0);   // virtual has priority: the preset's own colour
                 var s = GdtfDecoder.Decode(beam, mode, dmx, 1);
                 return (s.R, s.G, s.B);
             }

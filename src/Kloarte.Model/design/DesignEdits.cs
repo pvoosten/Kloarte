@@ -89,6 +89,9 @@ public static class DesignEdits
         foreach (var c in layout.Channels)
             if (current(c.Key) is { } v && c.ToDmx(v) is { } d)
                 c.Write(dmx, 1, d);
+        // Colour Mix control not set by the cue: the slot is the colour that was picked, also where its home value hides it.
+        if (layout.Mode.Channel("ColorMixMode") is { } mix && !dmx.ContainsKey(mix.Offsets[0]))
+            mix.Write(dmx, 1, 0);
         var before = GdtfDecoder.Decode(layout.Fixture, layout.Mode, dmx, 1);
         channel.Write(dmx, 1, next);
         var after = GdtfDecoder.Decode(layout.Fixture, layout.Mode, dmx, 1);

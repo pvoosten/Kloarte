@@ -125,14 +125,15 @@ internal sealed partial class MagicQExporter
     }
 
     /// <summary>
-    /// True when a cue value must be written: it gives another DMX value, or it refers to a palette the value now doesn't.
-    /// A hard value equal to what a palette reference gives leaves the reference.
+    /// True when a cue value must be written: it gives another DMX value, it refers to a palette the value now doesn't, or
+    /// its cached low byte isn't the palette's value any more. A hard value equal to what a palette reference gives
+    /// leaves the reference.
     /// </summary>
     private bool Changes(int address, int current, int raw)
     {
         var (nowPalette, nowValue) = Normal(address, current);
         var (wantPalette, wantValue) = Normal(address, raw);
-        return nowValue != wantValue || wantPalette != 0 && wantPalette != nowPalette;
+        return nowValue != wantValue || wantPalette != 0 && (wantPalette != nowPalette || (current & 0xff) != wantValue);
     }
 
     /// <summary>A cue value as MagicQ plays it: the palette (when it holds the address) and the DMX value.</summary>
