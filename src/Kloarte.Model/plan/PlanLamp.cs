@@ -38,6 +38,9 @@ public sealed class PlanLamp
     /// <summary>Gel name from MagicQ's colour table.</summary>
     public string GelName { get; init; } = "";
 
+    /// <summary>True if barndoor flaps are actively being used (not fully open).</summary>
+    public bool BarndoorsInUse { get; init; }
+
     /// <summary>MagicQ head number.</summary>
     public int Head { get; init; }
 

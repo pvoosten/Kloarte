@@ -88,6 +88,7 @@ public partial class ShowBuilder
                 Gel = gelColour,
                 GelCode = GelCode(gelId),
                 GelName = gel?.Name ?? "",
+                BarndoorsInUse = f.BarndoorTop > 0 || f.BarndoorRight > 0 || f.BarndoorBottom > 0 || f.BarndoorLeft > 0,
                 Head = vis.HeadNumber,
                 Address = vis.Address,
                 Support = vis.ParentId,

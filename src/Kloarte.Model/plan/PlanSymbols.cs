@@ -28,7 +28,7 @@ public static class PlanSymbols
     };
 
     /// <summary>Draws the symbol of `kind` at `centre`, pointing along `angle` (radians, plan; 0 = +x).</summary>
-    public static void Draw(IPlanCanvas c, string kind, bool small, Vector2 centre, float angle, Rgb? fill, float scale = 1f)
+    public static void Draw(IPlanCanvas c, string kind, bool small, Vector2 centre, float angle, Rgb? fill, float scale = 1f, bool barndoorsInUse = false)
     {
         float s = scale * (small ? 0.6f : 1f);
         var rot = Matrix3x2.CreateRotation(angle);
@@ -88,6 +88,12 @@ public static class PlanSymbols
             default:
                 c.Circle(centre, 0.15f * s, f, ink, w);
                 break;
+        }
+
+        if (barndoorsInUse)
+        {
+            float lineHalf = 0.22f * s;
+            c.Polyline(new[] { P(-lineHalf, 0), P(lineHalf, 0) }, ink, 1.5f * w);
         }
     }
 

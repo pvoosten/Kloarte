@@ -103,7 +103,7 @@ public static class PlanDrawing
             float angle = PlanSymbols.Angle(l);
             if (l.Selected)
                 c.Circle(l.Position, 0.38f * style.SymbolScale, null, Selected, 2.5f);
-            PlanSymbols.Draw(c, l.Kind, l.Small, l.Position, angle, l.Gel, style.SymbolScale);
+            PlanSymbols.Draw(c, l.Kind, l.Small, l.Position, angle, l.Gel, style.SymbolScale, l.BarndoorsInUse);
             // Labels on the far side of the symbol from the beam: head number, gel code, address.
             var back = new Vector2(-MathF.Cos(angle), -MathF.Sin(angle));
             var at = l.Position + back * 0.42f * style.SymbolScale;
