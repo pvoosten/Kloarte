@@ -5,7 +5,8 @@ namespace Kloarte.Model;
 /// <summary>
 /// A set piece on stage (Kloarte's own data, <c>blocking/scenery.yaml</c>; not exported to MagicQ): a shape with its
 /// sizes, where it stands, its colour and material. Position = the centre of the piece's bottom in stage coordinates
-/// (a curtain: the centre of its bottom edge); the rotation turns it about the vertical axis. Sizes along the piece's
+/// (a curtain: the centre of its bottom edge); it turns about that point, about its own z, then x, then the vertical
+/// (Y-X-Z like MagicVis, so a turn about the vertical stays one however the piece is tilted). Sizes along the piece's
 /// own axes: <see cref="Width"/> = x (a table's length), <see cref="Depth"/> = z, <see cref="Height"/> = y. Per cue a
 /// piece can go out / come in and a split curtain can open or close (<see cref="Blocking.SceneryCues"/>). No Godot
 /// dependencies.
@@ -32,6 +33,12 @@ public sealed class SceneryPiece
 
     /// <summary>Rotation about the vertical axis (degrees, counter-clockwise seen from above, like an actor's facing).</summary>
     public float Rotation { get; set; }
+
+    /// <summary>Rotation about the piece's x axis (degrees; positive tips its top towards the piece's +z: the audience at <see cref="Rotation"/> 0).</summary>
+    public float RotationX { get; set; }
+
+    /// <summary>Rotation about the piece's z axis (degrees; positive is counter-clockwise seen from the audience at <see cref="Rotation"/> 0).</summary>
+    public float RotationZ { get; set; }
 
     /// <summary>Size along the piece's x axis (m): a table's length, a curtain's width (closed).</summary>
     public float Width { get; set; } = 1f;

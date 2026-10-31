@@ -48,6 +48,18 @@
           "maximum": 360,
           "description": "Rotation around the vertical, counter-clockwise seen from above; missing = 0 (width along the stage's x) (°)"
         },
+        "rotationX": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360,
+          "description": "Rotation around the piece's own x, applied before the rotation around the vertical: positive tips its top towards its +z (the audience when rotation = 0); missing = 0 (°)"
+        },
+        "rotationZ": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360,
+          "description": "Rotation around the piece's own z, applied first: counter-clockwise seen from its +z (from the audience when rotation = 0); missing = 0 (°)"
+        },
         "width": {
           "type": "number",
           "minimum": 0.01,

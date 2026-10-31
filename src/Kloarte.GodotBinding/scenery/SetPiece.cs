@@ -5,7 +5,7 @@ namespace Kloarte.GodotBinding;
 
 /// <summary>
 /// A set piece on stage (<see cref="SceneryPiece"/>): its meshes and material, built from the model. The node's origin
-/// is the piece's position (centre of its bottom), turned by its rotation about the vertical axis. Playback sets
+/// is the piece's position (centre of its bottom), turned about its own z, x, then the vertical. Playback sets
 /// whether it is on stage (<see cref="Node3D.Visible"/>) and how far a split curtain is open (<see cref="Apply"/>);
 /// moving a curtain only rebuilds its cloth mesh (a few hundred vertices). Opaque pieces are on
 /// <see cref="RenderLayers.Occluders"/> (they cut haze beams), gauze is not.
@@ -49,7 +49,9 @@ public partial class SetPiece : Node3D
         };
         node.SetMeta(PieceMeta, piece.Id);
         float[] p = piece.Position is { Length: 3 } ? piece.Position : new[] { 0f, 0f, 0f };
-        node.Transform = new Transform3D(new Basis(Vector3.Up, Mathf.DegToRad(piece.Rotation)), new Vector3(p[0], p[1], p[2]));
+        var basis = new Basis(Vector3.Up, Mathf.DegToRad(piece.Rotation)) * new Basis(Vector3.Right, Mathf.DegToRad(piece.RotationX))
+                    * new Basis(Vector3.Back, Mathf.DegToRad(piece.RotationZ));
+        node.Transform = new Transform3D(basis, new Vector3(p[0], p[1], p[2]));
         var material = SetPieceMaterial.For(piece);
         switch (piece.Shape)
         {

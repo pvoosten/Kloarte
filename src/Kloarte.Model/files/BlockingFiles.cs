@@ -164,6 +164,8 @@ public static class BlockingFiles
             Shape = p.Shape.ToString().ToLowerInvariant(),
             Position = p.Position.Select(v => Math.Round((double)v, Metres, MidpointRounding.AwayFromZero)).ToArray(),
             Rotation = Math.Abs(p.Rotation) < 0.05f ? null : FileNumbers.Round(p.Rotation, Tenths),
+            RotationX = Math.Abs(p.RotationX) < 0.05f ? null : FileNumbers.Round(p.RotationX, Tenths),
+            RotationZ = Math.Abs(p.RotationZ) < 0.05f ? null : FileNumbers.Round(p.RotationZ, Tenths),
             Width = Size(p.Width, d.Width),
             Depth = curtain ? null : Size(p.Depth, d.Depth),
             Height = Size(p.Height, d.Height),
@@ -186,6 +188,8 @@ public static class BlockingFiles
         if (e.Position is { Length: 3 } at)
             p.Position = at.Select(v => (float)v).ToArray();
         p.Rotation = (float)(e.Rotation ?? 0);
+        p.RotationX = (float)(e.RotationX ?? 0);
+        p.RotationZ = (float)(e.RotationZ ?? 0);
         p.Width = (float)(e.Width ?? p.Width);
         p.Depth = (float)(e.Depth ?? p.Depth);
         p.Height = (float)(e.Height ?? p.Height);

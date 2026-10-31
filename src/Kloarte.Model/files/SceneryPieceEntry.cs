@@ -23,6 +23,14 @@ public sealed class SceneryPieceEntry
     [FileField("Rotation around the vertical, counter-clockwise seen from above; missing = 0 (width along the stage's x)", Unit = "°", Min = -360, Max = 360)]
     public double? Rotation { get; set; }
 
+    /// <summary>Rotation about the piece's x axis (degrees).</summary>
+    [FileField("Rotation around the piece's own x, applied before the rotation around the vertical: positive tips its top towards its +z (the audience when rotation = 0); missing = 0", Unit = "°", Min = -360, Max = 360)]
+    public double? RotationX { get; set; }
+
+    /// <summary>Rotation about the piece's z axis (degrees).</summary>
+    [FileField("Rotation around the piece's own z, applied first: counter-clockwise seen from its +z (from the audience when rotation = 0); missing = 0", Unit = "°", Min = -360, Max = 360)]
+    public double? RotationZ { get; set; }
+
     /// <summary>Width (m).</summary>
     [FileField("Width along the piece's own x: a table's length, a curtain's width when closed; missing = the shape's default", Unit = "m", Min = 0.01, Max = 50)]
     public double? Width { get; set; }

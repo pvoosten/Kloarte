@@ -66,14 +66,16 @@ project's own (Kloarte's data in `blocking/scenery.yaml`, not exported to MagicQ
 shape (Ctrl+Shift+N adds a block), *Duplicate* (Ctrl+D) copies the selected piece with what the cues do with it,
 *Remove* (Shift+Delete, or Delete in the plan) takes it out of the project. Click a piece in the list, the plan or the
 3D view to select it; the inspector edits its name, shape, place (x, y = height of its bottom, z) and rotation
-(counter-clockwise seen from above), the sizes of its shape (a table's length, depth, height, top and legs; a curtain's
+about its bottom's centre (*Rotation Y* about the vertical, counter-clockwise seen from above; *Rotation X* tips its top
+towards its front; *Rotation Z* turns it counter-clockwise seen from its front), the sizes of its shape (a table's length, depth, height, top and legs; a curtain's
 width, height, fullness, *Split* in two halves and how far it is open at the start), colour and material (painted,
 wood, molton, metal, gauze). In the plan drag a piece to move it (5 cm steps; Alt = freely), drag it with Shift held to
-turn it (15° steps); in the 3D view drag it over the floor, a right drag that starts on the selected piece turns it.
+turn it (15° steps); in the 3D view drag it over the floor, a right drag that starts on the selected piece turns it
+(both about the vertical; X and Z in the inspector). The plan shows what a tilted piece covers seen from above, as a dashed grey outline; only a curtain that hangs vertically is drawn in its colour.
 Per cue (inspector, *Cue N*, for the selected piece): *In this cue* Unchanged / In / Out (at the cue's GO, no fade) and
 for a split curtain *Open* % and *Opens in* s; what the cue doesn't say tracks from the cues before (the line under it
-says from which cue), *Clear this cue's change* takes it out. The plan draws a piece that is out at the current cue as
-a dashed outline, and the plan PDF has the pieces. Every edit is one undo step (a whole drag too).
+says from which cue), *Clear this cue's change* takes it out. The plan draws a piece that is out at the current cue in
+a lighter grey, and the plan PDF has the pieces. Every edit is one undo step (a whole drag too).
 
 **Values in cues** (decided 14 Oct 2026: Kloarte has no programmer; a value set by hand goes into the current cue,
 undoable). Cues *track*: a cue holds only what it changes, every other value stays as the cues before left it. A value
@@ -199,7 +201,7 @@ palettes need a native show (a project of before: save it once).
 | `list_actors` | the actors at the end of a cue: on stage, pose, position, facing, height, the face point aimed at |
 | `aim_moving_heads` | **moving-head aiming**: pan / tilt in a cue (later cues track it) at an actor's face, the middle of several actors or a stage point; per head or one target for many |
 | `focus_lamps` | **mechanical aiming**: a conventional lamp's focus point in its mechanics, the same in **every** cue (as focused by hand), at an actor (where they are at a cue) or a point |
-| `list_scenery` | the set pieces: id, name, shape, position, rotation, sizes, colour, material, and at a cue whether each is on stage and how far a split curtain is open |
+| `list_scenery` | the set pieces: id, name, shape, position, rotation (`rotation` = about the vertical, `rotationX`, `rotationZ`), sizes, colour, material, and at a cue whether each is on stage and how far a split curtain is open |
 | `add_scenery` | a set piece (block, pyramid, table, curtain) with the fields of `scenery.yaml`; what isn't given is the shape's default; answers its id |
 | `update_scenery` | moves, turns, resizes, recolours or renames a set piece (the id stays) |
 | `remove_scenery` | removes set pieces and what the cues change of them |

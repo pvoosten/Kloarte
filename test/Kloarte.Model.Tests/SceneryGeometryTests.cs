@@ -23,7 +23,7 @@ public sealed class SceneryGeometryTests
         return piece;
     }
 
-    /// <summary>Turned 90° counter-clockwise from above, the piece's +x points upstage (-z); ToLocal undoes ToPlan.</summary>
+    /// <summary>Turned 90° counter-clockwise from above, the piece's +x points upstage (-z).</summary>
     [Fact]
     public void RotationIsCounterClockwiseFromAbove()
     {
@@ -31,13 +31,57 @@ public sealed class SceneryGeometryTests
         var end = SceneryGeometry.ToPlan(piece, 1f, 0f);
         Assert.Equal(1f, end.X, 3);
         Assert.Equal(-4f, end.Y, 3);
-        var back = SceneryGeometry.ToLocal(piece, new Vector2(0.3f, -2.2f));
-        var again = SceneryGeometry.ToPlan(piece, back.X, back.Y);
-        Assert.Equal(0.3f, again.X, 3);
-        Assert.Equal(-2.2f, again.Y, 3);
         Assert.Equal(90f, SceneryGeometry.AngleTo(piece, end), 3);
         Assert.Equal(-170f, SceneryGeometry.Wrap(190f), 3);
     }
+
+    /// <summary>
+    /// The three rotations turn the piece about its bottom's centre: X tips its top towards the audience, Z turns it
+    /// counter-clockwise seen from the audience, and Y (last) turns that whole about the vertical.
+    /// </summary>
+    [Fact]
+    public void ThreeRotationsAboutTheBottomsCentre()
+    {
+        var piece = SceneryPiece.New("b", "Block", SceneryShape.Block);
+        piece.Position = new[] { 1f, 0.5f, -3f };
+
+        piece.RotationX = 90f;
+        Near(new Vector3(1f, 0.5f, -2f), SceneryGeometry.ToStage(piece, 0f, 1f, 0f));
+
+        (piece.RotationX, piece.RotationZ) = (0f, 90f);
+        Near(new Vector3(1f, 1.5f, -3f), SceneryGeometry.ToStage(piece, 1f, 0f, 0f));
+
+        (piece.RotationX, piece.RotationZ, piece.Rotation) = (90f, 0f, 90f);
+        Near(new Vector3(2f, 0.5f, -3f), SceneryGeometry.ToStage(piece, 0f, 1f, 0f));
+    }
+
+    /// <summary>A plank laid flat by tilting: the plan shows what it covers, and a click or a ray finds it there.</summary>
+    [Fact]
+    public void TiltedPieceCoversWhatItCoversFromAbove()
+    {
+        var plank = SceneryPiece.New("p", "Plank", SceneryShape.Block);
+        (plank.Width, plank.Depth, plank.Height, plank.RotationX) = (2f, 0.1f, 3f, 90f);   // 3 m high -> 3 m towards the audience
+
+        var f = SceneryGeometry.Footprint(plank);
+        Assert.Equal(-1f, f.Min(p => p.X), 3);
+        Assert.Equal(1f, f.Max(p => p.X), 3);
+        Assert.Equal(0f, f.Min(p => p.Y), 3);
+        Assert.Equal(3f, f.Max(p => p.Y), 3);
+        Assert.True(SceneryGeometry.Contains(plank, new Vector2(0.5f, 2.5f), 0f));
+        Assert.False(SceneryGeometry.Contains(plank, new Vector2(0.5f, -0.5f), 0f));
+
+        var t = SceneryGeometry.RayHit(plank, new Vector3(0f, 5f, 2f), new Vector3(0f, -1f, 0f), 0f);
+        Assert.NotNull(t);
+        Assert.Equal(4.95f, t.Value, 3);
+
+        var pyramid = SceneryPiece.New("y", "Pyramid", SceneryShape.Pyramid);
+        pyramid.RotationZ = -90f;   // its apex lies 1 m to the audience's right
+        Assert.Equal(1f, SceneryGeometry.Footprint(pyramid).Max(p => p.X), 3);
+        Assert.Equal(1f, SceneryGeometry.ToPlan(pyramid, 0f, 0f, 1f).X, 3);
+    }
+
+    /// <summary>Two points are the same to the millimetre.</summary>
+    private static void Near(Vector3 expected, Vector3 actual) => Assert.True((expected - actual).Length() < 1e-3f, $"{expected} != {actual}");
 
     /// <summary>The turned block covers 1 m along x and 2 m along z.</summary>
     [Fact]
@@ -92,8 +136,8 @@ public sealed class SceneryGeometryTests
     }
 
     /// <summary>
-    /// The plan draws a piece that is in filled with its colour, one that is out as a dashed outline, a pyramid with its
-    /// diagonals and an open split curtain as two lines in its colour.
+    /// The plan draws a piece as a dashed grey outline without its colour, in or out (lighter), a pyramid with lines to
+    /// its apex; only a vertically hanging curtain has its colour (an open split one two lines), a tilted one an outline.
     /// </summary>
     [Fact]
     public void PlanDrawsPieces()
@@ -103,24 +147,33 @@ public sealed class SceneryGeometryTests
         block.Color = "ff0000";
         var canvas = new Recorder();
         PlanPieces.Draw(canvas, new PlanPiece { Piece = block }, style);
-        Assert.Contains(canvas.Polygons, p => p.Fill == new Rgb(1f, 0f, 0f));
+        Assert.Empty(canvas.Polygons);
+        var line = Assert.Single(canvas.Lines);
+        Assert.True(line.Dashed);
+        Assert.True(line.Colour.R == line.Colour.G && line.Colour.G == line.Colour.B, $"grey ({line.Colour})");
         Assert.Contains(canvas.Texts, t => t == "Block");
 
         canvas = new Recorder();
         PlanPieces.Draw(canvas, new PlanPiece { Piece = block, Visible = false }, style);
         Assert.Empty(canvas.Polygons);
-        Assert.Contains(canvas.Lines, l => l.Dashed);
+        Assert.True(Assert.Single(canvas.Lines).Colour.R > line.Colour.R, "a piece that is out is lighter");
 
         var pyramid = SceneryPiece.New("p", "Pyramid", SceneryShape.Pyramid);
         canvas = new Recorder();
         PlanPieces.Draw(canvas, new PlanPiece { Piece = pyramid }, style);
-        Assert.Equal(2, canvas.Lines.Count(l => l.Points == 2));
+        Assert.Equal(4, canvas.Lines.Count(l => l.Points == 2));
 
         var curtain = SceneryPiece.New("c", "Curtain", SceneryShape.Curtain);
         curtain.Split = true;
         canvas = new Recorder();
         PlanPieces.Draw(canvas, new PlanPiece { Piece = curtain, Open = 50f }, style);
         Assert.Equal(2, canvas.Lines.Count(l => l.Colour == PlanPieces.ColourOf(curtain) && l.Points > 2));
+
+        curtain.RotationX = 45f;
+        canvas = new Recorder();
+        PlanPieces.Draw(canvas, new PlanPiece { Piece = curtain, Open = 50f }, style);
+        Assert.Equal(2, canvas.Lines.Count(l => l.Dashed && l.Colour != PlanPieces.ColourOf(curtain)));
+        Assert.Equal(2, canvas.Lines.Count);
 
         var data = new PlanData();
         data.Pieces.Add(new PlanPiece { Piece = block });

@@ -127,7 +127,7 @@ Moved out of CLAUDE.md; the per-project file listing was dropped (code and XML d
 Set pieces on stage: block, pyramid, table, curtain, each with one colour and a material preset. User manual:
 `docs/manual.md`, *Scenery*.
 - **Kloarte's own data**, not exported to MagicQ: `blocking/scenery.yaml` (`SceneryFile`; per piece shape, position =
-  centre of the bottom, rotation about the vertical, sizes, colour `#rrggbb`, material painted / wood / molton / metal /
+  centre of the bottom, `rotation` (about the vertical), `rotationX`, `rotationZ` (order Y-X-Z as MagicVis, about the bottom's centre), sizes, colour `#rrggbb`, material painted / wood / molton / metal /
   gauze; only what differs from the shape's default is written). Imported MagicVis boxes / borders stay in `rig.yaml`.
 - **Per cue, tracking like the smoke**: `steps.yaml` `scenery: {<piece>: {visible, open, time}}`: a piece goes out / comes
   in at the GO (no fade), a split curtain opens / closes over `time` (default 5 s) from where it is. Before the first cue

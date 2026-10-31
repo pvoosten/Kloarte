@@ -27,7 +27,7 @@ public sealed partial class RemoteTools
         yield return Tool("list_scenery", "Scenery",
             "The set pieces (Kloarte's own, not in MagicQ): id, name, shape, position [x, y, z] (m, stage coordinates: the " +
             "centre of the piece's bottom; a curtain: of its bottom edge), rotation (deg about the vertical, counter-" +
-            "clockwise seen from above), sizes (m), table / curtain fields, colour, material; and each piece's state at the " +
+            "clockwise seen from above), rotationX and rotationZ (deg about its own x and z), sizes (m), table / curtain fields, colour, material; and each piece's state at the " +
             "end of a cue (on stage or not, how far a split curtain is open).",
             Object(Optional("cue", TextOrNumber("The cue whose end state is given (default: the current cue)"))),
             readOnly: true, Scenery);
@@ -73,6 +73,8 @@ public sealed partial class RemoteTools
         Optional("position", ListOfNumbers("[x, y, z] (m, stage coordinates) of the centre of the piece's bottom; " +
                                            "[x, z] = on the floor (y 0); add: default [0, 0, 0]")),
         Optional("rotation", Number("Degrees about the vertical, counter-clockwise seen from above (0 = width along x)", -360, 360)),
+        Optional("rotationX", Number("Degrees about the piece's own x, before the rotation about the vertical: positive tips its top towards its +z (the audience at rotation 0)", -360, 360)),
+        Optional("rotationZ", Number("Degrees about the piece's own z, first of the three: counter-clockwise seen from its +z (from the audience at rotation 0)", -360, 360)),
         Optional("width", Number("Width along the piece's x (m): a table's length, a curtain's width when closed", 0.01, 50)),
         Optional("depth", Number("Depth along the piece's z (m); not for a curtain", 0.01, 50)),
         Optional("height", Number("Height (m): a pyramid's apex, a table's top side, a curtain's cloth", 0.01, 30)),
@@ -115,6 +117,7 @@ public sealed partial class RemoteTools
                     id = p.Id, name = p.Name, shape = ShapeName(p.Shape),
                     position = p.Position.Select(v => Math.Round(v, 3)).ToArray(),
                     rotation = Math.Round(p.Rotation, 1),
+                    rotationX = Math.Round(p.RotationX, 1), rotationZ = Math.Round(p.RotationZ, 1),
                     width = Round(p.Width), depth = curtain ? null : Round(p.Depth), height = Round(p.Height),
                     topThickness = table ? Round(p.TopThickness) : null, legThickness = table ? Round(p.LegThickness) : null,
                     fullness = curtain ? Round(p.Fullness) : null, split = curtain ? p.Split : (bool?)null,
@@ -307,6 +310,10 @@ public sealed partial class RemoteTools
         }
         if (args.Has("rotation"))
             piece.Rotation = (float)Ranged(args, "rotation", -360, 360, "°");
+        if (args.Has("rotationX"))
+            piece.RotationX = (float)Ranged(args, "rotationX", -360, 360, "°");
+        if (args.Has("rotationZ"))
+            piece.RotationZ = (float)Ranged(args, "rotationZ", -360, 360, "°");
         if (args.Has("width"))
             piece.Width = (float)Ranged(args, "width", 0.01, 50, "m");
         if (args.Has("depth"))

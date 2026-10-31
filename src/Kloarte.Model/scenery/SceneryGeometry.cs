@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace Kloarte.Model;
@@ -7,8 +8,9 @@ namespace Kloarte.Model;
 /// <summary>
 /// Where a set piece (<see cref="SceneryPiece"/>) is, from its model data alone: its footprint in the plan, a point in
 /// it, and a ray (a click in a 3D view) hitting its box. The piece's own axes: x along its width, z along its depth, y
-/// up; turned by <see cref="SceneryPiece.Rotation"/> about the vertical (counter-clockwise seen from above). Plan
-/// coordinates are (stage x, stage z). A split curtain that is open is two halves gathered at the sides
+/// up; turned about its own z (<see cref="SceneryPiece.RotationZ"/>), x (<see cref="SceneryPiece.RotationX"/>), then
+/// the vertical (<see cref="SceneryPiece.Rotation"/>, counter-clockwise seen from above). Plan coordinates are
+/// (stage x, stage z): a tilted piece shows what it covers seen from above. A split curtain that is open is two halves gathered at the sides
 /// (<see cref="Spans"/>). No Godot dependencies: the plan, the PDF and the 3D picking use the same geometry.
 /// </summary>
 public static class SceneryGeometry
@@ -19,26 +21,57 @@ public static class SceneryGeometry
     /// <summary>What is left of a curtain half's width when it is fully open (it gathers at its side).</summary>
     public const float GatheredWidth = 0.15f;
 
-    /// <summary>Cosine and sine of a piece's rotation.</summary>
-    private static (float Cos, float Sin) Turn(SceneryPiece piece)
+    /// <summary>Where a ray straight down starts above a piece (m): higher than any piece reaches.</summary>
+    private const float AboveStage = 100f;
+
+    /// <summary>Cosine and sine of an angle in degrees.</summary>
+    private static (float Cos, float Sin) Angle(float degrees)
     {
-        double a = piece.Rotation * Math.PI / 180.0;
+        double a = degrees * Math.PI / 180.0;
         return ((float)Math.Cos(a), (float)Math.Sin(a));
     }
 
-    /// <summary>The plan point of a point on the piece's own axes (x along its width, z along its depth).</summary>
-    public static Vector2 ToPlan(SceneryPiece piece, float x, float z)
+    /// <summary>A vector turned about the x axis.</summary>
+    private static Vector3 AboutX(Vector3 v, float degrees)
     {
-        var (c, s) = Turn(piece);
-        return new Vector2(piece.Position[0] + x * c + z * s, piece.Position[2] - x * s + z * c);
+        var (c, s) = Angle(degrees);
+        return new Vector3(v.X, v.Y * c - v.Z * s, v.Y * s + v.Z * c);
     }
 
-    /// <summary>A plan point on the piece's own axes (x along its width, y = along its depth).</summary>
-    public static Vector2 ToLocal(SceneryPiece piece, Vector2 plan)
+    /// <summary>A vector turned about the y axis.</summary>
+    private static Vector3 AboutY(Vector3 v, float degrees)
     {
-        var (c, s) = Turn(piece);
-        float dx = plan.X - piece.Position[0], dz = plan.Y - piece.Position[2];
-        return new Vector2(dx * c - dz * s, dx * s + dz * c);
+        var (c, s) = Angle(degrees);
+        return new Vector3(v.X * c + v.Z * s, v.Y, -v.X * s + v.Z * c);
+    }
+
+    /// <summary>A vector turned about the z axis.</summary>
+    private static Vector3 AboutZ(Vector3 v, float degrees)
+    {
+        var (c, s) = Angle(degrees);
+        return new Vector3(v.X * c - v.Y * s, v.X * s + v.Y * c, v.Z);
+    }
+
+    /// <summary>A vector on the piece's own axes in stage directions.</summary>
+    private static Vector3 Turned(SceneryPiece piece, Vector3 v) =>
+        AboutY(AboutX(AboutZ(v, piece.RotationZ), piece.RotationX), piece.Rotation);
+
+    /// <summary>A stage direction on the piece's own axes (undoes <see cref="Turned"/>).</summary>
+    private static Vector3 Unturned(SceneryPiece piece, Vector3 v) =>
+        AboutZ(AboutX(AboutY(v, -piece.Rotation), -piece.RotationX), -piece.RotationZ);
+
+    /// <summary>True when the piece doesn't stand level (it is turned about more than the vertical).</summary>
+    public static bool Tilted(SceneryPiece piece) => piece.RotationX != 0f || piece.RotationZ != 0f;
+
+    /// <summary>The stage point of a point on the piece's own axes (from the centre of its bottom).</summary>
+    public static Vector3 ToStage(SceneryPiece piece, float x, float y, float z) =>
+        Turned(piece, new Vector3(x, y, z)) + new Vector3(piece.Position[0], piece.Position[1], piece.Position[2]);
+
+    /// <summary>The plan point of a point on the piece's own axes (x along its width, z along its depth, y above its bottom).</summary>
+    public static Vector2 ToPlan(SceneryPiece piece, float x, float z, float y = 0f)
+    {
+        var stage = ToStage(piece, x, y, z);
+        return new Vector2(stage.X, stage.Z);
     }
 
     /// <summary>Half the piece's size along its depth as the plan shows it (a curtain: its pleats; at least half <see cref="MinThickness"/>).</summary>
@@ -59,12 +92,62 @@ public static class SceneryGeometry
         return new[] { (-hw, -hw + half), (hw - half, hw) };
     }
 
-    /// <summary>The footprint's corners in the plan (the whole width, also of an open curtain).</summary>
+    /// <summary>The footprint in the plan: what the whole width (also of an open curtain) covers seen from above.</summary>
     public static Vector2[] Footprint(SceneryPiece piece)
     {
-        float hw = Math.Max(piece.Width, MinThickness) / 2f, hd = HalfDepth(piece);
-        return Box(piece, -hw, hw, hd);
+        float hw = Math.Max(piece.Width, MinThickness) / 2f;
+        return Outline(piece, -hw, hw);
     }
+
+    /// <summary>The corners of the piece's bottom in the plan.</summary>
+    public static Vector2[] Base(SceneryPiece piece)
+    {
+        float hw = Math.Max(piece.Width, MinThickness) / 2f;
+        return Box(piece, -hw, hw, HalfDepth(piece));
+    }
+
+    /// <summary>
+    /// What the part of the piece from `x0` to `x1` along its width covers seen from above: its four bottom corners when
+    /// it stands level, else the convex outline of its corners (a pyramid's: its bottom and apex).
+    /// </summary>
+    public static Vector2[] Outline(SceneryPiece piece, float x0, float x1)
+    {
+        float hd = HalfDepth(piece), h = Math.Max(piece.Height, MinThickness);
+        var bottom = Box(piece, x0, x1, hd);
+        if (!Tilted(piece))
+            return bottom;
+        var corners = new List<Vector2>(bottom);
+        if (piece.Shape == SceneryShape.Pyramid)
+            corners.Add(ToPlan(piece, 0f, 0f, h));
+        else
+            foreach (float x in new[] { x0, x1 })
+                foreach (float z in new[] { -hd, hd })
+                    corners.Add(ToPlan(piece, x, z, h));
+        return Hull(corners);
+    }
+
+    /// <summary>The convex hull of points (Andrew's monotone chain).</summary>
+    private static Vector2[] Hull(List<Vector2> points)
+    {
+        var sorted = points.OrderBy(p => p.X).ThenBy(p => p.Y).ToList();
+        var hull = new List<Vector2>();
+        void Add(Vector2 p, int floor)
+        {
+            while (hull.Count > floor && Cross(hull[^2], hull[^1], p) <= 1e-7f)
+                hull.RemoveAt(hull.Count - 1);
+            hull.Add(p);
+        }
+        foreach (var p in sorted)
+            Add(p, 1);
+        int lower = hull.Count;
+        for (int i = sorted.Count - 2; i >= 0; i--)
+            Add(sorted[i], lower);
+        hull.RemoveAt(hull.Count - 1);   // the first point again
+        return hull.ToArray();
+    }
+
+    /// <summary>The z of the cross product (b - a) x (c - a).</summary>
+    private static float Cross(Vector2 a, Vector2 b, Vector2 c) => (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
 
     /// <summary>The plan corners of the part of the piece from `x0` to `x1` along its width, `hd` deep each side.</summary>
     public static Vector2[] Box(SceneryPiece piece, float x0, float x1, float hd) => new[]
@@ -80,17 +163,9 @@ public static class SceneryGeometry
         return new[] { new Vector2(-lx, -lz), new Vector2(lx, -lz), new Vector2(lx, lz), new Vector2(-lx, lz) };
     }
 
-    /// <summary>True when a plan point is on the piece (in one of its <see cref="Spans"/>, within its depth).</summary>
-    public static bool Contains(SceneryPiece piece, Vector2 plan, float open)
-    {
-        var local = ToLocal(piece, plan);
-        if (Math.Abs(local.Y) > HalfDepth(piece))
-            return false;
-        foreach (var (from, to) in Spans(piece, open))
-            if (local.X >= from && local.X <= to)
-                return true;
-        return false;
-    }
+    /// <summary>True when a plan point is on the piece seen from above (a ray straight down hits one of its <see cref="Spans"/>).</summary>
+    public static bool Contains(SceneryPiece piece, Vector2 plan, float open) =>
+        RayHit(piece, new Vector3(plan.X, piece.Position[1] + AboveStage, plan.Y), -Vector3.UnitY, open) != null;
 
     /// <summary>
     /// Where a ray (stage coordinates) first hits the piece's box (each of its <see cref="Spans"/>, from the floor to its
@@ -98,10 +173,8 @@ public static class SceneryGeometry
     /// </summary>
     public static float? RayHit(SceneryPiece piece, Vector3 origin, Vector3 dir, float open)
     {
-        var (c, s) = Turn(piece);
-        float ox = origin.X - piece.Position[0], oz = origin.Z - piece.Position[2];
-        var o = new Vector3(ox * c - oz * s, origin.Y - piece.Position[1], ox * s + oz * c);
-        var d = new Vector3(dir.X * c - dir.Z * s, dir.Y, dir.X * s + dir.Z * c);
+        var o = Unturned(piece, origin - new Vector3(piece.Position[0], piece.Position[1], piece.Position[2]));
+        var d = Unturned(piece, dir);
         float hd = HalfDepth(piece), h = Math.Max(piece.Height, MinThickness);
         float? best = null;
         foreach (var (from, to) in Spans(piece, open))

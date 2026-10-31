@@ -29,7 +29,7 @@ public sealed class SceneryTests : TestBase
         var blocking = new Blocking();
         var block = SceneryPiece.New("block", "Block", SceneryShape.Block);
         block.Position = new[] { 1.5f, 0f, -2f };
-        block.Rotation = 30f;
+        (block.Rotation, block.RotationX, block.RotationZ) = (30f, -12.5f, 45f);
         block.Width = 2f;
         block.Color = "ff0000";
         block.Material = SceneryMaterial.Wood;
@@ -73,6 +73,7 @@ public sealed class SceneryTests : TestBase
         Assert.Equal(new[] { "block", "pyramid", "table", "curtain" }, back.Scenery.Select(p => p.Id));
         var block = back.FindPiece("block");
         Assert.Equal((SceneryShape.Block, 2f, 30f, "ff0000", SceneryMaterial.Wood), (block.Shape, block.Width, block.Rotation, block.Color, block.Material));
+        Assert.Equal((-12.5f, 45f), (block.RotationX, block.RotationZ));
         Assert.Equal(new[] { 1.5f, 0f, -2f }, block.Position);
         Assert.Equal(0.08f, back.FindPiece("table").LegThickness, 3);
         Assert.Equal(0.75f, back.FindPiece("table").Height, 3);

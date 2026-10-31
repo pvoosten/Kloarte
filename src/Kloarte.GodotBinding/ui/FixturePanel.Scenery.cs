@@ -259,8 +259,8 @@ public partial class FixturePanel
     {
         if (_selectedPiece != null && _marker != null && CurrentBuilder?.Model?.Blocking.FindPiece(_selectedPiece) is { } piece)
         {
-            var p = piece.Position;
-            _marker.GlobalPosition = CurrentBuilder.ToGlobal(new Vector3(p[0], p[1] + piece.Height + 0.3f, p[2]));
+            var top = SceneryGeometry.ToStage(piece, 0f, piece.Height, 0f);
+            _marker.GlobalPosition = CurrentBuilder.ToGlobal(new Vector3(top.X, top.Y + 0.3f, top.Z));
         }
     }
 
@@ -402,15 +402,19 @@ public partial class FixturePanel
         };
         Row("Shape", shape);
 
-        Header("Place (m) and rotation", "Centre of the piece's bottom in stage coordinates; rotation about the vertical, counter-clockwise seen from above");
+        Header("Place (m) and rotation", "Centre of the piece's bottom in stage coordinates; the piece turns about that point");
         PieceNumber("X (right +)", "Stage x of the centre (audience's right +)", -30, 30, 0.01, "m", piece.Position[0],
             v => Edit("Place", p => p.Position = new[] { v, p.Position[1], p.Position[2] }));
         PieceNumber("Y (height)", "Height of the piece's bottom above the stage floor (e.g. on a rostrum)", -5, 20, 0.01, "m", piece.Position[1],
             v => Edit("Place", p => p.Position = new[] { p.Position[0], v, p.Position[2] }));
         PieceNumber("Z (audience +)", "Stage z of the centre (towards the audience +; 0 = proscenium line)", -30, 30, 0.01, "m", piece.Position[2],
             v => Edit("Place", p => p.Position = new[] { p.Position[0], p.Position[1], v }));
-        Slider("Rotation °", -180, 180, 1, () => Now().Rotation, v => Edit("Rotation", p => p.Rotation = v),
-            "Counter-clockwise seen from above (0 = the piece's width along the stage's width)");
+        Slider("Rotation X °", -180, 180, 1, () => Now().RotationX, v => Edit("Rotation", p => p.RotationX = v),
+            "About the piece's width: positive tips its top towards its front (the audience at rotation Y 0)");
+        Slider("Rotation Y °", -180, 180, 1, () => Now().Rotation, v => Edit("Rotation", p => p.Rotation = v),
+            "About the vertical, counter-clockwise seen from above (0 = the piece's width along the stage's width)");
+        Slider("Rotation Z °", -180, 180, 1, () => Now().RotationZ, v => Edit("Rotation", p => p.RotationZ = v),
+            "About the piece's depth: counter-clockwise seen from its front (from the audience at rotation Y 0)");
 
         Header("Size (m)");
         bool curtain = piece.Shape == SceneryShape.Curtain;

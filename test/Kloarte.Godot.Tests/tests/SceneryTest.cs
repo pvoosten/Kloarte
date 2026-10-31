@@ -102,6 +102,7 @@ public partial class SceneryTest : Node
             (new[] { -1f, 0f, -2f }, 1.2f, 1.2f, 1.5f, 20f, "b03030");
         var table = SceneryPiece.New("table", "Table", SceneryShape.Table);
         (table.Position, table.Color, table.Material) = (new[] { 1.2f, 0f, -2f }, "c0c0c8", SceneryMaterial.Metal);
+        (table.Rotation, table.RotationX, table.RotationZ) = (35f, 20f, -10f);
         var curtain = SceneryPiece.New("curtain", "Curtain", SceneryShape.Curtain);
         (curtain.Position, curtain.Width, curtain.Height, curtain.Fullness, curtain.Split, curtain.Color, curtain.Material) =
             (new[] { 0f, 0f, -4.5f }, CurtainWidth, 4.5f, 100f, true, "802030", SceneryMaterial.Painted);
@@ -117,6 +118,9 @@ public partial class SceneryTest : Node
         Check(_occluderEvents >= 1, "RebuildScenery raised OccludersChanged");
 
         CheckNodes(curtain);
+        var drawn = _builder.SetPieceOf("table").Transform * new Vector3(0.3f, 0.7f, -0.2f);
+        var model = SceneryGeometry.ToStage(table, 0.3f, 0.7f, -0.2f);
+        Check(drawn.DistanceTo(new Vector3(model.X, model.Y, model.Z)) < 0.001f, $"the node turns as the geometry says ({drawn} / {model})");
         var cyc = _builder.GetNode("Scenery").GetNodeOrNull<MeshInstance3D>("Cyc");
         Check(cyc == null || (cyc.Layers & RenderLayers.Occluders) != 0, "the cyc is an occluder");
 

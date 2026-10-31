@@ -40,7 +40,7 @@ GDTF, and actors moving through the cues.
   are marked with their side ("OP cour", "AF jardin") and announced on the status bar while the cues run. **Smoke per
   cue**: each cue can set the amount of haze in the room and how long the hazer takes to get there.
 - **Scenery**: set pieces of your own (blocks, pyramids, tables, curtains that open) with colour and material, placed
-  and turned in the plan or the 3D view; per cue a piece goes out or comes in and a split curtain opens or closes.
+  and turned in the plan or the 3D view, tilted about x and z in the inspector; per cue a piece goes out or comes in and a split curtain opens or closes.
 - **Exports**: stills (a PNG of every key moment), a movie, or a contact sheet (PDF, a picture per cue); from the 3D
   camera, a seat or a named viewpoint (Regie), a cue range, with cue captions; also one per actor (only their name on
   their shirt) to send to the cast.

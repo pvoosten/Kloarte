@@ -46,14 +46,14 @@ public sealed partial class RemoteToolsTests
 
         var changed = await Call("update_scenery", new JsonObject
         {
-            ["id"] = "table", ["name"] = "Kitchen table", ["width"] = 2, ["rotation"] = 90, ["color"] = "336699",
+            ["id"] = "table", ["name"] = "Kitchen table", ["width"] = 2, ["rotation"] = 90, ["rotationX"] = 15, ["rotationZ"] = -30, ["color"] = "336699",
             ["material"] = "wood", ["legThickness"] = 0.08,
         });
         Assert.False(changed.Error, changed.Text);
         table = _session.Model.Blocking.FindPiece("table");
         Assert.Equal("Kitchen table", table.Name);
         Assert.Equal(2f, table.Width);
-        Assert.Equal(90f, table.Rotation);
+        Assert.Equal((90f, 15f, -30f), (table.Rotation, table.RotationX, table.RotationZ));
         Assert.Equal("336699", table.Color);
         Assert.Equal(0.08f, table.LegThickness);
         Assert.Equal(new[] { 1f, 0f, -2f }, table.Position);   // not given: unchanged
@@ -137,6 +137,7 @@ public sealed partial class RemoteToolsTests
         await Refused("update_scenery", new JsonObject { ["id"] = "back-cloth", ["open"] = 50 }, "only for a split curtain");
         await Refused("update_scenery", new JsonObject { ["id"] = "nope", ["width"] = 2 }, "No set piece 'nope' (pieces: box, back-cloth)");
         await Refused("update_scenery", new JsonObject { ["id"] = "box", ["rotation"] = 400 }, "'rotation' must be -360..360");
+        await Refused("update_scenery", new JsonObject { ["id"] = "box", ["rotationX"] = 400 }, "'rotationX' must be -360..360");
         await Refused("remove_scenery", new JsonObject(), "Nothing to remove");
         await Refused("remove_scenery", new JsonObject { ["ids"] = new JsonArray("box", "nope") }, "No set piece 'nope'");
         Assert.Equal(before, BlockingNow);
