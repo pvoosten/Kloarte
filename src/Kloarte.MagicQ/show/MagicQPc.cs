@@ -34,8 +34,24 @@ public static class MagicQPc
     }
 
     /// <summary>MagicQ's status file (Documents\MagicQ\show\status.dat).</summary>
-    public static string StatusFile => Path.Combine(ShowFolderOverride
-        ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MagicQ", "show"), "status.dat");
+    public static string StatusFile => Path.Combine(ShowFolderOverride ?? DefaultShowFolder, "status.dat");
+
+    /// <summary>
+    /// Documents\MagicQ\show; when that doesn't exist but OneDrive's Documents\MagicQ\show does, that one (Windows can
+    /// report the local Documents while MagicQ keeps its folder in OneDrive).
+    /// </summary>
+    private static string DefaultShowFolder
+    {
+        get
+        {
+            string local = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MagicQ", "show");
+            string oneDrive = Environment.GetEnvironmentVariable("OneDrive");
+            if (Directory.Exists(local) || string.IsNullOrEmpty(oneDrive))
+                return local;
+            string synced = Path.Combine(oneDrive, "Documents", "MagicQ", "show");
+            return Directory.Exists(synced) ? synced : local;
+        }
+    }
 
     /// <summary>A show folder instead of MagicQ's own (tests that write shows; null = Documents\MagicQ\show).</summary>
     internal static string ShowFolderOverride { get; set; }

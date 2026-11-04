@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -95,6 +96,30 @@ internal sealed partial class MagicQWindow
             Thread.Sleep(15);
         }
         PostMessage(_handle, ButtonUp, IntPtr.Zero, Position(x, FaderTop));
+    }
+
+    /// <summary>The INT, POS, COL and BEAM buttons (palette windows), from a capture at the pinned size.</summary>
+    private static readonly (string Name, int X, int Y)[] PaletteButtons =
+        { ("intensity", 1600, 778), ("position", 1571, 808), ("colour", 1601, 808), ("beam", 1630, 808) };
+
+    /// <summary>The VIEW PALETTES soft button of the intensity window, from a capture at the pinned size.</summary>
+    private static readonly (int X, int Y) ViewPalettes = (133, 83);
+
+    /// <summary>Opens each palette window (INT, POS, COL, BEAM) and saves a capture of it in a folder.</summary>
+    public void CapturePalettes(string folder)
+    {
+        foreach (var (name, x, y) in PaletteButtons)
+        {
+            Click(x, y);
+            Thread.Sleep(1500);
+            if (name == "intensity")
+            {
+                // The intensity window opens on the programmer: VIEW PALETTES shows the palettes.
+                Click(ViewPalettes.X, ViewPalettes.Y);
+                Thread.Sleep(1500);
+            }
+            Capture(Path.Combine(folder, $"palettes_{name}.png"));
+        }
     }
 
     /// <summary>A position in window coordinates (as in a capture) as a message's lParam.</summary>

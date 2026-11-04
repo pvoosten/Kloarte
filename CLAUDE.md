@@ -160,7 +160,8 @@ kept **lossless** (unchanged records byte-identical; `MagicQRoundTripTests` chec
   (one per DMX channel), `U` user curve, `G` group, `C` cue stack, `S` cue, `F` palette, `H` MagicVis item, `T` console settings.
 - Cue values = `palette id << 8 | DMX value` when they refer to a palette. Gel and intensity are per head.
 - `.xhw` = ustar tar with icons and models. `status.dat` T f1 = the show MagicQ opens (edit only while MagicQ is closed).
-- **Unverified in MagicQ PC:** written palettes (trailer), inserted cue pairs, floor stands as pipes with rz = 90, people codes.
+- Written palettes (copied trailer) verified in MagicQ PC; playback uses a palette reference's cached low byte.
+- **Unverified in MagicQ PC:** inserted cue pairs, floor stands as pipes with rz = 90, people codes.
 
 ## Tests
 - `dotnet test Kloarte.sln` = Architecture, Model, MagicQ, Mcp, Application tests. Godot tests need `dotnet build Kloarte.sln` first, then

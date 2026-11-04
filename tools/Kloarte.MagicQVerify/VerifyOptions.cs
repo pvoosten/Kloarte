@@ -11,8 +11,9 @@ internal sealed record VerifyOptions
     /// <summary>The usage text.</summary>
     public const string Usage =
         "Kloarte.MagicQVerify --show <exported.shw> --stack <name> --playback <1..10>\n" +
-        "    [--restart] [--universe-offset <n>] [--out <folder>] [--expected <other.shw>]\n" +
-        "--restart: kill a running MagicQ PC (unsaved work in it is lost). Without it a running MagicQ is an error.";
+        "    [--restart] [--palettes] [--universe-offset <n>] [--out <folder>] [--expected <other.shw>]\n" +
+        "--restart: kill a running MagicQ PC (unsaved work in it is lost). Without it a running MagicQ is an error.\n" +
+        "--palettes: after the stack, capture MagicQ's palette windows (palettes_*.png) to check the palettes by eye.";
 
     /// <summary>The exported show. Not touched: MagicQ runs on a copy.</summary>
     public required string Show { get; init; }
@@ -29,6 +30,9 @@ internal sealed record VerifyOptions
     /// <summary>True when a running MagicQ may be killed.</summary>
     public bool Restart { get; init; }
 
+    /// <summary>True when the palette windows are captured after the stack.</summary>
+    public bool Palettes { get; init; }
+
     /// <summary>The Art-Net universe that is MagicQ universe 1.</summary>
     public int UniverseOffset { get; init; }
 
@@ -39,11 +43,13 @@ internal sealed record VerifyOptions
     public static VerifyOptions Parse(string[] args)
     {
         var values = new Dictionary<string, string>();
-        bool restart = false;
+        bool restart = false, palettes = false;
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--restart")
                 restart = true;
+            else if (args[i] == "--palettes")
+                palettes = true;
             else if (args[i].StartsWith("--", StringComparison.Ordinal) && i + 1 < args.Length)
                 values[args[i][2..]] = args[++i];
             else
@@ -60,6 +66,7 @@ internal sealed record VerifyOptions
             Stack = stack,
             Playback = number,
             Restart = restart,
+            Palettes = palettes,
             UniverseOffset = values.TryGetValue("universe-offset", out string offset) ? int.Parse(offset, CultureInfo.InvariantCulture) : 0,
             Output = Path.GetFullPath(values.GetValueOrDefault("out",
                 Path.Combine(Path.GetTempPath(), "kloarte-magicq-verify", Path.GetFileNameWithoutExtension(show)))),

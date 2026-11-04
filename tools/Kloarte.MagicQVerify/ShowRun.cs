@@ -69,6 +69,8 @@ internal sealed class ShowRun
             Thread.Sleep(1000);
             window.Capture(Path.Combine(_options.Output, "start.png"));
             results = PlayStack(show, stack, window, artNet);
+            if (_options.Palettes)
+                window.CapturePalettes(_options.Output);
         }
         finally
         {

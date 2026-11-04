@@ -57,7 +57,12 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
   a trailer (meaning unknown; new palettes copy it from the simplest palette of the same type). A position palette
   can hold colour / beam too (MagicQ's record mask) = combined palette (RT2025_044 "Strobo accident").
   Re-recording merges and refreshes the cached bytes in the cues (`RecordPalette`). 65185 cue references verified.
-  **To verify in MagicQ PC:** a written palette (trailer) and inserted cue pairs.
+  **Verified in MagicQ PC 1.9.7.3 (4 Nov 2026):** written palettes (new intensity, position, colour and beam records
+  with a copied trailer, a palette split over types) load: they show in the INT / POS / COL / BEAM windows with their
+  names and type letters, and a cue referring to them plays the expected DMX (`tools/Kloarte.MagicQVerify --palettes`
+  on an export of Kruimels_016 with new palettes, 36/36 cues). Playback uses the **cached low byte** of a palette
+  reference, not the palette's value: a copy with changed palette values but the same cues played identically, so
+  the cached bytes in the cues must be right (the export writes them). **To verify:** inserted cue pairs.
 - `H` = MagicVis: 1 id, 2 kind (1 fixture, 2 object), 3 object type, 8 parent id, 13-19 obfuscated numbers (x, y, z,
   rx, ry, rz, extra); fixtures 20 address, 21 head, 22 personality; objects 20 code, 21-23 size, 24 name, 26 model.
   Object types 1 proscenium, 2 truss / pipe (length along local +X), 4 box, 6 person, 7 podium, 8 model, 9 border.
