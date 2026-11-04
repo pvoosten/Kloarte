@@ -63,6 +63,35 @@ public partial class ModelTests : TestBase
               "flood throws towards the far end, not the near edge");
     }
 
+    /// <summary>
+    /// A row of cyc floods (eight, 2 m apart, 0.4 m above a 7.5 m cloth, 1.2..2 m in front of it) lights the cloth evenly:
+    /// across within 15 %, from top to bottom within 30 %. The old distribution (20x brighter at 70° to the side) gave
+    /// 2:1 stripes and a dark top.
+    /// </summary>
+    [Theory]
+    [InlineData(1.2)]
+    [InlineData(1.5)]
+    [InlineData(2.0)]
+    public void FloodRowLightsTheClothEvenly(double distance)
+    {
+        double Lux(double x, double y)
+        {
+            double sum = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                double dx = x - (i - 3.5) * 2.0, dy = y - 7.9;
+                double h = Math.Atan(dx / distance) * 180 / Math.PI, down = -Math.Atan(dy / distance) * 180 / Math.PI;
+                double r = Math.Sqrt(dx * dx + dy * dy + distance * distance);
+                sum += FloodDistribution.Relative(h, down) * distance / (r * r * r);
+            }
+            return sum;
+        }
+        var across = Enumerable.Range(0, 41).Select(i => Lux(-5 + i * 0.25, 4)).ToList();
+        var down = new[] { 7.2, 6.5, 5.5, 4.5, 3.5, 2.5, 1.5, 0.8 }.Select(y => Lux(0, y)).ToList();
+        Assert.True(across.Min() / across.Max() > 0.85, $"across {across.Min() / across.Max():0.00}");
+        Assert.True(down.Min() / down.Max() > 0.7, $"top to bottom {down.Min() / down.Max():0.00}");
+    }
+
     /// <summary>The venue's auditorium: rows, seats, eye positions.</summary>
     [Fact]
     public void VenueSeats()

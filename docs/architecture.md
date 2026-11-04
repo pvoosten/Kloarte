@@ -15,7 +15,10 @@ Moved out of CLAUDE.md; the per-project file listing was dropped (code and XML d
   `RenderingServer.FramePostDraw` with `GetImage()` -> **new** `ImageTexture` each change -> `SpotLight3D.LightProjector`
   and `beam_volume.gdshader` (haze). Intensity / colour / output changes only update the light (`ChangeLight`), not
   the mask (an intensity change per frame for 72 lamps re-rendering masks took the show to 3 fps).
-- Asymmetric floods: no mask shader; a CPU-made projector image of `FloodDistribution` (89° cone).
+- Asymmetric floods (cyc lights): no mask shader; a CPU-made projector image of `FloodDistribution` (80° cone). The box
+  hangs tilted 40° towards the cloth with its open front to it (aimed at the focus point's direction, not at the point);
+  the mask is evaluated in the level frame and is dark behind the open front. Body: an open box with a reflector that
+  glows with the lamp. No haze glow (Godot's fog ignores the projector and blows up at the bulb).
 - Light strength: catalogue lumens -> peak candela = lumens / (solid angle x (1 + falloff) / 2): narrower = brighter;
   PARs: candela per lamp; inverse-square attenuation (`SpotAttenuation = 2`); `ProfileFixture.CandelaToEnergy` 0.075.
 - Beam in haze: custom raymarched beam volume per fixture, sampling the same mask; that light's

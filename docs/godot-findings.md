@@ -5,7 +5,8 @@
 2. Volumetric fog ignores `light_projector`: custom `beam_volume.gdshader` (ray/frustum clip, scene-depth clip, 48 jittered
    steps, Henyey-Greenstein). Occlusion by scenery: finding 12. Gap: no extinction.
 3. **A spot with a projector and `ShadowEnabled = false` gives no light.** Use `ShadowEnabled = true` + `ShadowCasterMask = 0`.
-   The spot shadow map also cuts ~5° inside a very wide cone (floods use 89° and fade out by 85°).
+   The spot shadow map also cuts unevenly ~5° inside a very wide cone: floods use 80° around a tilted box, which keeps
+   the cloth away from the edge; the projector image is linear in tan, so a wider cone also costs resolution.
 4. `Camera3D.UnprojectPosition` returns canvas coordinates, not image pixels: scale by image size / `GetVisibleRect().Size`.
    The window doesn't stretch (`window/stretch/mode = disabled`); UI scale is a preference.
 5. A Control's `_Ready` runs immediately when added to a tree that is already running; don't subscribe to `Ready` afterwards.

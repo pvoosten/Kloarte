@@ -43,7 +43,14 @@ public partial class ProfileFixture : Node3D
     /// <summary>asymmetric floods: no cone margin, distribution in the mask</summary>
     private const float MaxFloodAngle = 170f;
     /// <summary>Half cone of a flood light (degrees), see Apply.</summary>
-    private const float MaxFloodHalfCone = 89f;
+    private const float MaxFloodHalfCone = 80f;
+    /// <summary>
+    /// A flood's share of Godot's fog glow. None: Godot's fog ignores the projector and is brightest right at the bulb,
+    /// which hid the flood's body in a white blob; the light of a 170° flood in haze is faint anyway.
+    /// </summary>
+    private const float FloodFogEnergy = 0f;
+    /// <summary>How far a flood's box is tilted towards the cloth (degrees).</summary>
+    private const float FloodTilt = 40f;
 
     /// <summary>Godot light energy per candela (calibration: a 1 kW profile at 26° ~ 3300 energy).</summary>
     private const float CandelaToEnergy = 0.075f;
@@ -256,16 +263,7 @@ public partial class ProfileFixture : Node3D
         AddChild(_beam);
         CreateOcclusion();
 
-        // Lamp housing behind the lens; does not cast shadows (the light sits at its front).
-        AddChild(new MeshInstance3D
-        {
-            Name = "Body",
-            Mesh = new CylinderMesh { TopRadius = 0.12f, BottomRadius = 0.12f, Height = 0.6f },
-            Position = new Vector3(0, 0, 0.3f),
-            RotationDegrees = new Vector3(90, 0, 0),
-            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
-            MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(0.03f, 0.03f, 0.03f), Roughness = 0.6f },
-        });
+        CreateBodies();
 
         _dirty = true;
         Apply();
@@ -290,7 +288,19 @@ public partial class ProfileFixture : Node3D
     /// <summary>Turns the lamp to its focus point now (normally done on the next frame after a change).</summary>
     public void AimAtFocus()
     {
-        if (_autoAim && IsInsideTree() && !GlobalPosition.IsEqualApprox(_focusPoint))
+        if (!_autoAim || !IsInsideTree() || GlobalPosition.IsEqualApprox(_focusPoint))
+            return;
+        // A cyc flood hangs level with its open front towards the cloth: its reflector spreads the light down (or up)
+        // the cloth. Aimed at the point itself, the spread would go past the cloth onto the floor.
+        var level = new Vector3(_focusPoint.X, GlobalPosition.Y, _focusPoint.Z);
+        if (IsFlood && GlobalPosition.DistanceTo(level) > 0.05f)
+        {
+            // Tilted towards the cloth as it is rigged: the cloth then lies well inside the light's cone (Godot's spot
+            // shadow map, needed for the projector, is uneven near the cone's edge). The mask undoes the tilt.
+            LookAt(level, Vector3.Up);
+            RotateObjectLocal(Vector3.Right, FloodPitch(_flood));
+        }
+        else
             LookAt(_focusPoint, Mathf.Abs(GlobalPosition.DirectionTo(_focusPoint).Y) > 0.99f ? Vector3.Forward : Vector3.Up);
     }
 
@@ -334,8 +344,9 @@ public partial class ProfileFixture : Node3D
         AimAtFocus();
 
         float halfField = Mathf.DegToRad(Mathf.Min(_fieldAngle, MaxAngle) / 2f);
-        // Floods: a 89° cone: Godot's spot shadow map (needed for the projector) cuts the light off ~5° inside the cone
-        // edge, unevenly; the distribution in the mask fades out by 85°.
+        // Floods: an 80° cone around the tilted box (FloodTilt): it holds the cloth and the reflector's spread to the
+        // sides. Wider costs the mask its resolution (it is linear in tan) and puts more of the cloth near the cone's
+        // edge, where Godot's spot shadow map (needed for the projector) cuts the light off unevenly.
         float halfCone = IsFlood ? Mathf.DegToRad(MaxFloodHalfCone) : Mathf.Min(halfField * ConeMargin, Mathf.DegToRad(89f));
         _light.SpotAngle = Mathf.RadToDeg(halfCone);
         _light.SpotAngleAttenuation = IsFlood ? 0.02f : 0.1f;
@@ -394,10 +405,11 @@ public partial class ProfileFixture : Node3D
         if (_light == null)
             return;
         _light.LightEnergy = Energy * _intensity;
-        // Floods: no raymarched beam (a 170° cone is not a beam); a little of Godot's fog glow near the cloth.
-        _light.LightVolumetricFogEnergy = IsFlood ? 0.15f * _fogEnergy : _customBeam ? 0f : _fogEnergy;
+        // Floods: no raymarched beam (a 170° cone is not a beam), see FloodFogEnergy.
+        _light.LightVolumetricFogEnergy = IsFlood ? FloodFogEnergy * _fogEnergy : _customBeam ? 0f : _fogEnergy;
         _light.LightColor = _lampColor * _gelColor;
         _light.Visible = _intensity > 0f;
+        ShowBody();
         if (IsFlood)
             return;
         _beam.Visible = _customBeam && _light.Visible;
@@ -412,25 +424,50 @@ public partial class ProfileFixture : Node3D
     /// </summary>
     private static readonly System.Collections.Generic.Dictionary<(FloodMounting, int), ImageTexture> FloodMasks = new();
 
+    /// <summary>
+    /// The tilt of a flood's box from level (radians, about its X axis): a hanging flood looks down at the cloth, a ground
+    /// row up.
+    /// </summary>
+    private static float FloodPitch(FloodMounting mounting) =>
+        Mathf.DegToRad(mounting == FloodMounting.Bottom ? FloodTilt : -FloodTilt);
+
     private static ImageTexture FloodMask(FloodMounting mounting, float halfConeDegrees)
     {
         var key = (mounting, Mathf.RoundToInt(halfConeDegrees * 10f));
         if (FloodMasks.TryGetValue(key, out var cached))
             return cached;
-        const int size = 1024;
+        const int size = 2048;
         float tanHalf = Mathf.Tan(Mathf.DegToRad(halfConeDegrees));
+        var tilt = new Basis(Vector3.Right, FloodPitch(mounting));
         var image = Image.CreateEmpty(size, size, false, Image.Format.Rgb8);
         for (int j = 0; j < size; j++)
             for (int i = 0; i < size; i++)
             {
                 float x = ((i + 0.5f) / size * 2f - 1f) * tanHalf;
                 float y = (1f - (j + 0.5f) / size * 2f) * tanHalf;
-                double h = Mathf.RadToDeg(Mathf.Atan(x));
-                double up = Mathf.RadToDeg(Mathf.Atan(y));
-                float v = (float)FloodDistribution.Relative(h, mounting == FloodMounting.Top ? -up : up);
+                // The direction as the level box sees it; behind its open front no light comes out.
+                var d = tilt * new Vector3(x, y, -1f);
+                float v = 0f;
+                if (d.Z < -1e-4f)
+                {
+                    double h = Mathf.RadToDeg(Mathf.Atan(d.X / -d.Z));
+                    double up = Mathf.RadToDeg(Mathf.Atan(d.Y / -d.Z));
+                    v = (float)FloodDistribution.Relative(h, mounting == FloodMounting.Top ? -up : up);
+                    // The near part of the cloth gets a few % of the far end's light: 8 bits draw rings there. Half a
+                    // step of fixed noise turns them into grain that the filtering smooths.
+                    v = Mathf.Clamp(v + (Dither(i, j) - 0.5f) / 255f, 0f, 1f);
+                }
                 image.SetPixel(i, j, new Color(v, v, v));
             }
         return FloodMasks[key] = ImageTexture.CreateFromImage(image);
+    }
+
+    /// <summary>A fixed pseudo-random value in 0..1 per texel.</summary>
+    private static float Dither(int i, int j)
+    {
+        uint n = (uint)i * 73856093u ^ (uint)j * 19349663u;
+        n = (n ^ n >> 13) * 1274126177u;
+        return (n ^ n >> 16) / (float)uint.MaxValue;
     }
 
     private async void ReadMaskAfterDraw(int version)
