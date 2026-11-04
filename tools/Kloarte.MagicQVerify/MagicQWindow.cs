@@ -122,6 +122,22 @@ internal sealed partial class MagicQWindow
         }
     }
 
+    /// <summary>Y of the row of select (S) buttons, from a capture at the pinned size.</summary>
+    private const int SelectRow = 751;
+
+    /// <summary>The CUE STK button (cue stack window), from a capture at the pinned size.</summary>
+    private static readonly (int X, int Y) CueStackButton = (1647, 270);
+
+    /// <summary>Selects a playback (1..10) and saves a capture of its cue stack window (the steps, numbers and texts).</summary>
+    public void CaptureCueStack(int playback, string path)
+    {
+        Click(PlaybackColumns[playback - 1], SelectRow);
+        Thread.Sleep(800);
+        Click(CueStackButton.X, CueStackButton.Y);
+        Thread.Sleep(1500);
+        Capture(path);
+    }
+
     /// <summary>A position in window coordinates (as in a capture) as a message's lParam.</summary>
     private nint Position(int x, int y) => x - _client.X | y - _client.Y << 16;
 

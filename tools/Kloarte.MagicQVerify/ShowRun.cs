@@ -68,7 +68,12 @@ internal sealed class ShowRun
             window.RaiseFader(_options.Playback);
             Thread.Sleep(1000);
             window.Capture(Path.Combine(_options.Output, "start.png"));
+            // Open before the first Go, it shows the top of the stack (later it follows the current cue).
+            if (_options.CueStack)
+                window.CaptureCueStack(_options.Playback, Path.Combine(_options.Output, "cue_stack_start.png"));
             results = PlayStack(show, stack, window, artNet);
+            if (_options.CueStack)
+                window.CaptureCueStack(_options.Playback, Path.Combine(_options.Output, "cue_stack_end.png"));
             if (_options.Palettes)
                 window.CapturePalettes(_options.Output);
         }

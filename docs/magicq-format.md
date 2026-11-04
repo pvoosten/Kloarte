@@ -62,7 +62,18 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
   names and type letters, and a cue referring to them plays the expected DMX (`tools/Kloarte.MagicQVerify --palettes`
   on an export of Kruimels_016 with new palettes, 36/36 cues). Playback uses the **cached low byte** of a palette
   reference, not the palette's value: a copy with changed palette values but the same cues played identically, so
-  the cached bytes in the cues must be right (the export writes them). **To verify:** inserted cue pairs.
+  the cached bytes in the cues must be right (the export writes them).
+  **Verified in MagicQ PC 1.9.7.3 (4 Nov 2026):** inserted cues (new S records copied from the simplest cue, a step
+  put in by `InsertStep`) and value pairs inserted into an existing cue: an export of Kruimels_016 with new cues
+  before the first (0.001), between 1 and 1.1 (1.01, own name), between 2.5 and 3 (2.6) and at the end (5), each
+  with dimmer and LEDBeam values, plus 7 pairs added to cue 2, plays 39/39 cues with the expected DMX and fades
+  (`tools/Kloarte.MagicQVerify --cue-stack`). The cue stack window lists the steps in cue-number order with their
+  texts and cue ids (Q96..Q99 + name), the step count is 39, and the last step's next cue is the new first cue (the
+  stack loops as before). The notes section takes a first step's two strings on the flag line
+  (`00000001,"","","",""`), the others on lines of their own: MagicQ reads both.
+  MagicQ's cue numbers have **2 decimals** (all 3426 steps of the show folder; the cue stack window shows "0.00" for
+  0.001): a 3-decimal number (what `NumberBetween` gives before 0.01 or between 29.11 and 29.12) plays in order but
+  shows rounded, so the export warns about it (`InsertedCuesExportInOrderAndThreeDecimalsAreWarned`).
 - `H` = MagicVis: 1 id, 2 kind (1 fixture, 2 object), 3 object type, 8 parent id, 13-19 obfuscated numbers (x, y, z,
   rx, ry, rz, extra); fixtures 20 address, 21 head, 22 personality; objects 20 code, 21-23 size, 24 name, 26 model.
   Object types 1 proscenium, 2 truss / pipe (length along local +X), 4 box, 6 person, 7 podium, 8 model, 9 border.

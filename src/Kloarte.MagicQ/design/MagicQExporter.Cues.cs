@@ -78,6 +78,12 @@ internal sealed partial class MagicQExporter
                 Warnings.Add($"{label}: {e.Message} (not in the stack)");
             }
         }
+        // MagicQ's cue numbers have 2 decimals: a third plays in order but shows rounded (0.001 = "0.00").
+        var fine = _design.CueOrder.Where(c => MathF.Abs(c.Number * 100 - MathF.Round(c.Number * 100)) > 0.05f)
+            .Select(c => c.Cue).ToList();
+        if (fine.Count > 0)
+            Warnings.Add($"cue {List(fine)}: MagicQ shows cue numbers with 2 decimals (0.001 as 0.00): they play in "
+                         + "order, but the console shows them as their rounded number");
         var delayed = _design.CueOrder.Where(c => (c.Delay ?? 0) > 0).Select(c => c.Cue).ToList();
         if (delayed.Count > 0)
             Warnings.Add($"delays are Kloarte's only, not exported: cue {List(delayed)}");

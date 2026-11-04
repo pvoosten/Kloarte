@@ -161,6 +161,42 @@ public sealed partial class DesignExportTests
     }
 
     /// <summary>
+    /// Cues inserted before the first, between two and at the end of Kruimels_016 (verified in MagicQ PC) export in
+    /// cue-number order; a number with 3 decimals (0.001, what inserting before 0.01 gives) is warned about: MagicQ
+    /// shows cue numbers with 2 decimals (0.001 is "0.00" in its cue stack window).
+    /// </summary>
+    [Fact]
+    public void InsertedCuesExportInOrderAndThreeDecimalsAreWarned()
+    {
+        string shw = Show("Kruimels_016.shw");
+        var design = MagicQImport.Import(MagicQShow.Load(shw), shw, Catalog).Show;
+        var cues = design.CueOrder;
+        var dimmer = design.Rig.Heads.First(h => h.Type == DesignTypes.GenericName);
+        DesignCue New(float? after, float? before, string text) => new()
+        {
+            Cue = CueNumbers.Text(CueNumbers.Between(after, before).Value), Text = text, FadeIn = 3, FadeOut = 3,
+            Heads = { [DesignShow.Key(dimmer.Number)] = new Dictionary<string, LookValue> { ["intensity"] = LookValue.Of(50) } },
+        };
+        var first = New(null, cues[0].Number, "First");
+        var between = New(cues[2].Number, cues[3].Number, "Between");
+        var last = New(cues[^1].Number, null, "Last");
+        Assert.Equal("0.001", first.Cue);
+        cues.AddRange(new[] { first, between, last });
+        cues.Sort((a, b) => a.Number.CompareTo(b.Number));
+        design.Changed();
+
+        string target = Target("inserted.shw");
+        var export = MagicQExport.Export(design, target, Catalog);
+        Assert.DoesNotContain(export.Warnings, w => w.StartsWith("check after writing"));
+        var steps = MagicQShow.Load(target).CueStacks.Single(s => s.Number == design.CueList.Stack).Steps;
+        Assert.Equal(design.CueOrder.Select(c => c.Cue), steps.Select(s => s.CueNumberText));
+        Assert.Equal(new[] { "First", "Between", "Last" },
+                     steps.Where(s => s.CueId >= first.Id).OrderBy(s => s.CueId).Select(s => s.Text));
+        string warning = Assert.Single(export.Warnings, w => w.Contains("2 decimals"));
+        Assert.StartsWith("cue 0.001:", warning);
+    }
+
+    /// <summary>
     /// A new project (the house venue, no show behind it) with a T1 and a dimmer, a palette and cues exports to a show
     /// with a cue stack, its palettes and its patch, and reads back the same.
     /// </summary>
