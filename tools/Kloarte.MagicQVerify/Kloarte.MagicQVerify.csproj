@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>Kloarte.MagicQVerify</RootNamespace>
+    <!-- For System.Drawing (window capture). -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- LibraryImport generates unsafe marshalling code. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Kloarte.Model/Kloarte.Model.csproj" />
+    <ProjectReference Include="../../src/Kloarte.MagicQ/Kloarte.MagicQ.csproj" />
+  </ItemGroup>
+</Project>
