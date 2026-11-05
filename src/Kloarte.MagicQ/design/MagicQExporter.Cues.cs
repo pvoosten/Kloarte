@@ -89,7 +89,10 @@ internal sealed partial class MagicQExporter
             Warnings.Add($"delays are Kloarte's only, not exported: cue {List(delayed)}");
     }
 
-    /// <summary>Sets what differs of a cue record: channels, In / Out times, name.</summary>
+    /// <summary>
+    /// Sets what differs of a cue record: channels, In / Out times (with their millisecond copies, which MagicQ plays),
+    /// name.
+    /// </summary>
     private void UpdateCue(MagicQShow.Cue record, DesignCue cue, string stepText)
     {
         var want = _design.ChannelsOf(cue).ToDictionary(c => c.Address, Raw);
@@ -117,7 +120,13 @@ internal sealed partial class MagicQExporter
             record.SetFade(record.Record.GetHex(6) != fadeIn ? (float)(cue.FadeIn ?? 0) : null,
                            record.Record.GetHex(7) != fadeOut ? (float)(cue.FadeOut ?? 0) : null);
             Wrote($"cue {cue.Cue}: fade {DesignShow.Seconds(cue.FadeIn)} / {DesignShow.Seconds(cue.FadeOut)} s");
-            Check("cue times written by Kloarte (In / Out; the record's millisecond copies are not changed)");
+        }
+        // MagicQ plays the millisecond copies: a copy that doesn't match its units (Kloarte exports before 5 Nov 2026)
+        // plays another time than the cue shows.
+        if (!record.TimeCopiesMatch)
+        {
+            record.RepairTimeCopies();
+            Wrote($"cue {cue.Cue}: millisecond copies of the times set to the times");
         }
         // The name follows the text (as imported: no name of its own) only when the text changed.
         string name = cue.Name != null
@@ -164,8 +173,9 @@ internal sealed partial class MagicQExporter
         foreach (var channel in _design.ChannelsOf(cue))
             added.SetChannel(channel.Address, Raw(channel));
         added.SetFade((float)(cue.FadeIn ?? 0), (float)(cue.FadeOut ?? 0));
+        added.RepairTimeCopies();
         _show.Cues.Add(added);
-        Check("new cues (cue records copied from the simplest cue; times: In / Out only)");
+        Check("new cues (cue records copied from the simplest cue)");
         return added;
     }
 

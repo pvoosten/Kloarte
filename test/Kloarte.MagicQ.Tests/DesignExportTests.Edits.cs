@@ -22,13 +22,15 @@ public sealed partial class DesignExportTests
 
     /// <summary>
     /// Every show, imported and exported unchanged, is written byte-identical (.shw and .xhw), with nothing written and no
-    /// warnings: the export changes only what the design changed.
+    /// warnings: the export changes only what the design changed. Except: cue times whose millisecond copies an earlier
+    /// Kloarte export left behind are repaired (MagicQ plays the copies).
     /// </summary>
     [Fact]
     public void UnchangedShowsExportByteIdentical()
     {
         var catalog = Catalog;
         var failures = new List<string>();
+        var repaired = new List<string>();
         int shows = 0;
         foreach (string shw in Directory.EnumerateFiles(ShowFolder, "*.shw", SearchOption.AllDirectories))
         {
@@ -46,6 +48,13 @@ public sealed partial class DesignExportTests
             string target = Target($"same_{shows:000}.shw");
             var export = MagicQExport.Export(design, target, catalog);
             string name = Path.GetFileName(shw);
+            // Kloarte exports before 5 Nov 2026 set a cue's time units without their millisecond copies, which MagicQ
+            // plays: the export repairs them (Kruimels_012 to 016: cues 0x5a..0x5f), and nothing else.
+            if (export.Written.Count > 0 && export.Written.All(w => w.EndsWith("millisecond copies of the times set to the times")))
+            {
+                repaired.Add(name);
+                continue;
+            }
             if (File.ReadAllText(target, System.Text.Encoding.Latin1) != File.ReadAllText(shw, System.Text.Encoding.Latin1))
                 failures.Add($"{name}: the .shw differs; written: {string.Join("; ", export.Written.Take(5))}");
             else if (export.Written.Count > 0)
@@ -58,7 +67,8 @@ public sealed partial class DesignExportTests
             foreach (string warning in export.Warnings)
                 _log.WriteLine($"{name}: {warning}");
         }
-        _log.WriteLine($"{shows} shows exported unchanged");
+        _log.WriteLine($"{shows} shows exported unchanged; time copies repaired in {string.Join(", ", repaired)}");
+        Assert.Equal(new[] { "Kruimels_012.shw", "Kruimels_013.shw", "Kruimels_014.shw", "Kruimels_015.shw", "Kruimels_016.shw" }, repaired.Order());
         Check(shows > 0, "the MagicQ show folder has shows");
         Check(failures.Count == 0, string.Join("\n", failures.Take(20)));
     }
@@ -153,8 +163,22 @@ public sealed partial class DesignExportTests
         var newCue = back.CueOrder[^1];
         Assert.Equal("@Kloarte look", newCue.Heads[DesignShow.Key(t1.Number)]["Pan"].ToString());
 
-        // The other cue stacks are byte-identical.
         var written = MagicQShow.Load(target);
+        // MagicQ PC plays a time's millisecond copy (cue 1.01 with In 4.5 s and the copy at 2971 ms faded in 2.7 s,
+        // 5 Nov 2026): the copies are written with the units, Pos / Col / Beam follow In, and the new cue's are its own.
+        var edited = written.Cues.First(c => c.Id == cues[1].Id);
+        Assert.Equal(new[] { 149, 99, 149, 149, 149 }, edited.Times);
+        Assert.All(written.Cues, c => Assert.True(c.TimeCopiesMatch, $"cue record {c.Id:x4}"));
+        Assert.Equal(4471, MagicQShow.Cue.Milliseconds(149));
+        Assert.Equal(new[] { 66, 99, 66, 66, 66 }, written.Cues.First(c => c.Id == newCue.Id).Times);
+
+        // The FX of 29.1 (1-051..1-061) follows the moved head (before 5 Nov 2026 it stayed on its old address).
+        int oldAddress = source.Patch.First(p => p.HeadNumber == moved.Number).Address;
+        var fx = written.Cues.First(c => c.Id == source.Cues.First(s => s.FxAddresses.Contains(oldAddress)).Id).FxAddresses;
+        Assert.Contains(free, fx);
+        Assert.DoesNotContain(oldAddress, fx);
+
+        // The other cue stacks are byte-identical.
         foreach (var stack in source.CueStacks.Where(s => s.Number != design.CueList.Stack))
             Assert.Equal(string.Join("|", stack.Record.CopyLines().Select(l => string.Join(",", l.Tokens))),
                          string.Join("|", written.CueStacks.Single(s => s.Number == stack.Number).Record.CopyLines().Select(l => string.Join(",", l.Tokens))));

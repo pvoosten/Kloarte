@@ -6,6 +6,9 @@ namespace Kloarte.MagicQ;
 
 internal sealed partial class MagicQExporter
 {
+    /// <summary>The addresses of the channels of moved heads: old -&gt; new.</summary>
+    private readonly Dictionary<int, int> _movedAddresses = new();
+
     /// <summary>
     /// The heads as L records: a head that is there with its personality and channel count keeps its records (moved,
     /// renamed, gel / beam / shape set when they differ); a head of another type or a new head gets records copied from a
@@ -39,6 +42,14 @@ internal sealed partial class MagicQExporter
                     _show.RemovePatchChannel(channel);
             NewHead(head, personality);
         }
+        // MagicQ refers to a cue's FX channels by address: they follow the moved heads (all at once, so heads that
+        // swap addresses don't move twice).
+        if (_movedAddresses.Count > 0)
+        {
+            int fx = _show.Cues.Sum(c => c.MoveFxAddresses(_movedAddresses));
+            if (fx > 0)
+                Wrote($"{fx} FX channel{(fx == 1 ? "" : "s")} of cues moved with their heads");
+        }
         foreach (var group in groups.Where(g => !matched.Contains(g) && !designNumbers.Contains(g[0].HeadNumber)))
         {
             foreach (var channel in group)
@@ -55,7 +66,10 @@ internal sealed partial class MagicQExporter
         if (offset != 0)
         {
             foreach (var channel in channels)
+            {
+                _movedAddresses[channel.Address] = channel.Address + offset;
                 channel.Address += offset;
+            }
             done.Add($"moved to {DmxAddress.Format(head.Address)}");
         }
         string name = HeadNames.Clean(head.Name);

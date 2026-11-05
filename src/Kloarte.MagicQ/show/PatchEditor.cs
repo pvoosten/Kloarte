@@ -79,8 +79,8 @@ public sealed class PatchEditor
     }
 
     /// <summary>
-    /// Repatches a head to another start address. Its lamps follow, and so does every cue value and palette value of
-    /// its channels (MagicQ stores them by DMX address).
+    /// Repatches a head to another start address. Its lamps follow, and so does every cue value, cue FX channel and
+    /// palette value of its channels (MagicQ stores them by DMX address).
     /// </summary>
     private void MoveHead(int headNumber, int address)
     {
@@ -104,6 +104,7 @@ public sealed class PatchEditor
                 cue.RemoveChannel(a);
             foreach (var (a, v) in moved)
                 cue.SetChannel(map[a], v);
+            cue.MoveFxAddresses(map);
         }
         foreach (var palette in _show.Palettes)
             palette.MoveAddresses(map);
