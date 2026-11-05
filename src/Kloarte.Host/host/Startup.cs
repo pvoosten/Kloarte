@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Godot;
 using Kloarte.Application;
 using Kloarte.GodotBinding;
@@ -17,6 +19,7 @@ public partial class Startup : Node
     /// <inheritdoc />
     public override void _EnterTree()
     {
+        CleanupMovieResolutionOverride();
         AppPaths.Current = new GodotAppPaths();
         FileCodec.Current = new YamlFileCodec();
         FixturePanel.LiveInputFactory = () => new LiveInput(new ArtNetReceiver());
@@ -40,6 +43,31 @@ public partial class Startup : Node
             new RemoteTools(ui).AddTo(server);
             return server;
         };
+    }
+
+    /// <summary>Removes the temporary movie override after Godot has loaded the project settings.</summary>
+    private static void CleanupMovieResolutionOverride()
+    {
+        bool isMovie = false;
+        foreach (string arg in OS.GetCmdlineUserArgs())
+            isMovie |= arg == HostBoot.RenderMovieArg;
+        if (!isMovie)
+            return;
+
+        string root = OS.HasFeature("template")
+            ? Path.GetDirectoryName(OS.GetExecutablePath()) ?? "."
+            : ProjectSettings.GlobalizePath("res://");
+        string path = Path.Combine(root, "override.cfg");
+        try
+        {
+            if (File.Exists(path) && File.ReadAllText(path).StartsWith(
+                    FixturePanel.MovieResolutionOverrideMarker, StringComparison.Ordinal))
+                File.Delete(path);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            GD.PushError($"Could not remove the temporary movie resolution override: {e.Message}");
+        }
     }
 
     /// <summary>

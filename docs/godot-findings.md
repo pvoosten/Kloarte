@@ -49,3 +49,7 @@
     at once). Within the budget for the real show, so **on by default** (`BeamOcclusion.Enabled`). `ShowBuilder` invalidates
     every lamp's map whenever the occluders change (`NotifyOccludersChanged`: build, scenery rebuild, a piece in / out, a
     curtain moving).
+13. **Movie Maker output size is the project viewport size at startup**, not the `--resolution` window request. For a
+    per-export size, write `display/window/size/viewport_width` and `viewport_height` in a temporary `override.cfg` before
+    starting the second process; remove it from the render startup after Godot has loaded project settings. Do not overwrite
+    an existing user `override.cfg`.

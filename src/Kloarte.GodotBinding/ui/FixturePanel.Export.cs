@@ -24,11 +24,14 @@ public partial class FixturePanel
     /// <summary>Frame rate of the movie.</summary>
     public const int MovieFps = 30;
 
+    /// <summary>First line identifying a temporary project-settings override used for movie rendering.</summary>
+    public const string MovieResolutionOverrideMarker = "; Kloarte movie resolution override; owner=";
+
     /// <summary>Seconds of the initial state before the first GO in a movie from the start (the render's lead-in).</summary>
     private const double MovieLeadIn = 1.0;
 
     /// <summary>A movie to render: the AVI, the process arguments, its progress file and what the status bar calls it.</summary>
-    private sealed record MovieJob(string Avi, string[] Args, string Progress, string Label);
+    private sealed record MovieJob(string Avi, string[] Args, string Progress, string Label, Vector2I Size);
 
     /// <summary>Movies waiting to be rendered (per actor: one after the other).</summary>
     private readonly Queue<MovieJob> _movieJobs = new();
@@ -36,6 +39,8 @@ public partial class FixturePanel
     /// <summary>The movie being rendered and its process, the ffmpeg conversion running, the movies done.</summary>
     private MovieJob _movieJob;
     private int _moviePid = -1;
+    private string _movieSettingsOverride;
+    private string _movieStartError;
     private readonly List<string> _moviesDone = new();
     private double _moviePoll;
 
@@ -221,9 +226,8 @@ public partial class FixturePanel
             string avi = actor == null ? options.Target
                 : Path.Combine(Path.GetDirectoryName(options.Target) ?? "", $"{Path.GetFileNameWithoutExtension(options.Target)}_{FileSafe(actor.Name)}.avi");
             string progress = Path.Combine(folder, $"progress_{_movieJobs.Count}.txt");
-            // From the project the second process needs --path and the render scene; an exported build runs its own .pck
-            // and refuses a scene on the command line (Godot 4.7 templates: disable_path_overrides): its boot scene
-            // (host HostBoot) starts the render on --render-movie.
+            // An exported build refuses a scene on the command line (Godot 4.7 templates: disable_path_overrides):
+            // its boot scene (host HostBoot) starts the render on --render-movie.
             var args = AppPaths.Exported ? new List<string>()
                 : new List<string> { "--path", ProjectSettings.GlobalizePath("res://"), "res://render/show_render.tscn" };
             args.AddRange(new[]
@@ -250,12 +254,13 @@ public partial class FixturePanel
                 args.Add("--caption=1");
             if (actor != null)
                 args.Add("--actor=" + actor.Id);
-            _movieJobs.Enqueue(new MovieJob(avi, args.ToArray(), progress, actor?.Name ?? Path.GetFileName(avi)));
+            _movieJobs.Enqueue(new MovieJob(avi, args.ToArray(), progress, actor?.Name ?? Path.GetFileName(avi), options.Size));
         }
         int count = _movieJobs.Count;
+        _movieStartError = null;
         StartNextMovie();
         if (_movieJob == null)
-            return "Could not start the movie process";
+            return _movieStartError ?? "Could not start the movie process";
         return count > 1
             ? $"Recording {count} movies ({(end ?? rangeEnd) - start:0} s each), one after the other..."
             : $"Recording {(end ?? rangeEnd) - start:0} s of show into {Path.GetFileName(options.Target)} (in a separate window)...";
@@ -276,10 +281,45 @@ public partial class FixturePanel
         catch (IOException)
         {
         }
+        string overridePath = MovieResolutionOverridePath();
+        try
+        {
+            if (File.Exists(overridePath))
+            {
+                string existing = File.ReadAllText(overridePath);
+                if (!TryRemoveStaleMovieOverride(overridePath, existing))
+                {
+                    _movieJobs.Clear();
+                    _movieStartError = $"Cannot render a movie while {overridePath} is in use or contains custom settings.";
+                    _status.Text = _movieStartError;
+                    StatusBar.EndTask();
+                    return;
+                }
+            }
+            _movieSettingsOverride = overridePath;
+            using (var stream = new FileStream(overridePath, FileMode.CreateNew, System.IO.FileAccess.Write, FileShare.Read))
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.Write($"{MovieResolutionOverrideMarker}{OS.GetProcessId()}\n[display]\n" +
+                    $"window/size/viewport_width={job.Size.X}\nwindow/size/viewport_height={job.Size.Y}\n");
+            }
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            RemoveMovieResolutionOverride();
+            _movieJobs.Clear();
+            _movieStartError = $"Could not set movie resolution: {e.Message}";
+            _status.Text = _movieStartError;
+            StatusBar.EndTask();
+            return;
+        }
         _moviePid = OS.CreateProcess(OS.GetExecutablePath(), job.Args);
         if (_moviePid <= 0)
         {
+            RemoveMovieResolutionOverride();
             _movieJobs.Clear();
+            _movieStartError = "Could not start the movie process";
+            _status.Text = _movieStartError;
             StatusBar.EndTask();
             return;
         }
@@ -293,6 +333,7 @@ public partial class FixturePanel
         _movieJobs.Clear();
         if (_moviePid > 0 && OS.IsProcessRunning(_moviePid))
             OS.Kill(_moviePid);
+        RemoveMovieResolutionOverride();
         string avi = _movieJob?.Avi;
         _movieJob = null;
         _moviePid = -1;
@@ -319,6 +360,7 @@ public partial class FixturePanel
                 total > 0 ? (double)frame / total : -1, CancelMovies);
             return;
         }
+        RemoveMovieResolutionOverride();
         _moviePid = -1;
         if (File.Exists(job.Avi))
         {
@@ -337,6 +379,49 @@ public partial class FixturePanel
         string folder = Path.GetDirectoryName(_moviesDone[0]) ?? "";
         string what = _moviesDone.Count == 1 ? $"Movie saved: {_moviesDone[0]}" : $"{_moviesDone.Count} movies saved in {folder}";
         PostWithFolder(what + (FindFfmpeg() != null ? " (converting to MP4)" : ""), folder);
+    }
+
+    /// <summary>Returns the project (or exported executable) root's override settings path.</summary>
+    private static string MovieResolutionOverridePath()
+    {
+        string root = AppPaths.Exported
+            ? Path.GetDirectoryName(OS.GetExecutablePath()) ?? "."
+            : ProjectSettings.GlobalizePath("res://");
+        return Path.Combine(root, "override.cfg");
+    }
+
+    /// <summary>Removes a stale override only when its owner process has exited.</summary>
+    private static bool TryRemoveStaleMovieOverride(string path, string contents)
+    {
+        if (!contents.StartsWith(MovieResolutionOverrideMarker, StringComparison.Ordinal))
+            return false;
+        string ownerText = contents[MovieResolutionOverrideMarker.Length..].Split('\n', 2)[0];
+        if (int.TryParse(ownerText, out int owner) && OS.IsProcessRunning(owner))
+            return false;
+        File.Delete(path);
+        return true;
+    }
+
+    /// <summary>Removes this process's temporary movie settings override.</summary>
+    private void RemoveMovieResolutionOverride()
+    {
+        if (_movieSettingsOverride == null)
+            return;
+        try
+        {
+            if (File.Exists(_movieSettingsOverride))
+            {
+                string contents = File.ReadAllText(_movieSettingsOverride);
+                if (contents.StartsWith(MovieResolutionOverrideMarker + OS.GetProcessId(), StringComparison.Ordinal))
+                    File.Delete(_movieSettingsOverride);
+            }
+            _movieSettingsOverride = null;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            GD.PushError($"Could not remove the temporary movie resolution override: {e.Message}");
+            _status.Text = $"Could not remove the temporary movie resolution override: {e.Message}";
+        }
     }
 
     /// <summary>The progress file's "frame total" (0, 0 when it isn't there yet).</summary>

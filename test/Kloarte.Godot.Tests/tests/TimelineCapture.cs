@@ -270,19 +270,31 @@ public partial class TimelineCapture : Node
                 task = t;
         }
         Check(task != null && bar.Task == null, $"movie progress in the status bar: '{task}', after: '{bar.Task}'");
-        int frames = File.Exists(avi) ? AviFrames(avi) : -1;
+        (int Frames, int Width, int Height) movie = File.Exists(avi) ? AviHeader(avi) : (-1, -1, -1);
         int expected = (int)((4.0 + ShowRender.LeadIn) * FixturePanel.MovieFps) + 1;
-        Check(System.Math.Abs(frames - expected) <= 2, $"movie: {frames} frames (expected {expected}), {(File.Exists(avi) ? new FileInfo(avi).Length / 1024 : 0)} kB");
+        Check(System.Math.Abs(movie.Frames - expected) <= 2, $"movie: {movie.Frames} frames (expected {expected}), {(File.Exists(avi) ? new FileInfo(avi).Length / 1024 : 0)} kB");
+        Check(movie.Width == 640 && movie.Height == 360, $"movie size: {movie.Width}x{movie.Height} (expected 640x360)");
+        string overridePath = ProjectSettings.GlobalizePath("res://override.cfg");
+        Check(!File.Exists(overridePath), "temporary movie resolution override cleaned up");
+
+        const string customOverride = "[display]\nwindow/size/viewport_width=800\n";
+        File.WriteAllText(overridePath, customOverride);
+        string blocked = _panel.StartMovie(avi, "320x180", end: 0.1);
+        bool preserved = blocked.Contains("override.cfg") && File.ReadAllText(overridePath) == customOverride;
+        File.Delete(overridePath);
+        Check(preserved, "existing user override.cfg is left unchanged");
     }
 
-    /// <summary>dwTotalFrames from the AVI main header ("avih").</summary>
-    private static int AviFrames(string path)
+    /// <summary>Frame count and dimensions from the AVI main header ("avih").</summary>
+    private static (int Frames, int Width, int Height) AviHeader(string path)
     {
         var bytes = File.ReadAllBytes(path);
-        for (int i = 0; i + 28 < bytes.Length && i < 4096; i++)
+        for (int i = 0; i + 48 < bytes.Length && i < 4096; i++)
             if (bytes[i] == 'a' && bytes[i + 1] == 'v' && bytes[i + 2] == 'i' && bytes[i + 3] == 'h')
-                return System.BitConverter.ToInt32(bytes, i + 8 + 16);
-        return -1;
+                return (System.BitConverter.ToInt32(bytes, i + 8 + 16),
+                    System.BitConverter.ToInt32(bytes, i + 8 + 32),
+                    System.BitConverter.ToInt32(bytes, i + 8 + 36));
+        return (-1, -1, -1);
     }
 
     private void Shot(string name)
