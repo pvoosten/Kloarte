@@ -286,8 +286,13 @@ public static class MagicQImport
         foreach (var cue in source.Cues)
             cues.TryAdd(cue.Id, cue);
         var seen = new HashSet<int>();
+        var delayed = new List<string>();
+        var follow = new List<string>();
+        var effects = new List<string>();
         foreach (var step in stack.Steps)
         {
+            if (!step.WaitsForGo)
+                follow.Add(step.Mark ? $"{step.CueNumberText} (mark cue)" : step.CueNumberText);
             if (!seen.Add(step.CueId))
             {
                 notes.Add($"cue {step.CueNumberText} plays cue id {step.CueId} a second time: left out");
@@ -304,12 +309,23 @@ public static class MagicQImport
                 entry.Name = string.IsNullOrEmpty(cue.Name) || cue.Name == step.Text ? null : cue.Name;
                 entry.FadeIn = Time(cue.Record.GetHex(6));
                 entry.FadeOut = Time(cue.Record.GetHex(7));
+                if (cue.Delays.Any(d => d > 0))
+                    delayed.Add(step.CueNumberText);
+                if (cue.FxAddresses.Count > 0)
+                    effects.Add(step.CueNumberText);
                 entry.Heads = CueLooks(source, design, cue, heads, palettes, out var loose);
                 if (loose.Count > 0)
                     entry.Dmx = loose;
             }
             design.CueOrder.Add(entry);
         }
+        // MagicQ plays these (the export keeps them), Kloarte's playback doesn't.
+        if (delayed.Count > 0)
+            notes.Add($"cue {string.Join(", ", delayed)}: MagicQ delays (In / Out / Pos / Col / Beam) are not played in Kloarte");
+        if (follow.Count > 0)
+            notes.Add($"cue {string.Join(", ", follow)}: MagicQ plays {(follow.Count == 1 ? "it" : "them")} without a Go after the cue before; Kloarte waits for a GO");
+        if (effects.Count > 0)
+            notes.Add($"cue {string.Join(", ", effects)}: MagicQ FX are not played in Kloarte");
     }
 
     /// <summary>A cue time in seconds (null for 0).</summary>

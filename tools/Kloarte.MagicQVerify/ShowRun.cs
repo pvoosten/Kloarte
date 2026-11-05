@@ -98,7 +98,7 @@ internal sealed class ShowRun
         foreach (var r in results)
             Line(Describe(r));
         int passed = results.Count(r => r.Passed);
-        Line($"{passed} of {results.Count} cues pass");
+        Line($"{passed} of {results.Count} cues pass" + (results.Count < steps.Count ? $" ({steps.Count} steps: some follow on their own)" : ""));
         bool untouched = Hash(_options.Show) == sourceHash;
         if (!untouched)
             Line($"FAILED: {_options.Show} changed during the run");
@@ -169,36 +169,59 @@ internal sealed class ShowRun
         }
     }
 
-    /// <summary>Plays the steps one by one: `steps` are the indices in `stack` of the steps the played stack has.</summary>
+    /// <summary>
+    /// Plays the steps Go by Go: `steps` are the indices in `stack` of the steps the played stack has. A step that
+    /// follows the one before on its own (<see cref="MagicQShow.CueStack.Step.WaitsForGo"/> false) is played by the Go of
+    /// its chain (<see cref="MagicQVerification.Chains"/>): the output is checked after the last step of the chain, and
+    /// the fade is the sum of the chain's fades. Channels an FX runs on are not compared (FX are not simulated).
+    /// </summary>
     private List<StepResult> PlayStack(MagicQShow show, MagicQShow.CueStack stack, IReadOnlyList<int> steps, MagicQWindow window,
         ArtNetReceiver artNet)
     {
         var expected = MagicQVerification.ExpectedLevels(show, stack);
+        var fx = MagicQVerification.FxAddresses(show, stack);
         var intensities = MagicQCheck.IntensityAddresses(show);
-        var cues = show.Cues.ToDictionary(c => c.Id);
+        var cues = show.Cues.GroupBy(c => c.Id).ToDictionary(g => g.Key, g => g.First());
         var results = new List<StepResult>();
         bool started = window.IsActive(_options.Playback);
         if (started)
             Line("The stack started when its fader went up: no Go for the first cue, whose fade is not measured");
-        for (int j = 0; j < steps.Count; j++)
+        var chains = MagicQVerification.Chains(stack, steps);
+        for (int j = 0; j < chains.Count; j++)
         {
-            int i = steps[j];
-            var step = stack.Steps[i];
-            float fade = cues.TryGetValue(step.CueId, out var cue) ? MagicQVerification.LongestFade(cue) : 0;
-            var before = artNet.Snapshot();
-            string name = $"{step.CueNumberText} {step.Text}".Trim();
-            // Only a cue that has to move the output has a fade: others repeat the look or set a channel's default.
-            bool moves = MagicQVerification.Compare(before, expected[i], intensities).Diffs.Count > 0;
+            var chain = chains[j];
+            int last = chain[^1];
+            var ignore = fx[last];
+            var before = MagicQVerification.Without(artNet.Snapshot(), ignore);
+            var want = MagicQVerification.Without(expected[last], ignore);
+            float fade = 0;
+            var from = before;
+            foreach (int i in chain)
+            {
+                var to = MagicQVerification.Without(expected[i], ignore);
+                if (cues.TryGetValue(stack.Steps[i].CueId, out var cue))
+                    fade += MagicQVerification.ExpectedFade(cue, from, to, intensities, ignore);
+                from = to;
+            }
+            string name = string.Join(" + ", chain.Select(i => $"{stack.Steps[i].CueNumberText} {stack.Steps[i].Text}".Trim()));
+            if (chain.Count > 1)
+                name += " (followed on their own)";
+            // Only a cue that changes the expected output has a fade and gets a second Go when nothing moves: going by
+            // the received output instead, a channel that is wrong all along made a Go on a cue without changes look
+            // lost, and the second Go skipped a cue (RT2025_044 30.1, 5 Nov 2026).
+            var previous = chain[0] > 0 ? MagicQVerification.Without(expected[chain[0] - 1], ignore) : new Dictionary<int, int>();
+            bool moves = MagicQVerification.Compare(previous, want, intensities).Diffs.Count > 0;
             // Some stacks start when the fader goes up: they are on their first cue already.
             bool go = j > 0 || !started;
-            var meter = Settle(artNet, before, fade, go ? () => window.Go(_options.Playback) : null,
+            var meter = Settle(artNet, before, fade, ignore, go ? () => window.Go(_options.Playback) : null,
                 go && moves ? () => Again(window, name) : null);
-            var (compared, diffs) = MagicQVerification.Compare(artNet.Snapshot(), expected[i], intensities);
-            var result = new StepResult(name, compared, diffs.Count, MagicQCheck.FormatDiffs(diffs), fade, meter.Duration,
+            var (compared, diffs) = MagicQVerification.Compare(MagicQVerification.Without(artNet.Snapshot(), ignore), want, intensities);
+            string text = MagicQCheck.FormatDiffs(diffs) + (ignore.Count > 0 ? $" ({ignore.Count} FX channels not compared)" : "");
+            var result = new StepResult(name, compared, diffs.Count, text, fade, meter.Duration,
                 !moves || meter.Matches(fade) || j == 0 && started);
             results.Add(result);
             Console.WriteLine(Describe(result));
-            window.Capture(Path.Combine(_options.Output, $"cue_{i + 1:000}.png"));
+            window.Capture(Path.Combine(_options.Output, $"cue_{last + 1:000}.png"));
         }
         return results;
     }
@@ -214,8 +237,10 @@ internal sealed class ShowRun
     /// Runs `go` (may be null) and follows the output from `before` until a fade of `fade` seconds has ended and it is
     /// quiet. `again` runs once when the output has not started to change after <see cref="RetrySeconds"/>; null = no
     /// change expected. The first sample is from before the Go: an instant cue is over before the click returns.
+    /// Addresses in `ignore` (FX) are left out of the samples.
     /// </summary>
-    private static FadeMeter Settle(ArtNetReceiver artNet, Dictionary<int, int> before, float fade, Action go, Action again)
+    private static FadeMeter Settle(ArtNetReceiver artNet, Dictionary<int, int> before, float fade, ISet<int> ignore, Action go,
+        Action again)
     {
         var meter = new FadeMeter();
         meter.Add(0, before);
@@ -229,7 +254,7 @@ internal sealed class ShowRun
             if (artNet.Packets != packets)
             {
                 packets = artNet.Packets;
-                if (meter.Add(now, artNet.Snapshot()))
+                if (meter.Add(now, MagicQVerification.Without(artNet.Snapshot(), ignore)))
                     quietFrom = now;
             }
             if (again != null && meter.FirstChange == null && now >= RetrySeconds)

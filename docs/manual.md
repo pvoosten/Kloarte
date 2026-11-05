@@ -141,13 +141,15 @@ that doesn't read is not applied and never overwritten.
 
 - *Import*: a MagicQ show becomes a project (File > New project from show, the start screen). Exact: after every cue the
   DMX is MagicQ's. Its main cue stack (the one with the most cues) is the cue list; the other stacks, FX, curves and
-  settings stay in the MagicQ show.
+  settings stay in the MagicQ show. The import notes name the cues MagicQ plays differently from Kloarte: MagicQ
+  delays (e.g. an In delay), cues that follow without a Go (and mark cues), and FX; the export keeps them as they are.
 - *Export* (File > Export MagicQ show, *Export...*): written into a copy of the show the project came from (a new
   project: the house venue's), changing only what differs; an unchanged show is written byte-identical. After writing,
   the file is read back and compared with Kloarte (a difference is a warning). The status says what was written and
   what to **check in MagicQ PC** (kinds of records not yet verified there: new palettes, changed cue channels and
   times, cue steps put in or taken out, new heads, groups and MagicVis items). A rig item's name longer than the 15
-  characters MagicQ keeps is a warning. Not exported: dimmer curves
+  characters MagicQ keeps is a warning. A cue's In / Out time is written with the millisecond copy MagicQ plays (copies
+  an older export left wrong are repaired). Not exported: dimmer curves
   (a warning; edit them in MagicQ), cue delays. Never over an existing file.
 - *Open in MagicQ PC* (Playback): exports the show as the project's next numbered MagicQ show and starts MagicQ PC with
   it, with live Art-Net and the look check.

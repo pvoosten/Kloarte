@@ -159,6 +159,8 @@ kept **lossless** (unchanged records byte-identical; `MagicQRoundTripTests` chec
 - `.shw` ASCII, CRLF, records of comma-separated fields ending in `;`, mostly hex. Record types: `P` personality, `L` patch
   (one per DMX channel), `U` user curve, `G` group, `C` cue stack, `S` cue, `F` palette, `H` MagicVis item, `T` console settings.
 - Cue values = `palette id << 8 | DMX value` when they refer to a palette. Gel and intensity are per head.
+- Cue times: MagicQ **plays the millisecond copies** of the times (`30 x units + 1`), not the units: the export writes
+  both. Delays, FX, steps that follow without a Go and mark cues are played by MagicQ, not by Kloarte (import notes).
 - `.xhw` = ustar tar with icons and models. `status.dat` T f1 = the show MagicQ opens (edit only while MagicQ is closed).
 - Written palettes (copied trailer) verified in MagicQ PC; playback uses a palette reference's cached low byte.
 - Inserted cues (new S records + steps, also before the first cue) and pairs added to a cue verified in MagicQ PC.

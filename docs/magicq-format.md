@@ -37,17 +37,36 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
   address gets its own head (given number or a free one); conflicts are refused.
 - `G` = groups: `G,<num>,"<name>",<count hex>,<head numbers hex...>`.
 - `C` = cue stack: 1 number, 2 name, 4 step count; a 17-field line; then 7 fields per step, one line each: next step,
-  previous step (circular list in record order), cue id (-> `S`), ?, flags (00006000; 0000c000 mark cue), cue number
+  previous step (circular list in record order), cue id (-> `S`), ?, flags (00006000 waits for a Go; 00004000
+  follows the step before when that has finished, without a Go; 0000c000 mark cue, follows too), cue number
   (float), text (max 15 chars). Then a notes flag (00000001: two strings per step follow, the second is the step note),
   a 5-field line, one 8-digit field per step, and a tail that doesn't depend on the steps. In all 727 stacks of the
   show folder the steps are in cue-number order and linked in record order. `CueStack.InsertStep` adds a step at its
   place in all three per-step sections and relinks; `CueStack.NumberBetween` picks the new cue number (fewest
   decimals: 1|2 -> 1.1, 1|4 -> 2).
-- `S` = cue: 1 id, 2 name, 3 pair count, f6..10 In / Out / Pos / Col / Beam (units of 1/33.3 s), pairs from f16 on
+- `S` = cue: 1 id, 2 name, 3 pair count, 4 number of FX blocks, f6..10 In / Out / Pos / Col / Beam times, f11..15
+  their delays (units of 1/33.3 s), pairs from f16 on
   **one line** (address, value), sorted by address; later lines (FX per channel, timing) refer to channels by
   address: a header line `0002,<count>,...` then per channel `addr,waveform?,speed?,size,group,phase offset,flags`
   (RT2025_031 cues 29.1-30.2: an FX on 61 channels with a phase spread; not simulated). Value = `palette id << 8 | DMX value` when it refers to a palette (the low byte is a cached copy).
   `Cue.SetChannel` inserts pairs in address order and updates f3. Empty cues (0 pairs) exist (RT S0001).
+  **Times (verified in MagicQ PC 1.9.7.3, 5 Nov 2026, RT2025_044 with `tools/Kloarte.MagicQVerify`):**
+  - Each time and delay has a **millisecond copy** after the pairs (the first 14 fields of 8 hex digits in a row: 5
+    times, 5 delays, 4 more), written by MagicQ as `30 x units + 1` (0 for 0: 99 = 2971, 33 = 991, 999 = 29971; 39815 of
+    the 39870 times of the show folder). **MagicQ plays the copy**: a cue with In 4.5 s in f6 and the copy at 2971 ms
+    faded in 2.7 s. Kloarte exports before 5 Nov 2026 set only f6 / f7: Kruimels_012..016 cues 2.22, 3.35..3.38 and 4
+    (In 1 s / 0.27 s / 0 s in the units) play in 3 s. `Cue.SetFade` now writes the copies (and Pos / Col / Beam when they
+    were equal to the old In), and the export repairs copies that don't match (`TimeCopiesMatch`).
+  - The **In delay** (f11) holds back rising intensities (RT2025_044 cues 2..27.01: cue 6, In 3 s + In delay 3 s, the
+    output changes for 5.7 s; falling intensities and other channels start at once). Kloarte's import doesn't read
+    delays (Kloarte's playback has none of MagicQ's) and names the cues in a note; the export keeps them.
+  - **FX**: f4 blocks after the pairs, each a 12-field header (`0002`, channel count, ...) and 7 fields per channel,
+    address first (`Cue.FxAddresses`). Not simulated (import note); a repatch moves their addresses with the head
+    (`Cue.MoveFxAddresses`, in `PatchEditor.MoveHead` and the export; before 5 Nov 2026 they stayed on the old address).
+  - A cue that sets the **coarse** channel of a 16-bit attribute without its fine (a palette reference: palettes hold
+    the coarse byte) outputs the **fine at 0** (RT2025_044 29.13: the T1's CMY fines, recorded 255 / 92 / 66 in 1.1,
+    went to 0). L field 3 flags: 0x1 intensity, 0x4 coarse, 0x8 fine of a 16-bit attribute. Kloarte's tracking keeps the
+    old fine (a 1/256 step); `MagicQVerification.ExpectedLevels` models it.
   `MagicQShow.AddCue` copies the simplest cue's record (incl. its fade times; the fields after the pairs are not
   understood), next free id; `InsertCue(stack, number, text, blackout)` = BO (every intensity channel of the patch at 0)
   or a cue without changes (no channels: the look tracks). Playback tab: "+ BO cue" / "+ No change" after the current
@@ -77,6 +96,13 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
   MagicQ's cue numbers have **2 decimals** (all 3426 steps of the show folder; the cue stack window shows "0.00" for
   0.001): a 3-decimal number (what `NumberBetween` gives before 0.01 or between 29.11 and 29.12) plays in order but
   shows rounded, so the export warns about it (`InsertedCuesExportInOrderAndThreeDecimalsAreWarned`).
+  **Verified in MagicQ PC 1.9.7.3 (5 Nov 2026):** a step without the 0x2000 flag plays on its own after the step before
+  (RT2025_044: one Go on 27.1 played 27.1, 29.1 "otomatic" and the mark cue 29.11 in 8.7 s; one Go on 29.12 played
+  29.13). A mark cue (no values) presets the heads that are dark to the next cue's other channels (move in black).
+  Kloarte's playback waits for a GO on every cue (import note: `CueStack.Step.WaitsForGo` / `Mark`). MagicQVerify plays
+  such a chain with one Go and checks the output after its last step (before, one Go per step ran it two cues ahead:
+  16 of 41 cues of the unchanged RT2025_044 passed; with chains, delays, FX, mark cues and the 16-bit fine modelled,
+  38 of 38 pass, also for an edited export, and 36 of 36 when cues that look like the cue before are skipped).
 - `H` = MagicVis: 1 id, 2 kind (1 fixture, 2 object), 3 object type, 8 parent id, 13-19 obfuscated numbers (x, y, z,
   rx, ry, rz, extra); fixtures 20 address, 21 head, 22 personality; objects 20 code, 21-23 size, 24 name, 26 model.
   Object types 1 proscenium, 2 truss / pipe (length along local +X), 4 box, 6 person, 7 podium, 8 model, 9 border.
@@ -129,6 +155,6 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
 - `CueStack.RemoveStep` is the inverse of `InsertStep`: the step line, its two note strings, its per-step field, the
   count and the relinking; a renumbered step that changes the order is removed and put in again (its note is lost).
 - `Group.SetHeads` rewrites the member list on the count's line (hex, as MagicQ writes them); `Palette.SetValues`
-  replaces all triplets (links dropped); cue times: only the units of In / Out (f6 / f7) are set, not the millisecond
-  copies further on (`00000b9b` = 2971 for 99 units): **to verify in MagicQ PC**.
+  replaces all triplets (links dropped); cue times: the units of In / Out (f6 / f7) and their millisecond copies
+  (MagicQ plays the copies, see `S` above); Pos / Col / Beam follow In when they were equal to it.
 - Not written: user curves (U), FX lines of cues, other cue stacks (kept byte-identical).

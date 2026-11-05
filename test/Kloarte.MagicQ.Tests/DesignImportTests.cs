@@ -154,4 +154,17 @@ public sealed class DesignImportTests : TestBase
         Assert.Equal("Mode 1 - CMY", t1.GdtfMode);
         Assert.Contains(import.Show.Palettes, p => p.Heads.Values.Any(h => h.ContainsKey("Pan")));
     }
+
+    /// <summary>
+    /// What MagicQ plays in RT2025_044's "show" stack and Kloarte doesn't (verified in MagicQ PC 1.9.7.3, 5 Nov 2026) is
+    /// named in the import notes: In delays, steps that follow without a Go (and the mark cue), FX.
+    /// </summary>
+    [Fact]
+    public void ImportNamesMagicQCueFeaturesKloarteDoesNotPlay()
+    {
+        var notes = MagicQImport.Import(Show("Risquons-Tout_RT2025_044.shw"), Catalog).Notes;
+        Assert.Contains(notes, n => n.StartsWith("cue 2, 6, 6.1, 7, 8, 9, 12, 12.1, 20.1, 22, 25, 27, 27.01: MagicQ delays"));
+        Assert.Contains(notes, n => n.StartsWith("cue 29.1, 29.11 (mark cue), 29.13: MagicQ plays them without a Go"));
+        Assert.Contains(notes, n => n.StartsWith("cue 29.1, 30.2, 30.3, 99.1: MagicQ FX"));
+    }
 }

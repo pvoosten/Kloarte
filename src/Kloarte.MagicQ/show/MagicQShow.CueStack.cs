@@ -41,7 +41,8 @@ public partial class MagicQShow
                 for (int i = 0; i < count && FirstStep + (i + 1) * StepFields <= Record.FieldCount; i++)
                 {
                     int f = FirstStep + i * StepFields;
-                    steps.Add(new Step(Record.GetHex(f), Record.GetHex(f + 2), Record.GetFloat(f + 5), Record.GetString(f + 6)));
+                    steps.Add(new Step(Record.GetHex(f), Record.GetHex(f + 2), Record.GetFloat(f + 5), Record.GetString(f + 6))
+                        { Flags = Record.GetHex(f + 4) });
                 }
                 return steps.OrderBy(s => s.CueNumber).ToList();
             }
@@ -175,8 +176,32 @@ public partial class MagicQShow
         /// <param name="Text">Step text.</param>
         public sealed record Step(int Index, int CueId, float CueNumber, string Text) : ICueStep
         {
+            /// <summary>Flag that the step waits for a Go (halt); without it the step follows the one before.</summary>
+            private const int HaltFlag = 0x2000;
+
+            /// <summary>Flag of a mark cue.</summary>
+            private const int MarkFlag = 0x8000;
+
             /// <summary>Cue number as MagicQ shows it, e.g. "12.1".</summary>
             public string CueNumberText => CueNumber.ToString("0.###", CultureInfo.InvariantCulture);
+
+            /// <summary>
+            /// The step's flags (field 4 of its line): 00006000 a step that waits for a Go, 00004000 one that follows
+            /// the step before when that has finished (RT2025_044 29.1 "otomatic"), 0000c000 a mark cue (follows too).
+            /// </summary>
+            public int Flags { get; init; } = 0x6000;
+
+            /// <summary>
+            /// True when the step waits for a Go; false when MagicQ plays it on its own after the step before has
+            /// finished (verified in MagicQ PC 1.9.7.3 on RT2025_044: one Go on 27.1 plays 27.1, 29.1 and 29.11).
+            /// </summary>
+            public bool WaitsForGo => (Flags & HaltFlag) != 0;
+
+            /// <summary>
+            /// True for a mark cue: MagicQ presets the heads that are dark in it to the positions, colours and beams of
+            /// the next cue (move in black); the cue's own record holds no values (RT2025_044 29.11).
+            /// </summary>
+            public bool Mark => (Flags & MarkFlag) != 0;
         }
     }
 }
