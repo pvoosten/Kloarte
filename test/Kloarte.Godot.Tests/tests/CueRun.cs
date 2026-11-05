@@ -1,19 +1,27 @@
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Kloarte.GodotBinding;
 using Kloarte.MagicQ;
+using Kloarte.Model;
 
 namespace Kloarte.Tests;
 
 /// <summary>
 /// Plays every cue of a cue stack in order (with tracking) and saves one screenshot per cue plus a contact sheet;
 /// prints per cue how many fixtures are lit and how dark the picture is (share of near-black pixels in the stage area).
+/// A cue that looks like the cue before (same DMX output, nothing else changes on stage: <see cref="CueChanges"/>) is
+/// not rendered again unless <see cref="AllCues"/>.
 /// Run:  Godot_console.exe --path . --resolution 1280x720 res://tests/cue_run.tscn
 /// </summary>
 public partial class CueRun : Node
 {
     /// <summary>Cue stack to run.</summary>
     [Export] public string StackName = "show";
+
+    /// <summary>True: render every cue, also those that look like the cue before.</summary>
+    [Export] public bool AllCues;
+
     private const int FramesPerCue = 40;
     private const int ThumbW = 320, ThumbH = 180, Columns = 6;
 
@@ -21,6 +29,10 @@ public partial class CueRun : Node
     private ShowBuilder _builder;
     private Kloarte.Model.ICueStack _stack;
     private int _frame, _step = -1;
+
+    /// <summary>The steps to render (indices in the stack), and the position in that list.</summary>
+    private List<int> _steps;
+    private int _shot = -1;
     private Image _sheet;
     private string _outDir;
 
@@ -42,7 +54,10 @@ public partial class CueRun : Node
         if (_stack == null)
         {
             _stack = _builder.Document.CueStacks.First(s => s.Name == StackName);
-            int rows = (_stack.Steps.Count + Columns - 1) / Columns;
+            _steps = AllCues ? Enumerable.Range(0, _stack.Steps.Count).ToList()
+                : CueChanges.ChangingSteps(_builder.Document, _stack, _builder.Model.Blocking);
+            GD.Print($"rendering {_steps.Count} of {_stack.Steps.Count} cues; the others look like the cue before");
+            int rows = (_steps.Count + Columns - 1) / Columns;
             _sheet = Image.CreateEmpty(ThumbW * Columns, ThumbH * rows, false, Image.Format.Rgb8);
             // Front-of-house seat in the first rows: the stage fills the frame.
             var cam = _scene.GetNode<FlyCamera>("Camera");
@@ -76,20 +91,21 @@ public partial class CueRun : Node
         GD.Print($"cue {step.CueNumberText,6} {step.Text,-16} lit {lit,2}  mean {sum / total:0.000}  black {100.0 * dark / total:0}%");
 
         image.Resize(ThumbW, ThumbH);
-        _sheet.BlitRect(image, new Rect2I(0, 0, ThumbW, ThumbH), new Vector2I(_step % Columns * ThumbW, _step / Columns * ThumbH));
+        _sheet.BlitRect(image, new Rect2I(0, 0, ThumbW, ThumbH), new Vector2I(_shot % Columns * ThumbW, _shot / Columns * ThumbH));
         NextCue();
     }
 
     private void NextCue()
     {
         _frame = 0;
-        if (++_step >= _stack.Steps.Count)
+        if (++_shot >= _steps.Count)
         {
             _sheet.SavePng($"{_outDir}/contact_sheet.png");
             GD.Print($"saved {_outDir}/contact_sheet.png");
             GetTree().Quit();
             return;
         }
+        _step = _steps[_shot];
         _builder.ApplyCueStack(_stack, _step);
     }
 }

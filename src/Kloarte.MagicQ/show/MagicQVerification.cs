@@ -20,9 +20,41 @@ public static class MagicQVerification
 
     /// <summary>The DMX expected after each step (dimmer curves applied): [i] = after step i.</summary>
     public static List<Dictionary<int, int>> ExpectedLevels(IShowDocument show, ICueStack stack) =>
-        Enumerable.Range(0, stack.Steps.Count)
-            .Select(i => show.WithCurves(CueTracking.LevelsAfter(show, stack, i)))
-            .ToList();
+        CueChanges.Outputs(show, stack);
+
+    /// <summary>
+    /// The steps worth playing (indices, in order): those whose output differs from the step before
+    /// (<see cref="CueChanges"/>) in the expected show or in the played one (a played cue that changes something the
+    /// expected one doesn't must be played to find the difference). All steps when the two stacks differ in length.
+    /// </summary>
+    public static List<int> StepsToPlay(IShowDocument expected, ICueStack expectedStack, IShowDocument played, ICueStack playedStack)
+    {
+        if (expectedStack.Steps.Count != playedStack.Steps.Count)
+            return Enumerable.Range(0, playedStack.Steps.Count).ToList();
+        return CueChanges.ChangingSteps(expected, expectedStack)
+            .Union(CueChanges.ChangingSteps(played, playedStack))
+            .Order().ToList();
+    }
+
+    /// <summary>
+    /// Removes the steps of a stack that are not in `keep` (indices in cue-number order) with
+    /// <see cref="MagicQShow.CueStack.RemoveStep"/>; the cue records stay. A step whose cue another step of the stack
+    /// plays too stays (removal goes by cue id). Returns the indices of the steps that are left, in order.
+    /// </summary>
+    public static List<int> KeepOnly(MagicQShow.CueStack stack, IReadOnlyCollection<int> keep)
+    {
+        var steps = stack.Steps;
+        var shared = steps.GroupBy(s => s.CueId).Where(g => g.Count() > 1).Select(g => g.Key).ToHashSet();
+        var left = new List<int>();
+        for (int i = 0; i < steps.Count; i++)
+        {
+            if (keep.Contains(i) || shared.Contains(steps[i].CueId))
+                left.Add(i);
+            else
+                stack.RemoveStep(steps[i].CueId);
+        }
+        return left;
+    }
 
     /// <summary>The longest fade of a cue in seconds (In, Out, Pos, Col, Beam).</summary>
     public static float LongestFade(MagicQShow.Cue cue) =>

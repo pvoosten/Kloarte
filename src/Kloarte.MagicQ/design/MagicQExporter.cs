@@ -68,10 +68,11 @@ internal sealed partial class MagicQExporter
             Warnings.Add($"check after writing: the cue stack has {actualStack?.Steps.Count ?? 0} cues, Kloarte {expectedStack.Steps.Count}");
             return;
         }
+        var wanted = CueTracking.LevelsPerStep(expected, expectedStack);
+        var gotten = CueTracking.LevelsPerStep(actual, actualStack);
         for (int i = 0; i < expectedStack.Steps.Count; i++)
         {
-            var want = CueTracking.LevelsAfter(expected, expectedStack, i);
-            var got = CueTracking.LevelsAfter(actual, actualStack, i);
+            var (want, got) = (wanted[i], gotten[i]);
             int wrong = want.Keys.Union(got.Keys).Count(a => want.GetValueOrDefault(a, -1) != got.GetValueOrDefault(a, -1));
             if (wrong > 0 || !CueNumbers.Same(expectedStack.Steps[i].CueNumber, actualStack.Steps[i].CueNumber))
             {

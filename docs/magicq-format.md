@@ -71,6 +71,9 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
   texts and cue ids (Q96..Q99 + name), the step count is 39, and the last step's next cue is the new first cue (the
   stack loops as before). The notes section takes a first step's two strings on the flag line
   (`00000001,"","","",""`), the others on lines of their own: MagicQ reads both.
+  Since 5 Nov 2026 MagicQVerify takes the cues whose output (all universes, after the fade) is the same as the cue
+  before's, in the expected and in the played show, out of the copy MagicQ plays (`RemoveStep`; `CueChanges` in the
+  model), and lists them in the report; `--all-cues` plays every cue.
   MagicQ's cue numbers have **2 decimals** (all 3426 steps of the show folder; the cue stack window shows "0.00" for
   0.001): a 3-decimal number (what `NumberBetween` gives before 0.01 or between 29.11 and 29.12) plays in order but
   shows rounded, so the export warns about it (`InsertedCuesExportInOrderAndThreeDecimalsAreWarned`).

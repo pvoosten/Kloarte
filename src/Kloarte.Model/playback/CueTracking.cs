@@ -22,4 +22,24 @@ public static class CueTracking
                     state[address] = show.Resolve(address, value);
         return state;
     }
+
+    /// <summary>
+    /// The levels of <see cref="LevelsAfter"/> for every step of a cue stack in one pass: [i] = after step i. Each
+    /// entry is its own dictionary.
+    /// </summary>
+    public static List<Dictionary<int, int>> LevelsPerStep(IShowDocument show, ICueStack stack)
+    {
+        var cues = show.Cues.ToDictionary(c => c.Id);
+        var state = new Dictionary<int, int>();
+        var steps = stack?.Steps ?? Array.Empty<ICueStep>();
+        var result = new List<Dictionary<int, int>>(steps.Count);
+        foreach (var step in steps)
+        {
+            if (cues.TryGetValue(step.CueId, out var cue))
+                foreach (var (address, value) in cue.Channels)
+                    state[address] = show.Resolve(address, value);
+            result.Add(new Dictionary<int, int>(state));
+        }
+        return result;
+    }
 }

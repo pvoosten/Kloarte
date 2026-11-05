@@ -86,6 +86,15 @@ public sealed class Blocking
     /// <summary>cue id -&gt; actor id -&gt; movement steps of that actor in that cue, in order</summary>
     public Dictionary<int, Dictionary<string, List<ActorState>>> Cues { get; set; } = new();
 
+    /// <summary>
+    /// True when a cue changes something on stage besides the lights: an actor moves, smoke, or a set piece comes in,
+    /// goes out or opens.
+    /// </summary>
+    public bool ChangesAt(int cueId) =>
+        Cues.TryGetValue(cueId, out var actors) && actors.Values.Any(steps => steps.Count > 0)
+        || Smoke.ContainsKey(cueId)
+        || SceneryCues.TryGetValue(cueId, out var pieces) && pieces.Count > 0;
+
     /// <summary>The actor with this id, or null.</summary>
     public ActorDef Find(string actorId) => Actors.FirstOrDefault(a => a.Id == actorId);
 

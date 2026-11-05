@@ -1,13 +1,22 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Kloarte.MagicQ;
+using Kloarte.Model;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Kloarte.Tests;
 
 /// <summary>The parts of MagicQ verification that need no running MagicQ.</summary>
-public class MagicQVerificationTests
+public class MagicQVerificationTests : TestBase
 {
+    /// <summary>Test output.</summary>
+    private readonly ITestOutputHelper _log;
+
+    /// <summary>Creates the test class (output folder verification).</summary>
+    public MagicQVerificationTests(ITestOutputHelper log) : base("verification") => _log = log;
+
     /// <summary>A look of one channel.</summary>
     private static Dictionary<int, int> Look(int address, int value) => new() { [address] = value };
 
@@ -56,5 +65,57 @@ public class MagicQVerificationTests
         Assert.Null(meter.FirstChange);
         Assert.Equal(0, meter.Duration);
         Assert.True(meter.Matches(0));
+    }
+
+    /// <summary>
+    /// A Risquons-Tout stack without the cues that add nothing: the stack that is left gives, cue by cue, the output of
+    /// the kept cues of the whole stack, also after saving and reading back (MagicQ plays the same looks in fewer cues).
+    /// </summary>
+    [Fact]
+    public void StackWithoutRedundantCuesPlaysTheSameLooks()
+    {
+        string shw = Show("Risquons-Tout_RT2025_044.shw");
+        var show = MagicQShow.Load(shw);
+        var stack = show.CueStacks.First(s => s.Name == "show");
+        var full = MagicQVerification.ExpectedLevels(show, stack);
+        var play = MagicQVerification.StepsToPlay(show, stack, show, stack);
+        Assert.Equal(CueChanges.ChangingSteps(show, stack), play);
+        _log.WriteLine($"{play.Count} of {stack.Steps.Count} cues change the output");
+        Assert.True(play.Count < stack.Steps.Count, "the stack has cues that add nothing");
+
+        var left = MagicQVerification.KeepOnly(stack, play);
+        Assert.Equal(play, left);
+        string reduced = Path.Combine(_out, "reduced.shw");
+        show.Save(reduced);
+        foreach (var check in new[] { show, MagicQShow.Load(reduced) })
+        {
+            var checkStack = check.CueStacks.First(s => s.Name == "show");
+            Assert.Equal(left.Count, checkStack.Steps.Count);
+            var levels = MagicQVerification.ExpectedLevels(check, checkStack);
+            for (int j = 0; j < left.Count; j++)
+                Assert.True(CueChanges.SameOutput(full[left[j]], levels[j]), $"cue {checkStack.Steps[j].CueNumberText}");
+        }
+    }
+
+    /// <summary>A played cue that changes something the expected one doesn't is played; stacks of other lengths play all.</summary>
+    [Fact]
+    public void StepsToPlayKeepsDifferencesOfThePlayedShow()
+    {
+        string shw = Show("Risquons-Tout_RT2025_044.shw");
+        var expected = MagicQShow.Load(shw);
+        var expectedStack = expected.CueStacks.First(s => s.Name == "show");
+        var redundant = Enumerable.Range(0, expectedStack.Steps.Count).Except(CueChanges.ChangingSteps(expected, expectedStack)).First();
+        var played = MagicQShow.Load(shw);
+        var playedStack = played.CueStacks.First(s => s.Name == "show");
+        var cue = played.Cues.First(c => c.Id == playedStack.Steps[redundant].CueId);
+        var levels = MagicQVerification.ExpectedLevels(played, playedStack)[redundant];
+        int address = cue.Channels.Count > 0 ? cue.Channels[0].Address : levels.Keys.First();
+        cue.SetChannel(address, (levels.GetValueOrDefault(address) + 1) % 256);
+        Assert.Contains(redundant, MagicQVerification.StepsToPlay(expected, expectedStack, played, playedStack));
+        Assert.DoesNotContain(redundant, MagicQVerification.StepsToPlay(expected, expectedStack, expected, expectedStack));
+
+        playedStack.RemoveStep(playedStack.Steps[redundant].CueId);
+        Assert.Equal(Enumerable.Range(0, playedStack.Steps.Count),
+            MagicQVerification.StepsToPlay(expected, expectedStack, played, playedStack));
     }
 }

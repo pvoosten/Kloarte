@@ -13,7 +13,9 @@ namespace Kloarte.MagicQVerify;
 
 /// <summary>
 /// One verification: copies the show, starts MagicQ PC on the copy, plays every cue of a stack and compares the Art-Net
-/// output with what the show file says. status.dat is put back afterwards, and MagicQ is left closed.
+/// output with what the show file says. A cue whose output is the same as the cue before's adds nothing to check: the
+/// copy's stack goes without it (<see cref="MagicQVerification.StepsToPlay"/>), unless --all-cues. status.dat is put
+/// back afterwards, and MagicQ is left closed.
 /// </summary>
 internal sealed class ShowRun
 {
@@ -44,12 +46,15 @@ internal sealed class ShowRun
     /// <summary>Runs the verification; true when every cue passed.</summary>
     public bool Run()
     {
+        if (Inside(_options.Output, MagicQPc.ShowFolder))
+            throw new ArgumentException($"the output folder must not be in MagicQ's show folder: {_options.Output}");
         Directory.CreateDirectory(_options.Output);
         string copy = CopyShow();
         string sourceHash = Hash(_options.Show);
         var show = MagicQShow.Load(_options.Expected ?? copy);
         var stack = show.CueStacks.FirstOrDefault(s => s.Name == _options.Stack)
             ?? throw new ArgumentException($"no cue stack '{_options.Stack}' in the show");
+        var steps = StepsToPlay(show, stack, copy);
 
         byte[] status = File.ReadAllBytes(MagicQPc.StatusFile);
         // A killed run can't restore it: this copy can.
@@ -71,7 +76,7 @@ internal sealed class ShowRun
             // Open before the first Go, it shows the top of the stack (later it follows the current cue).
             if (_options.CueStack)
                 window.CaptureCueStack(_options.Playback, Path.Combine(_options.Output, "cue_stack_start.png"));
-            results = PlayStack(show, stack, window, artNet);
+            results = PlayStack(show, stack, steps, window, artNet);
             if (_options.CueStack)
                 window.CaptureCueStack(_options.Playback, Path.Combine(_options.Output, "cue_stack_end.png"));
             if (_options.Palettes)
@@ -104,6 +109,43 @@ internal sealed class ShowRun
         return untouched && results.Count > 0 && passed == results.Count;
     }
 
+    /// <summary>
+    /// The steps of the expected stack to play (indices, in order). Without --all-cues the steps whose output is the same
+    /// as the step before's, in the expected and in the played show, are taken out of the copy's stack (the copy is
+    /// saved again), so MagicQ plays only the others.
+    /// </summary>
+    private List<int> StepsToPlay(MagicQShow show, MagicQShow.CueStack stack, string copy)
+    {
+        var all = Enumerable.Range(0, stack.Steps.Count).ToList();
+        if (_options.AllCues)
+        {
+            Line($"Playing all {all.Count} cues (--all-cues)");
+            return all;
+        }
+        var played = MagicQShow.Load(copy);
+        var playedStack = played.CueStacks.FirstOrDefault(s => s.Name == _options.Stack)
+            ?? throw new ArgumentException($"no cue stack '{_options.Stack}' in the show");
+        var play = MagicQVerification.StepsToPlay(show, stack, played, playedStack);
+        if (play.Count == playedStack.Steps.Count)
+        {
+            Line($"Playing all {all.Count} cues: each changes the output");
+            return all;
+        }
+        var left = MagicQVerification.KeepOnly(playedStack, play);
+        played.Save(copy);
+        var skipped = all.Except(left).Select(i => stack.Steps[i].CueNumberText);
+        Line($"Skipped {all.Count - left.Count} of {all.Count} cues with the same output as the cue before (--all-cues plays them): "
+            + string.Join(", ", skipped));
+        return left;
+    }
+
+    /// <summary>True when `path` is `folder` or in it.</summary>
+    private static bool Inside(string path, string folder)
+    {
+        string relative = Path.GetRelativePath(Path.GetFullPath(folder), Path.GetFullPath(path));
+        return relative == "." || !relative.StartsWith("..", StringComparison.Ordinal) && !Path.IsPathRooted(relative);
+    }
+
     /// <summary>Copies the show into the output folder: MagicQ autosaves next to the show it runs.</summary>
     private string CopyShow()
     {
@@ -127,8 +169,9 @@ internal sealed class ShowRun
         }
     }
 
-    /// <summary>Plays the steps one by one.</summary>
-    private List<StepResult> PlayStack(MagicQShow show, MagicQShow.CueStack stack, MagicQWindow window, ArtNetReceiver artNet)
+    /// <summary>Plays the steps one by one: `steps` are the indices in `stack` of the steps the played stack has.</summary>
+    private List<StepResult> PlayStack(MagicQShow show, MagicQShow.CueStack stack, IReadOnlyList<int> steps, MagicQWindow window,
+        ArtNetReceiver artNet)
     {
         var expected = MagicQVerification.ExpectedLevels(show, stack);
         var intensities = MagicQCheck.IntensityAddresses(show);
@@ -137,8 +180,9 @@ internal sealed class ShowRun
         bool started = window.IsActive(_options.Playback);
         if (started)
             Line("The stack started when its fader went up: no Go for the first cue, whose fade is not measured");
-        for (int i = 0; i < stack.Steps.Count; i++)
+        for (int j = 0; j < steps.Count; j++)
         {
+            int i = steps[j];
             var step = stack.Steps[i];
             float fade = cues.TryGetValue(step.CueId, out var cue) ? MagicQVerification.LongestFade(cue) : 0;
             var before = artNet.Snapshot();
@@ -146,12 +190,12 @@ internal sealed class ShowRun
             // Only a cue that has to move the output has a fade: others repeat the look or set a channel's default.
             bool moves = MagicQVerification.Compare(before, expected[i], intensities).Diffs.Count > 0;
             // Some stacks start when the fader goes up: they are on their first cue already.
-            bool go = i > 0 || !started;
+            bool go = j > 0 || !started;
             var meter = Settle(artNet, before, fade, go ? () => window.Go(_options.Playback) : null,
                 go && moves ? () => Again(window, name) : null);
             var (compared, diffs) = MagicQVerification.Compare(artNet.Snapshot(), expected[i], intensities);
             var result = new StepResult(name, compared, diffs.Count, MagicQCheck.FormatDiffs(diffs), fade, meter.Duration,
-                !moves || meter.Matches(fade) || i == 0 && started);
+                !moves || meter.Matches(fade) || j == 0 && started);
             results.Add(result);
             Console.WriteLine(Describe(result));
             window.Capture(Path.Combine(_options.Output, $"cue_{i + 1:000}.png"));

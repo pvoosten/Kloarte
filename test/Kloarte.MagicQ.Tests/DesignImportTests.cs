@@ -65,11 +65,12 @@ public sealed class DesignImportTests : TestBase
                 failures.Add($"{Path.GetFileName(shw)}: {designStack.Steps.Count} cues, MagicQ {sourceSteps.Count}");
                 continue;
             }
+            var expectedLevels = TrackedLevels(source, sourceSteps);
+            var actualLevels = CueTracking.LevelsPerStep(design, designStack);
             for (int i = 0; i < sourceSteps.Count; i++)
             {
                 steps++;
-                var expected = TrackedLevels(source, sourceSteps, i);
-                var actual = CueTracking.LevelsAfter(design, designStack, i);
+                var (expected, actual) = (expectedLevels[i], actualLevels[i]);
                 var wrong = expected.Keys.Union(actual.Keys)
                     .Where(a => expected.GetValueOrDefault(a, -1) != actual.GetValueOrDefault(a, -1)).ToList();
                 if (wrong.Count > 0)
@@ -98,18 +99,22 @@ public sealed class DesignImportTests : TestBase
         Check(failures.Count == 0, string.Join("\n", failures.Take(20)));
     }
 
-    /// <summary>MagicQ's tracked levels after step `upTo` of these steps (each cue id once, as the import plays them).</summary>
-    private static Dictionary<int, int> TrackedLevels(MagicQShow show, IReadOnlyList<MagicQShow.CueStack.Step> steps, int upTo)
+    /// <summary>MagicQ's tracked levels after each of these steps (each cue id once, as the import plays them): [i] = after step i.</summary>
+    private static List<Dictionary<int, int>> TrackedLevels(MagicQShow show, IReadOnlyList<MagicQShow.CueStack.Step> steps)
     {
         var cues = new Dictionary<int, MagicQShow.Cue>();
         foreach (var cue in show.Cues)
             cues.TryAdd(cue.Id, cue);
         var state = new Dictionary<int, int>();
-        for (int i = 0; i <= upTo; i++)
-            if (cues.TryGetValue(steps[i].CueId, out var cue))
+        var result = new List<Dictionary<int, int>>();
+        foreach (var step in steps)
+        {
+            if (cues.TryGetValue(step.CueId, out var cue))
                 foreach (var (address, value) in cue.Channels)
                     state[address] = show.Resolve(address, value);
-        return state;
+            result.Add(new Dictionary<int, int>(state));
+        }
+        return result;
     }
 
     /// <summary>
