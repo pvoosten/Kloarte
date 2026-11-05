@@ -138,6 +138,29 @@ internal sealed partial class MagicQWindow
         Capture(path);
     }
 
+    /// <summary>The VIS button (MagicQ's visualiser window), from a capture at the pinned size.</summary>
+    private static readonly (int X, int Y) VisButton = (1613, 352);
+
+    /// <summary>The visualiser window's view soft buttons, from a capture at the pinned size.</summary>
+    private static readonly (string Name, int X, int Y)[] VisViews =
+        { ("perspective", 572, 83), ("top", 660, 83), ("front", 748, 83), ("side", 836, 83) };
+
+    /// <summary>
+    /// Opens MagicQ's visualiser window (VIS: MagicVis in MagicQ, the show's H records) and saves a capture of each
+    /// view (perspective, top, front, side: vis_*.png) in a folder, to check the rig by eye.
+    /// </summary>
+    public void CaptureVis(string folder)
+    {
+        Click(VisButton.X, VisButton.Y);
+        Thread.Sleep(3000);
+        foreach (var (name, x, y) in VisViews)
+        {
+            Click(x, y);
+            Thread.Sleep(2000);
+            Capture(Path.Combine(folder, $"vis_{name}.png"));
+        }
+    }
+
     /// <summary>A position in window coordinates (as in a capture) as a message's lParam.</summary>
     private nint Position(int x, int y) => x - _client.X | y - _client.Y << 16;
 
@@ -167,9 +190,18 @@ internal sealed partial class MagicQWindow
         bitmap.Save(path, ImageFormat.Png);
     }
 
-    /// <summary>The window's current image.</summary>
+    /// <summary>ShowWindow: restore a minimised window without activating it.</summary>
+    private const int ShowNoActivate = 4;
+
+    /// <summary>The window's current image. A minimised window (someone else's click) draws nothing: it is restored first.</summary>
     private Bitmap Grab()
     {
+        if (IsIconic(_handle))
+        {
+            ShowWindow(_handle, ShowNoActivate);
+            SetWindowPos(_handle, IntPtr.Zero, Left, Top, Width, Height, NoZOrder | NoActivate);
+            Thread.Sleep(1000);
+        }
         var bitmap = new Bitmap(Width, Height);
         using var graphics = Graphics.FromImage(bitmap);
         var dc = graphics.GetHdc();
@@ -177,6 +209,14 @@ internal sealed partial class MagicQWindow
         graphics.ReleaseHdc(dc);
         return bitmap;
     }
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsIconic(IntPtr window);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool ShowWindow(IntPtr window, int command);
 
     [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
     [return: MarshalAs(UnmanagedType.Bool)]

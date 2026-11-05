@@ -6,6 +6,9 @@ namespace Kloarte.MagicQ;
 
 internal sealed partial class MagicQExporter
 {
+    /// <summary>The characters of a MagicVis object's name MagicQ keeps (every show MagicQ wrote; its save cuts the rest).</summary>
+    private const int MaxObjectName = 15;
+
     /// <summary>
     /// The rig items as MagicVis H records, by id: what differs is set; a new item is a copy of an H record of its kind
     /// (a lamp of its personality, an object of its type: the show's, else the templates' or the house venue's); an item
@@ -32,8 +35,6 @@ internal sealed partial class MagicQExporter
                 if (vis == null)
                     continue;
                 Wrote($"rig item {item.Id} ({item.Kind}{(item.Name != null ? " " + item.Name : "")}) added");
-                if (rig.ObjectKind == RigObjectKind.Pipe && System.Math.Abs(rig.RotZ - 90) < 0.01f)
-                    Check("floor stands (pipes standing up: rotation z 90)");
                 SetItem(vis, item, true);
                 continue;
             }
@@ -110,7 +111,15 @@ internal sealed partial class MagicQExporter
         if (Size(vis.SizeA, rig.SizeA)) { vis.SizeA = rig.SizeA; changed.Add("sizeA"); }
         if (Size(vis.SizeB, rig.SizeB)) { vis.SizeB = rig.SizeB; changed.Add("sizeB"); }
         if (Size(vis.SizeC, rig.SizeC)) { vis.SizeC = rig.SizeC; changed.Add("sizeC"); }
-        if (all || vis.Name != rig.Name) { vis.Name = rig.Name; changed.Add("name"); }
+        if (all || vis.Name != rig.Name)
+        {
+            vis.Name = rig.Name;
+            changed.Add("name");
+            // MagicQ keeps 15 characters of an object's name: its save cuts the rest (re-import: renamed).
+            if (rig.Name is { Length: > MaxObjectName } name)
+                Warnings.Add($"rig item {item.Id} '{name}': MagicQ keeps {MaxObjectName} characters of a name "
+                             + $"('{name[..MaxObjectName]}' after a save in MagicQ)");
+        }
         return changed;
     }
 }

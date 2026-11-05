@@ -146,7 +146,8 @@ that doesn't read is not applied and never overwritten.
   project: the house venue's), changing only what differs; an unchanged show is written byte-identical. After writing,
   the file is read back and compared with Kloarte (a difference is a warning). The status says what was written and
   what to **check in MagicQ PC** (kinds of records not yet verified there: new palettes, changed cue channels and
-  times, cue steps put in or taken out, new heads, groups and MagicVis items, floor stands). Not exported: dimmer curves
+  times, cue steps put in or taken out, new heads, groups and MagicVis items). A rig item's name longer than the 15
+  characters MagicQ keeps is a warning. Not exported: dimmer curves
   (a warning; edit them in MagicQ), cue delays. Never over an existing file.
 - *Open in MagicQ PC* (Playback): exports the show as the project's next numbered MagicQ show and starts MagicQ PC with
   it, with live Art-Net and the look check.

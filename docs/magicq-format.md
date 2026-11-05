@@ -77,7 +77,14 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
 - `H` = MagicVis: 1 id, 2 kind (1 fixture, 2 object), 3 object type, 8 parent id, 13-19 obfuscated numbers (x, y, z,
   rx, ry, rz, extra); fixtures 20 address, 21 head, 22 personality; objects 20 code, 21-23 size, 24 name, 26 model.
   Object types 1 proscenium, 2 truss / pipe (length along local +X), 4 box, 6 person, 7 podium, 8 model, 9 border.
-  Floor stands are written as type-2 pipes with rz = 90 (new H records copied from a truss; **verify in MagicQ**).
+  Floor stands are written as type-2 pipes on the floor with rz = 90 (local +X up) and their height as size A (new H
+  records copied from a truss). **Verified in MagicQ PC 1.9.7.3 (5 Nov 2026)**: an export of Kruimels_016 with a new
+  2.5 m stand (x 2, z 4.5) carrying two lamps (top + 0.15 and 1.6 m, aimed at the floor downstage left and stage right)
+  and the Cour stand raised to 1.5 m plays 35/35 cues; MagicQ's visualiser (VIS, `tools/Kloarte.MagicQVerify --vis`:
+  perspective, top, front, side) shows the stand upright from the floor at its place and height, the lamps on it at
+  their heights and their beams going where they were aimed. MagicQ keeps **15 characters** of an object's name (all
+  shows it wrote; its save of Kruimels_016 has "Staander profie"): the export warns about a longer name ("Stand
+  Manfrotto 111U #1" is cut on a MagicQ save and comes back renamed).
   Numbers: "%.2f", per char `x = ((c >= 0x60 ? c - 0x20 : c) ^ 0x64) - (3 - i)`, digits 9-complement, 0x3b '.',
   0x3c '-'. Euler order Y-X-Z; fixtures point down at rotation 0.
 - `T` = console settings (loaded only with SHIFT + LOAD SHOW+CON): f1 show path, f8 universe count, then one word

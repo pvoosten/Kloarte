@@ -76,6 +76,8 @@ internal sealed class ShowRun
                 window.CaptureCueStack(_options.Playback, Path.Combine(_options.Output, "cue_stack_end.png"));
             if (_options.Palettes)
                 window.CapturePalettes(_options.Output);
+            if (_options.Vis)
+                window.CaptureVis(_options.Output);
         }
         finally
         {

@@ -197,6 +197,40 @@ public sealed partial class DesignExportTests
     }
 
     /// <summary>
+    /// A floor stand added to Kruimels_016 with two lamps on it, and an existing stand made higher (verified in MagicQ
+    /// PC's visualiser): the stand is a type-2 pipe on the floor with rotation z 90 and its height as length, the lamps
+    /// hang on it; its name ("Stand Manfrotto 111U #1") is longer than the 15 characters MagicQ keeps: warned.
+    /// </summary>
+    [Fact]
+    public void FloorStandsExportAsUprightPipesAndLongNamesAreWarned()
+    {
+        string shw = Show("Kruimels_016.shw");
+        var design = MagicQImport.Import(MagicQShow.Load(shw), shw, Catalog).Show;
+        var rig = new Rig(design);
+        var template = ((IRigDocument)design).RigItems.Single(i => i.Id == 192);
+        var stand = rig.AddStand("Manfrotto 111U", 2f, 4.5f, 0f, 2.5f);
+        var top = rig.AddLamp(template, 2f, 2.5f + Rig.StandMount, 4.5f, stand.Id, 63.5f, 131.2f);
+        var low = rig.AddLamp(template, 2f, 1.6f, 4.5f, stand.Id, 64.5f, -63.4f);
+        rig.SetHeight(191, 1.5f);
+        design.Changed();
+
+        string target = Target("stand.shw");
+        var export = MagicQExport.Export(design, target, Catalog);
+        Assert.DoesNotContain(export.Warnings, w => w.StartsWith("check after writing"));
+        var vis = MagicQShow.Load(target).Vis.ToDictionary(v => v.Id);
+        var pipe = vis[stand.Id];
+        Assert.Equal((2, "Stand Manfrotto 111U #1"), (pipe.ObjectType, pipe.Name));
+        Assert.Equal((2f, 0f, 4.5f, 0f, 0f, 90f, 2.5f), (pipe.X, pipe.Y, pipe.Z, pipe.RotX, pipe.RotY, pipe.RotZ, pipe.SizeA));
+        var back = MagicQImport.Import(MagicQShow.Load(target), target, Catalog).Show;
+        Assert.Contains(new Rig(back).Stands, s => s.Id == stand.Id && Math.Abs(s.Height - 2.5f) < 0.01f);
+        Assert.Equal((stand.Id, 2.65f, 63.5f, 131.2f), (vis[top.Id].ParentId, vis[top.Id].Y, vis[top.Id].RotX, vis[top.Id].RotY));
+        Assert.Equal((stand.Id, 1.6f), (vis[low.Id].ParentId, vis[low.Id].Y));
+        Assert.Equal((1.5f, 1.65f), (vis[191].SizeA, vis[193].Y));
+        string warning = Assert.Single(export.Warnings, w => w.Contains("15 characters"));
+        Assert.Contains("'Stand Manfrotto'", warning);
+    }
+
+    /// <summary>
     /// A new project (the house venue, no show behind it) with a T1 and a dimmer, a palette and cues exports to a show
     /// with a cue stack, its palettes and its patch, and reads back the same.
     /// </summary>
