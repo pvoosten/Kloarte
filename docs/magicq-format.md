@@ -96,7 +96,14 @@ tests write to `tests/output/`, never over the originals. Everything MagicQ stor
   (command-line arguments are ignored). Rewritten when MagicQ quits, so edit it only while MagicQ is closed.
   MagicQ PC cannot output DMX to a (virtual) COM port: its USB devices use FTDI D2XX, out types are network or
   ChamSys hardware only.
-- People objects (type 6) codes 60001..60004 (man / woman standing / seated: a GUESS, verify in MagicVis).
+- People objects (type 6), code in field 20 (decimal): 60001 man standing, 60002 woman standing (pony tail),
+  60003 man seated, 60004 woman seated (MagicVis draws no chair). **Verified in MagicQ PC 1.9.7.3 (5 Nov 2026)**
+  with `tools/Kloarte.MagicQVerify --vis` on an export of RT2025_044 with only new people, each code alone:
+  size 0, 0, 0 = native size (about 1.8 m standing, all heads level), feet on the floor at y 0, at the exported
+  x / z; rotY 0 faces the audience (+Z), rotY 90 faces +X (audience's right; a seated person's knees point there),
+  rotY 180 shows the back: the same convention as Kloarte's actors (facing = rotY). Names do not follow the code
+  ("People 1" is 60001 in RT2025, "People 2" 60003 or 60004). The export writes the code of a new or changed
+  person (before 5 Nov 2026 a new one kept the code of the record it was copied from).
 - `lastshow.shw` (MagicQ show folder) = MagicQ's copy of the loaded show (unsaved changes included), written when
   MagicQ quits (seen missing while it starts); header `\ Show saved as '<real show>.sbk'`. At start Kloarte opens the show in
   status.dat T f1 (user: preferred; the newer of its .shw and .sbk, `MagicQPc.Existing`; an unreadable status.dat

@@ -162,7 +162,8 @@ kept **lossless** (unchanged records byte-identical; `MagicQRoundTripTests` chec
 - `.xhw` = ustar tar with icons and models. `status.dat` T f1 = the show MagicQ opens (edit only while MagicQ is closed).
 - Written palettes (copied trailer) verified in MagicQ PC; playback uses a palette reference's cached low byte.
 - Inserted cues (new S records + steps, also before the first cue) and pairs added to a cue verified in MagicQ PC.
-- **Unverified in MagicQ PC:** people codes. MagicQ keeps 15 characters of a MagicVis object name (the export warns).
+- People codes verified in MagicVis: 60001 man / 60002 woman standing, 60003 man / 60004 woman seated; rotY 0 faces
+  the audience, +90 faces +X. MagicQ keeps 15 characters of a MagicVis object name (the export warns).
 
 ## Tests
 - `dotnet test Kloarte.sln` = Architecture, Model, MagicQ, Mcp, Application tests. Godot tests need `dotnet build Kloarte.sln` first, then

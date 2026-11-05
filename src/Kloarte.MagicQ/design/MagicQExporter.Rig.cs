@@ -120,6 +120,8 @@ internal sealed partial class MagicQExporter
                 Warnings.Add($"rig item {item.Id} '{name}': MagicQ keeps {MaxObjectName} characters of a name "
                              + $"('{name[..MaxObjectName]}' after a save in MagicQ)");
         }
+        // An item without a code keeps the copied record's (MagicVis' variant of its type).
+        if (rig.ObjectCode.Length > 0 && vis.ObjectCode != rig.ObjectCode) { vis.ObjectCode = rig.ObjectCode; changed.Add("code"); }
         return changed;
     }
 }

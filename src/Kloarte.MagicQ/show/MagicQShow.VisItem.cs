@@ -61,7 +61,7 @@ public partial class MagicQShow
         /// <summary>
         /// Objects only. ObjectCode = MagicVis object variant (e.g. 20001 truss, 30005 box, 60001/60003 people).
         /// </summary>
-        public string ObjectCode => Record[20];
+        public string ObjectCode { get => Record[20]; set => Record[20] = value; }
         /// <summary>Size A (objects; truss length, box depth, proscenium width).</summary>
         public float SizeA { get => Record.GetFloat(21); set => Record.SetFloat(21, value); }
         /// <summary>Size B (objects).</summary>

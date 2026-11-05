@@ -12,8 +12,8 @@ public static partial class Mannequin
 {
 
     /// <summary>
-    /// MagicVis people object codes (H field 20). GUESS from the shows: 60003 is used for a "Drummer" (seated).
-    /// Correct here when verified in MagicVis.
+    /// MagicVis people object codes (H field 20), verified in MagicQ PC's MagicVis (docs/magicq-format.md):
+    /// man / woman standing, man / woman seated.
     /// </summary>
     public static readonly Dictionary<string, (bool Female, Pose Pose)> MagicVisCodes = new()
     {
